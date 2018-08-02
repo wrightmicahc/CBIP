@@ -143,7 +143,7 @@ high_intensity_adjustment <- function(diam_reduction){
 }
 
 # calculate diameter reduction for woody fuels
-diam_redux_calc <- function(pct_hun_hr, fm_10hr, fm_1000hr, fm_type){
+diam_redux_calc <- function(pct_hun_hr, fm_1000hr, fm_type){
         
         adjfm_1000hr <- final1000hr(fm_1000hr, 
                                     fm_type)
