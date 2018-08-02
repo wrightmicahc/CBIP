@@ -138,7 +138,7 @@ spring_summer_adjustment <- function(pct_hun_hr, adjfm_1000hr, fm_type) {
 # adjust for high intensity. This assumes highest intensity, and avoids needing 
 # to estimate ignition time or fire size
 high_intensity_adjustment <- function(diam_reduction){
-        dr <- diam_reduction * 0.67
+        dr <- diam_reduction * (2/3)
         return(dr)
 }
 
@@ -536,5 +536,14 @@ ccon_activity <- function(fm1000,
         # name output
         names(sc_dat) <- sc_names
         
-        return(sc_dat)
+        # create a list of output data frames 
+        out_list <- lapply(names(sc_dat), function(x) {
+                data.frame(size_class = x, 
+                           sc_dat[[x]])
+        })
+        
+        # combine the list
+        out_df <- do.call(rbind, out_list)
+        
+        return(out_df)
 }
