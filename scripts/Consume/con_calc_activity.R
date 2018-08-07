@@ -445,7 +445,7 @@ ccon_activity <- function(fm1000,
         pct_hun_hr <- pct_hun_hr_calc(wind, slope, fm10, hun_hr_sound)
         
         # diameter reduction
-        dred <- diam_redux_calc(pct_hun_hr, fm10, fm1000, fm_type)
+        dred <- diam_redux_calc(pct_hun_hr, fm1000, fm_type)
         
         # 100 hr consumption
         hun_hr_fsrt <- ccon_hun_act(pct_hun_hr, dred$diam_reduction, QMDs, hun_hr_sound)
