@@ -1,0 +1,42 @@
+---
+title: "UW Fuels Crosswalk"
+author: "Micah Wright"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "../..")
+```
+
+# Purpose
+
+This document contains a crosswalk to partition the UW residue size classes into the commonly used time lag fuel size classes.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+knitr::kable(tibble::tibble("Residue Size Class (in.)" = c("Foliage", 
+                                                           "Branches",
+                                                           "Branches", 
+                                                           "Branches",
+                                                           "4-6", 
+                                                           "6-9", 
+                                                           "9+", 
+                                                           "9+"),
+                            "Surface Fuel Size Class (in.)" = c("Litter",
+                                                                "<=0.25",
+                                                                "0.26-1",
+                                                                "1.1-3",
+                                                                "3.1-9",
+                                                                "3.1-9",
+                                                                "9.1-20", 
+                                                                ">20"),
+                            "Time Lag Designation Woody Fuels" = c(" ",
+                                                       "1-hr",
+                                                       "10-hr", 
+                                                       "100-hr", 
+                                                       "1,000-hr",
+                                                       "1,000-hr",
+                                                       "10,000-hr",
+                                                       ">10,000-hr")),
+             caption = "Table 1. Crosswalk for residue output size class to FCCS woody surface fuel size class.")
+```
