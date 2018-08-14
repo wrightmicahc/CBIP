@@ -55,7 +55,6 @@ csdist <- function(tot, csd){
 # fm_10hr: 10 hour fuel moisture, %
 # hun_hr_sound: 100 hour fuel load
 pct_hun_hr_calc <- function(wind, slope, fm_10hr, hun_hr_sound) {
-        # browser()
         # Eq. B: Heat flux correction
         hfc <- (hun_hr_sound/4.8) * (1 + ((slope-20)/60) + (wind/4))
         
@@ -95,7 +94,6 @@ final1000hr <- function(fm_1000hr, fm_type) {
 # Eq.'s H, I, & J. From consume source code: if fm_type is NFDRS, divide by 1.4 
 # not in documentation.
 spring_summer_adjustment <- function(pct_hun_hr, adjfm_1000hr, fm_type) {
-        # browser()
         # make masks
         mask_spring <- (pct_hun_hr <= 0.75)
         mask_trans <- (pct_hun_hr > 0.75 & pct_hun_hr < 0.85)
@@ -205,7 +203,7 @@ duff_redux_activity <- function(diam_reduction,
                                  ifelse(days_since_rain > days_to_dry, 
                                         dry_df_redux, moist_df_redux))
         
-        # Eq. W: Shallow duff adjustment p. 162, ln 4802-4811
+        # Eq. W: Shallow duff adjustment
         duff_reduction2 =ifelse(duff_depth < 0.5,
                                 duff_reduction * 0.5,
                                 duff_reduction * ((0.25 * duff_depth) + 0.375))
@@ -366,7 +364,6 @@ ccon_ffr_activity <- function(diam_reduction,
                               litter_depth,
                               lichen_depth,
                               moss_depth) {
-        # browser()
         duff_redux <- duff_redux_activity(diam_reduction,
                                           oneK_fsrt, 
                                           tenK_fsrt,
@@ -390,7 +387,6 @@ ccon_ffr_activity <- function(diam_reduction,
 
 # compare forest floor reduction to litter layer depth
 calc_and_reduce_ff <- function(litter_depth, ff_reduction){
-        # browser()
         # if the depth of the layer is less than the available reduction
         #  use the depth of the layer. Otherwise, use the available reduction
         layer_reduction <- ifelse(litter_depth < ff_reduction, litter_depth, ff_reduction)
@@ -425,7 +421,6 @@ ccon_activity <- function(fm1000,
                           fm10, 
                           days_since_rain,
                           LD){
-        # browser()
         one_hr_sound <- LD[["one_hr_sound"]]
         ten_hr_sound <- LD[["ten_hr_sound"]] 
         hun_hr_sound <- LD[["hun_hr_sound"]] 
