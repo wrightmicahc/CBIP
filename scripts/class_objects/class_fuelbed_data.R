@@ -20,13 +20,15 @@
 # 
 ################################################################################
 setClass("fuelbed_data",
+         
          slots = c(xy_coords = "matrix",
                    fuelbed_number = "integer",
                    FCID2018 = "integer",
                    fuel_load = "data.frame",
                    residue = "data.frame",
                    treatment = "character",
-                   fuel_moisture = "data.frame",
+                   fm1000 = "numeric",
+                   fm10 = "numeric",
                    slope = "numeric",
                    wind = "numeric",
                    tpi = "numeric",
