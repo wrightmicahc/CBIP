@@ -23,7 +23,7 @@ setClass("fuelbed_data",
          
          slots = c(xy_coords = "matrix",
                    fuelbed_number = "integer",
-                   FCID2018 = "integer",
+                   fcid2018 = "integer",
                    fuel_load = "data.frame",
                    residue = "data.frame",
                    treatment = "character",
@@ -33,5 +33,6 @@ setClass("fuelbed_data",
                    wind = "numeric",
                    tpi = "numeric",
                    pulp_market = "logical",
-                   days_since_rain = "integer")
+                   days_since_rain = "integer",
+                   fm_type = "character")
 )
