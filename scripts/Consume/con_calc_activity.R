@@ -108,7 +108,7 @@ spring_summer_adjustment <- function(pct_hun_hr, adjfm_1000hr, fm_type) {
                 sumr <- cdic$summer[[fm_type]][x]
                 
                 mb <- (mask_spring * sprg) + (mask_summer * sumr) +
-                        (mask_trans * ((spring_ff + sprg) * (sumr - sprg)))
+                        (mask_trans * (sprg + (spring_ff * (sumr - sprg))))
                 # note from consume 4.0, line 107: transitional equation NOT in 
                 # documentation- retrieved from source code
                 return(mb)
