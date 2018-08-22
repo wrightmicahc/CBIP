@@ -1,6 +1,5 @@
 ################################################################################
-# This script stacks the FCID, FCCS to a single multiband image, splits the 
-# image into tiles, and saves to a file
+# This script makes custom tiles and saves to a file
 # 
 # Author: Micah Wright
 # Date: 06/07/2018
@@ -9,19 +8,9 @@
 # Setup: Load the necessary packages
 library(raster)
 library(rgdal)
-library(parallel)
 
-# Make a list with the file names of the necessary rasters
-file_list <- list("FCID2018" = "data/UW/UW_FCID.tif",
-                  "Slope" = "data/Other/DEM/Slope_NAD83.tif",
-                  "fuelbed_number" = "data/FCCS/spatial/FCCS_NAD83.tif", 
-                  "Fm10" = "data/GEE/temp/fm10.tif",
-                  "Fm1000" = "data/GEE/temp/fm1000.tif",
-                  "Wind" = "data/GEE/temp/windv.tif",
-                  "TPI" = "data/Other/DEM/dem_dev_2g_NAD83.tif")
-
-# Load the rasters as a stack
-rstack <- stack(file_list)
+# grab one of the necessary rasters
+FCID <- raster("data/UW/UW_FCID.tif")
 
 # make a function that creates a list of extents that fall within an existing 
 # extent object. needs a raster and the number of tiles in the x-y dimensions
@@ -48,68 +37,44 @@ SplitRas <- function(r, numtiles_x, numtiles_y) {
 }
 
 # make a bunch of extents
-ext_list <- SplitRas(rstack, 125, 125)
+ext_list <- SplitRas(FCID, 125, 125)
 
 # function to make the extents spatialpolygons
 CreatePoly <- function(ext) {
         #browser()
         p <- as(ext, "SpatialPolygons")
         return(p)
-        
-        #shapefile(p, filename = paste0("data/Tiles/",id, ".shp"), overwrite=TRUE)
-        
-        # writeOGR(obj = p, 
-        #          dsn = "data/Tiles", 
-        #          layer = id, 
-        #          driver = "ESRI Shapefile",
-        #          overwrite_layer = TRUE)
 }
 
 # create a list of spatialpolygons
 poly_list <- lapply(seq(1:length(ext_list)), 
-                    #mc.cores = detectCores()-2,
                     function(i) CreatePoly( ext_list[[i]]))
 
 # merge to one big poly
 poly <- do.call(bind, poly_list) 
 
-proj4string(poly) <- crs(rstack)
+# define projection
+proj4string(poly) <- crs(FCID)
 
+# load CA 1 degree srtm
 srtm <- readOGR("data/Other/srtm_1_deg",
                 "srtm_1_deg")
 
+# reproject
 srtm <- spTransform(srtm, proj4string(poly))
 
+# crop extents to CA
 poly <- poly[srtm, ]
+
+# check with a plot
+plot(poly)
+
+# how big are the tiles?
+area(poly[599])
 
 # Remove any old tiles to avoid overwrite issues
 lapply(list.files("data/Tiles", full.names = TRUE), file.remove)
 
+# save the polygons
 shapefile(poly, filename = paste0("data/Tiles/tiles.shp"), overwrite=TRUE)
 
-# # crop function
-# CropRas <- function(r, l, ex, id){
-#         # browser()
-#         cr <- crop(r, ex)
-#         
-#         # fraction that is NA
-#         i <- cellStats(is.na(cr[[l]]), sum)/ncell(cr[[l]])
-#         
-#         if(i != 1)
-#                raster::writeRaster(cr, 
-#                                    filename = paste0("data/Tiles/", 
-#                                                      id, 
-#                                                      ".tif"),
-#                                    options = "INTERLEAVE=BAND")
-# }
-# 
-# # Remove any old tiles to avoid overwrite issues
-# lapply(list.files("data/Tiles", full.names = TRUE), file.remove)
-# 
-# # crop the raster to each extent
-# mclapply(seq(1:length(ext_list)), 
-#          mc.cores = detectCores()-2,
-#          function(i) CropRas(rstack,
-#                              "FCID2018",
-#                              ext_list[[i]],
-#                              i))
