@@ -48,31 +48,68 @@ SplitRas <- function(r, numtiles_x, numtiles_y) {
 }
 
 # make a bunch of extents
-ext_list <- SplitRas(rstack, 25, 25)
+ext_list <- SplitRas(rstack, 125, 125)
 
-# crop function
-CropRas <- function(r, l, ex, id){
-        browser()
-        cr <- crop(r, ex)
+# function to make the extents spatialpolygons
+CreatePoly <- function(ext) {
+        #browser()
+        p <- as(ext, "SpatialPolygons")
+        return(p)
         
-        # fraction that is NA
-        i <- cellStats(is.na(cr[[l]]), sum)/ncell(cr[[l]])
+        #shapefile(p, filename = paste0("data/Tiles/",id, ".shp"), overwrite=TRUE)
         
-        if(i != 1)
-               raster::writeRaster(cr, 
-                                   filename = paste0("data/Tiles/", 
-                                                     id, 
-                                                     ".tif"),
-                                   options = "INTERLEAVE=BAND")
+        # writeOGR(obj = p, 
+        #          dsn = "data/Tiles", 
+        #          layer = id, 
+        #          driver = "ESRI Shapefile",
+        #          overwrite_layer = TRUE)
 }
+
+# create a list of spatialpolygons
+poly_list <- lapply(seq(1:length(ext_list)), 
+                    #mc.cores = detectCores()-2,
+                    function(i) CreatePoly( ext_list[[i]]))
+
+# merge to one big poly
+poly <- do.call(bind, poly_list) 
+
+proj4string(poly) <- crs(rstack)
+
+srtm <- readOGR("data/Other/srtm_1_deg",
+                "srtm_1_deg")
+
+srtm <- spTransform(srtm, proj4string(poly))
+
+poly <- poly[srtm, ]
 
 # Remove any old tiles to avoid overwrite issues
 lapply(list.files("data/Tiles", full.names = TRUE), file.remove)
 
-# crop the raster to each extent
-mclapply(seq(1:length(ext_list)), 
-         mc.cores = detectCores()-2,
-         function(i) CropRas(rstack,
-                             "FCID2018",
-                             ext_list[[i]],
-                             i))
+shapefile(poly, filename = paste0("data/Tiles/tiles.shp"), overwrite=TRUE)
+
+# # crop function
+# CropRas <- function(r, l, ex, id){
+#         # browser()
+#         cr <- crop(r, ex)
+#         
+#         # fraction that is NA
+#         i <- cellStats(is.na(cr[[l]]), sum)/ncell(cr[[l]])
+#         
+#         if(i != 1)
+#                raster::writeRaster(cr, 
+#                                    filename = paste0("data/Tiles/", 
+#                                                      id, 
+#                                                      ".tif"),
+#                                    options = "INTERLEAVE=BAND")
+# }
+# 
+# # Remove any old tiles to avoid overwrite issues
+# lapply(list.files("data/Tiles", full.names = TRUE), file.remove)
+# 
+# # crop the raster to each extent
+# mclapply(seq(1:length(ext_list)), 
+#          mc.cores = detectCores()-2,
+#          function(i) CropRas(rstack,
+#                              "FCID2018",
+#                              ext_list[[i]],
+#                              i))
