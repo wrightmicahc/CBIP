@@ -26,6 +26,7 @@
                                fuelbed_number = "integer",
                                fcid2018 = "integer",
                                fuel_load = "data.frame",
+                               fuel_prop = "data.frame",
                                residue = "data.frame",
                                treatment = "character",
                                bio_rm = "numeric",
@@ -61,6 +62,7 @@ Fuelbed <- function(xy_coords,
                  treatment = treatment,
                  bio_rm = bio_rm,
                  fuel_load = fuelbed[fuelbed$fuelbed_number == fuelbed_number, ],
+                 fuel_prop = fuel_prop[fuel_prop$fuelbed_number == fuelbed_number, ],
                  residue = residue[residue$FCID2018 == fcid2018 &
                                            residue$Treatment == treatment, ],
                  fm1000 = fm1000,
@@ -73,3 +75,20 @@ Fuelbed <- function(xy_coords,
                  fm_type = fm_type)
 }
 
+setMethod("show", "Fuelbed", function(object) {
+        cat(is(object)[[1]], "\n",
+            " Fuelbed Number: ", object@fuelbed_number, "\n", 
+            " FCID (2018): ", object@fcid2018, "\n",
+            #" Fuel Load: ", object@fuel_load, "\n",
+            #" Treatment Residue: ", object@residue, "\n",
+            " Treatment: ", object@treatment, "\n",
+            " Biomass Removed: ", object@bio_rm, "\n",
+            # " 1,000-hr Fuel Moisture: ", object@fm1000, "\n",
+            # " 10-hr Fuel Moisture: ", object@fm10, "\n",
+            # " % Slope: ", object@slope, "\n",
+            # " Windspeed (m/sec): ", object@wind, "\n",
+            # "Terrain Prominence: ", object@tpi, "\n",
+            " Pulp Market: ", object@pulp_market, "\n",
+            " Fuel Moisture Type: ", object@fm_type, "\n",
+            sep = "")
+})
