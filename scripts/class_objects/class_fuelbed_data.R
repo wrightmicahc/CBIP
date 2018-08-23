@@ -44,6 +44,7 @@ Fuelbed <- function(xy_coords,
                     fuelbed_number,
                     fcid2018, 
                     fuelbed, 
+                    fuel_prop,
                     residue,
                     treatment,
                     bio_rm,
@@ -92,3 +93,47 @@ setMethod("show", "Fuelbed", function(object) {
             " Fuel Moisture Type: ", object@fm_type, "\n",
             sep = "")
 })
+
+AddFuel <- function(x) {
+        browser()
+        addfuel <- function(load, add, prop) {
+                fuel <- load + (add * prop)
+                return(fuel)
+        }
+        zero_div <- function(x, y) {
+                return(ifelse(x == 0 & y == 0, 0, x / y))
+        }
+        
+        x@fuel_load$litter_loading = addfuel(x@fuel_load$litter_loading,
+                                             x@residue$Foliage_tonsAcre, 
+                                             x@fuel_prop$litter_prop)
+        
+        x@fuel_load$litter_depth = zero_div(x@fuel_load$litter_loading,
+                                            x@fuel_prop$litter_ratio)
+        
+        x@fuel_load$one_hr_sound = addfuel(x@fuel_load$one_hr_sound,
+                                           x@residue$Branch_tonsAcre, 
+                                           x@fuel_prop$one_hr_sound_prop)
+        
+        x@fuel_load$ten_hr_sound = addfuel(x@fuel_load$ten_hr_sound,
+                                           x@residue$Branch_tonsAcre, 
+                                           x@fuel_prop$ten_hr_sound_prop)
+        
+        x@fuel_load$hun_hr_sound = addfuel(x@fuel_load$hun_hr_sound,
+                                           x@residue$Branch_tonsAcre, 
+                                           x@fuel_prop$hun_hr_sound_prop)
+        
+        x@fuel_load$oneK_hr_sound = addfuel(x@fuel_load$oneK_hr_sound,
+                                           x@residue$Break_4t9_tonsAcre, 
+                                           x@fuel_prop$oneK_hr_sound_prop)
+        
+        x@fuel_load$tenK_hr_sound = addfuel(x@fuel_load$tenK_hr_sound,
+                                            x@residue$Break_ge9_tonsAcre, 
+                                            x@fuel_prop$tenK_hr_sound_prop)
+        
+        x@fuel_load$tnkp_hr_sound = addfuel(x@fuel_load$tnkp_hr_sound,
+                                            x@residue$Break_ge9_tonsAcre, 
+                                            x@fuel_prop$tnkp_hr_sound_prop)
+        
+        return(x)
+}
