@@ -5,16 +5,18 @@
 # slots:
 # xy_coords: two column matrix with raster cell lat-long
 # fuelbed_number: FCCS fuelbed ID number
-# fuel_load: FCCS fuel loading data with columns for fuel size class
-# residue: harvest and treatment residues
-# treatmet: silvaculture treatment
-# fuel moisture: data frame with columns for  97.5 percentile values for 10 and
-# 1,000-hr fuel moisture
+# fcid2018: updated GNN FCID 
+# fuel_load: FCCS fuel loading data with columns for each fuel size class
+# residue: harvest and treatment residue data frames
+# treatment: silvaculture treatment
+# fm1000: 97.5 percentile value for 1,000-hr fuel moisture
+# fm10: 97.5 percentile value for 10-hr fuel moisture
 # slope: % slope
 # wind: uncorrected windspeed
 # tpi: normalized terrain prominance index
-# pulp_market: is pulp market present?
+# pulp_market: is there a pulp market?
 # days_since_rain: the number of days since 0.25" rainfall
+# fm_type: fuel moisture adjustment class
 #
 # author: Micah Wright
 #
