@@ -504,20 +504,25 @@ ccon_activity <- function(fm1000,
                                       litter_loading, 
                                       ffr, 
                                       c(0.90, 0.10, 0.0))
-        # names for the woody fuels catagories
-        sc_names <- c("one",
-                      "ten",
-                      "hun_hr",
-                      "oneK_snd",
-                      "oneK_rot",
-                      "tenK_snd",
-                      "tenK_rot",
-                      "tnkp_snd",
-                      "tnkp_rot",
-                      "litter")
+        
+        # row and column names 
+        sc_names <- list(c("one",
+                           "ten",
+                           "hun_hr",
+                           "oneK_snd",
+                           "oneK_rot",
+                           "tenK_snd",
+                           "tenK_rot",
+                           "tnkp_snd",
+                           "tnkp_rot",
+                           "litter"),
+                         c("flaming",
+                           "smoldering",
+                           "residual",
+                           "total"))
 
-        # create output list
-        sc_dat <-list(one_fsrt, 
+        # create output matrix
+        sc_dat <-rbind(one_fsrt, 
                       ten_fsrt, 
                       hun_hr_fsrt$hundredhr,
                       oneK_fsrt_snd, 
@@ -529,16 +534,7 @@ ccon_activity <- function(fm1000,
                       lit_fsrt)
         
         # name output
-        names(sc_dat) <- sc_names
+        dimnames(sc_dat) <- sc_names
         
-        # create a list of output data frames 
-        out_list <- lapply(names(sc_dat), function(x) {
-                data.frame(size_class = x, 
-                           sc_dat[[x]])
-        })
-        
-        # combine the list
-        out_df <- do.call(rbind, out_list)
-        
-        return(out_df)
+        return(sc_dat)
 }
