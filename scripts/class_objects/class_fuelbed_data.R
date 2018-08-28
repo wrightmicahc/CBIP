@@ -25,7 +25,7 @@
 .Fuelbed <- setClass("Fuelbed",
                      
                      slots = c(xy_coords = "matrix",
-                               fuelbed_number = "integer",
+                               fuelbed_number = "numeric",
                                fcid2018 = "integer",
                                fuel_load = "data.frame",
                                fuel_prop = "data.frame",
@@ -58,7 +58,6 @@ Fuelbed <- function(xy_coords,
                     pulp_market,
                     days_since_rain,
                     fm_type) {
-        
         .Fuelbed(xy_coords = xy_coords,
                  fuelbed_number = fuelbed_number,
                  fcid2018 = fcid2018,
