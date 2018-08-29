@@ -506,35 +506,31 @@ ccon_activity <- function(fm1000,
                                       c(0.90, 0.10, 0.0))
         
         # row and column names 
-        sc_names <- list(c("one",
-                           "ten",
-                           "hun_hr",
-                           "oneK_snd",
-                           "oneK_rot",
-                           "tenK_snd",
-                           "tenK_rot",
-                           "tnkp_snd",
-                           "tnkp_rot",
-                           "litter"),
-                         c("flaming",
-                           "smoldering",
-                           "residual",
-                           "total"))
+        sc_names <- c("one",
+                      "ten",
+                      "hun_hr",
+                      "oneK_snd",
+                      "oneK_rot",
+                      "tenK_snd",
+                      "tenK_rot",
+                      "tnkp_snd",
+                      "tnkp_rot",
+                      "litter")
 
         # create output matrix
-        sc_dat <-rbind(one_fsrt, 
-                      ten_fsrt, 
-                      hun_hr_fsrt$hundredhr,
-                      oneK_fsrt_snd, 
-                      oneK_fsrt_rot,
-                      tenK_fsrt_snd,
-                      tenK_fsrt_rot,
-                      tnkp_fsrt_snd,
-                      tnkp_fsrt_rot,
-                      lit_fsrt)
+        sc_dat <- rbind(as.data.frame(one_fsrt),
+                        as.data.frame(ten_fsrt), 
+                        as.data.frame(hun_hr_fsrt$hundredhr),
+                        as.data.frame(oneK_fsrt_snd), 
+                        as.data.frame(oneK_fsrt_rot),
+                        as.data.frame(tenK_fsrt_snd),
+                        as.data.frame(tenK_fsrt_rot),
+                        as.data.frame(tnkp_fsrt_snd),
+                        as.data.frame(tnkp_fsrt_rot),
+                        as.data.frame(lit_fsrt))
         
         # name output
-        dimnames(sc_dat) <- sc_names
+        rownames(sc_dat) <- sc_names
         
         return(sc_dat)
 }
