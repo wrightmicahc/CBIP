@@ -530,7 +530,7 @@ ccon_activity <- function(fm1000,
                         as.data.frame(lit_fsrt))
         
         # name output
-        rownames(sc_dat) <- sc_names
+        sc_dat$size_class <- sc_names
         
         return(sc_dat)
 }
