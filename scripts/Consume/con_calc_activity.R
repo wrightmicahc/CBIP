@@ -517,7 +517,7 @@ ccon_activity <- function(fm1000,
                       "tnkp_rot",
                       "litter")
 
-        # create output matrix
+        # create output data frame
         sc_dat <- rbind(as.data.frame(one_fsrt),
                         as.data.frame(ten_fsrt), 
                         as.data.frame(hun_hr_fsrt$hundredhr),
