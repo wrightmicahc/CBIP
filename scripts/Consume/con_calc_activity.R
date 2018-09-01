@@ -411,6 +411,12 @@ ccon_forest_floor <- function(litter_depth, litter_loading, ff_reduction, csd){
         return(csdist(total, csd))
 }
 
+# emissions calculations
+emiss_calc <- function(cons, ef){
+        return(list(flaming = cons$flaming * ef$flaming,
+                    smoldering = cons$smoldering * ef$smoldering,
+                    residual = cons$residual * ef$residual))
+}
 
 # combine all functions together to get consumption in tons/acre for each load
 # catagory
@@ -421,6 +427,7 @@ ccon_activity <- function(fm1000,
                           fm10, 
                           days_since_rain,
                           LD){
+        #browser()
         one_hr_sound <- LD[["one_hr_sound"]]
         ten_hr_sound <- LD[["ten_hr_sound"]] 
         hun_hr_sound <- LD[["hun_hr_sound"]] 
@@ -516,21 +523,76 @@ ccon_activity <- function(fm1000,
                       "tnkp_snd",
                       "tnkp_rot",
                       "litter")
+        
+        # emissions factors
+        ef_db <- list("flaming" = c("CH4" =  0.00382000,
+                                    "CO" = 0.07180000,
+                                    "CO2" = 1.64970000,
+                                    "NH3" = 0.00120640,
+                                    "NOx" = 0.00242000,
+                                    "PM10" = 0.00859040,
+                                    "PM2.5" = 0.00728000,
+                                    "SO2" = 0.00098000,
+                                    "VOC" = 0.01734200),
+                      
+                      "smoldering"= c("CH4" = 0.00986800,
+                                      "CO" = 0.21012000,
+                                      "CO2" = 1.39308000,
+                                      "NH3" = 0.00341056,
+                                      "NOx" = 0.00090800,
+                                      "PM10" = 0.01962576,
+                                      "PM2.5" = 0.01663200,
+                                      "SO2" = 0.00098000,
+                                      "VOC" = 0.04902680),
+                      
+                      "residual"= c("CH4" = 0.00986800,
+                                    "CO" = 0.21012000,
+                                    "CO2" = 1.39308000,
+                                    "NH3" = 0.00341056,
+                                    "NOx" = 0.00090800,
+                                    "PM10" = 0.01962576,
+                                    "PM2.5" = 0.01663200,
+                                    "SO2" = 0.00098000,
+                                    "VOC" = 0.04902680))
+        fsrt_list <- list("one" = one_fsrt,
+                          "ten" = ten_fsrt, 
+                          "hun_hr" = hun_hr_fsrt$hundredhr,
+                          "oneK_snd" = oneK_fsrt_snd, 
+                          "oneK_rot" = oneK_fsrt_rot,
+                          "tenK_snd" = tenK_fsrt_snd,
+                          "tenK_rot" = tenK_fsrt_rot,
+                          "tnkp_snd" = tnkp_fsrt_snd,
+                          "tnkp_rot" = tnkp_fsrt_rot,
+                          "litter" = lit_fsrt)
+        
+        em_dat <- lapply(seq(1:length(fsrt_list)),
+                         function(i){
+                                 ed <- as.data.frame(emiss_calc(fsrt_list[[i]],
+                                                                ef_db))
+                                 ed$total <- rowSums(ed)
+                                 ed$size_class <- names(fsrt_list[i])
+                                 ed$e_spp <- rownames(ed)
+                                 
+                                 return(ed)
+        })
+        
+        em_dat <- do.call("rbind", em_dat)
 
         # create output data frame
-        sc_dat <- rbind(as.data.frame(one_fsrt),
-                        as.data.frame(ten_fsrt), 
-                        as.data.frame(hun_hr_fsrt$hundredhr),
-                        as.data.frame(oneK_fsrt_snd), 
-                        as.data.frame(oneK_fsrt_rot),
-                        as.data.frame(tenK_fsrt_snd),
-                        as.data.frame(tenK_fsrt_rot),
-                        as.data.frame(tnkp_fsrt_snd),
-                        as.data.frame(tnkp_fsrt_rot),
-                        as.data.frame(lit_fsrt))
+        # sc_dat <- rbind(as.data.frame(one_fsrt),
+        #                 as.data.frame(ten_fsrt), 
+        #                 as.data.frame(hun_hr_fsrt$hundredhr),
+        #                 as.data.frame(oneK_fsrt_snd), 
+        #                 as.data.frame(oneK_fsrt_rot),
+        #                 as.data.frame(tenK_fsrt_snd),
+        #                 as.data.frame(tenK_fsrt_rot),
+        #                 as.data.frame(tnkp_fsrt_snd),
+        #                 as.data.frame(tnkp_fsrt_rot),
+        #                 as.data.frame(lit_fsrt))
         
         # name output
-        sc_dat$size_class <- sc_names
+        # sc_dat$size_class <- sc_names
         
-        return(sc_dat)
+        
+        return(em_dat)
 }
