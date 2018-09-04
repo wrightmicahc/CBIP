@@ -512,19 +512,7 @@ ccon_activity <- function(fm1000,
                                       ffr, 
                                       c(0.90, 0.10, 0.0))
         
-        # row and column names 
-        sc_names <- c("one",
-                      "ten",
-                      "hun_hr",
-                      "oneK_snd",
-                      "oneK_rot",
-                      "tenK_snd",
-                      "tenK_rot",
-                      "tnkp_snd",
-                      "tnkp_rot",
-                      "litter")
-        
-        # emissions factors
+        # emissions factors data
         ef_db <- list("flaming" = c("CH4" =  0.00382000,
                                     "CO" = 0.07180000,
                                     "CO2" = 1.64970000,
@@ -554,6 +542,8 @@ ccon_activity <- function(fm1000,
                                     "PM2.5" = 0.01663200,
                                     "SO2" = 0.00098000,
                                     "VOC" = 0.04902680))
+        
+        # create list of consumption values by emissions phase and size class
         fsrt_list <- list("one" = one_fsrt,
                           "ten" = ten_fsrt, 
                           "hun_hr" = hun_hr_fsrt$hundredhr,
@@ -565,34 +555,20 @@ ccon_activity <- function(fm1000,
                           "tnkp_rot" = tnkp_fsrt_rot,
                           "litter" = lit_fsrt)
         
+        # create a list of data frames of emissions including spp and total
         em_dat <- lapply(seq(1:length(fsrt_list)),
                          function(i){
                                  ed <- as.data.frame(emiss_calc(fsrt_list[[i]],
                                                                 ef_db))
                                  ed$total <- rowSums(ed)
-                                 ed$size_class <- names(fsrt_list[i])
+                                 
                                  ed$e_spp <- rownames(ed)
                                  
                                  return(ed)
         })
         
+        # combine the list to a single data frame
         em_dat <- do.call("rbind", em_dat)
-
-        # create output data frame
-        # sc_dat <- rbind(as.data.frame(one_fsrt),
-        #                 as.data.frame(ten_fsrt), 
-        #                 as.data.frame(hun_hr_fsrt$hundredhr),
-        #                 as.data.frame(oneK_fsrt_snd), 
-        #                 as.data.frame(oneK_fsrt_rot),
-        #                 as.data.frame(tenK_fsrt_snd),
-        #                 as.data.frame(tenK_fsrt_rot),
-        #                 as.data.frame(tnkp_fsrt_snd),
-        #                 as.data.frame(tnkp_fsrt_rot),
-        #                 as.data.frame(lit_fsrt))
-        
-        # name output
-        # sc_dat$size_class <- sc_names
-        
         
         return(em_dat)
 }
