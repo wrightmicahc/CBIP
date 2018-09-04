@@ -418,6 +418,13 @@ emiss_calc <- function(cons, ef){
                     residual = cons$residual * ef$residual))
 }
 
+# function to calculate pile consumption, assumes 90% equally weighted
+ccon_piled <- function(pile_load) {
+        return(list("flaming" = pile_load * 0.3,                           
+                    "smoldering" = pile_load * 0.3,      
+                    "residual" = pile_load * 0.3)  ) 
+}
+
 # combine all functions together to get consumption in tons/acre for each load
 # catagory
 ccon_activity <- function(fm1000,
@@ -443,6 +450,8 @@ ccon_activity <- function(fm1000,
         litter_loading <- LD[["litter_loading"]] 
         lichen_depth <- LD[["lichen_depth"]]
         moss_depth <- LD[["moss_depth"]]
+        pile_load <- LD[["pile_load"]]
+        
         # run consumption functions for all size classes
         pct_hun_hr <- pct_hun_hr_calc(wind, slope, fm10, hun_hr_sound)
         
@@ -453,44 +462,44 @@ ccon_activity <- function(fm1000,
         hun_hr_fsrt <- ccon_hun_act(pct_hun_hr, dred$diam_reduction, QMDs, hun_hr_sound)
         
         # 1 hr consumption
-        one_fsrt = ccon_one_act(one_hr_sound)
+        one_fsrt <- ccon_one_act(one_hr_sound)
         
         # 10 hr consumption
-        ten_fsrt = ccon_ten_act(ten_hr_sound)
+        ten_fsrt <- ccon_ten_act(ten_hr_sound)
         
         # 1,000 hr consumption
-        oneK_fsrt_snd = ccon_oneK_act(oneK_hr_sound, 
+        oneK_fsrt_snd <- ccon_oneK_act(oneK_hr_sound, 
                                       QMDs,
                                       dred$diam_reduction, 
                                       hun_hr_fsrt$flamgDRED$flam_DRED,
                                       HS = "H")
         
-        oneK_fsrt_rot = ccon_oneK_act(oneK_hr_rotten, 
+        oneK_fsrt_rot <- ccon_oneK_act(oneK_hr_rotten, 
                                       QMDs,
                                       dred$diam_reduction, 
                                       hun_hr_fsrt$flamgDRED$flam_DRED,
                                       HS = "S")
         
         # 10,000 hr consumption
-        tenK_fsrt_snd = ccon_tenK_act(tenK_hr_sound, 
+        tenK_fsrt_snd <- ccon_tenK_act(tenK_hr_sound, 
                                       QMDs,
                                       dred$diam_reduction, 
                                       hun_hr_fsrt$flamgDRED$flam_DRED,
                                       HS = "H")
         
-        tenK_fsrt_rot = ccon_tenK_act(tenK_hr_rotten, 
+        tenK_fsrt_rot <- ccon_tenK_act(tenK_hr_rotten, 
                                       QMDs,
                                       dred$diam_reduction, 
                                       hun_hr_fsrt$flamgDRED$flam_DRED,
                                       HS = "S")
         
         # consumption >10,000 hrs
-        tnkp_fsrt_snd = ccon_tnkp_act(dred$adjfm_1000hr,
+        tnkp_fsrt_snd <- ccon_tnkp_act(dred$adjfm_1000hr,
                                       hun_hr_fsrt$flamgDRED$flamg_portion,
                                       tnkp_hr_sound,
                                       HS = "H")
         
-        tnkp_fsrt_rot = ccon_tnkp_act(dred$adjfm_1000hr,
+        tnkp_fsrt_rot <- ccon_tnkp_act(dred$adjfm_1000hr,
                                       hun_hr_fsrt$flamgDRED$flamg_portion,
                                       tnkp_hr_rotten,
                                       HS = "S")
@@ -511,6 +520,8 @@ ccon_activity <- function(fm1000,
                                       litter_loading, 
                                       ffr, 
                                       c(0.90, 0.10, 0.0))
+        # pile consumption
+        pile_fsrt <- ccon_piled(pile_load)
         
         # emissions factors data
         ef_db <- list("flaming" = c("CH4" =  0.00382000,
@@ -553,7 +564,8 @@ ccon_activity <- function(fm1000,
                           "tenK_rot" = tenK_fsrt_rot,
                           "tnkp_snd" = tnkp_fsrt_snd,
                           "tnkp_rot" = tnkp_fsrt_rot,
-                          "litter" = lit_fsrt)
+                          "litter" = lit_fsrt,
+                          "piled" = pile_fsrt)
         
         # create a list of data frames of emissions including spp and total
         em_dat <- lapply(seq(1:length(fsrt_list)),
