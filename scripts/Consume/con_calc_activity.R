@@ -418,7 +418,8 @@ emiss_calc <- function(cons, ef){
                     residual = cons$residual * ef$residual))
 }
 
-# function to calculate pile consumption, assumes 90% equally weighted
+# function to calculate pile consumption, assumes 90% consumption equally 
+# weighted between combustion phase
 ccon_piled <- function(pile_load) {
         return(list("flaming" = pile_load * 0.3,                           
                     "smoldering" = pile_load * 0.3,      
@@ -434,7 +435,7 @@ ccon_activity <- function(fm1000,
                           fm10, 
                           days_since_rain,
                           LD){
-        #browser()
+        # specify fuel load
         one_hr_sound <- LD[["one_hr_sound"]]
         ten_hr_sound <- LD[["ten_hr_sound"]] 
         hun_hr_sound <- LD[["hun_hr_sound"]] 
@@ -469,40 +470,40 @@ ccon_activity <- function(fm1000,
         
         # 1,000 hr consumption
         oneK_fsrt_snd <- ccon_oneK_act(oneK_hr_sound, 
-                                      QMDs,
-                                      dred$diam_reduction, 
-                                      hun_hr_fsrt$flamgDRED$flam_DRED,
-                                      HS = "H")
+                                       QMDs,
+                                       dred$diam_reduction, 
+                                       hun_hr_fsrt$flamgDRED$flam_DRED,
+                                       HS = "H")
         
         oneK_fsrt_rot <- ccon_oneK_act(oneK_hr_rotten, 
-                                      QMDs,
-                                      dred$diam_reduction, 
-                                      hun_hr_fsrt$flamgDRED$flam_DRED,
-                                      HS = "S")
+                                       QMDs,
+                                       dred$diam_reduction, 
+                                       hun_hr_fsrt$flamgDRED$flam_DRED,
+                                       HS = "S")
         
         # 10,000 hr consumption
         tenK_fsrt_snd <- ccon_tenK_act(tenK_hr_sound, 
-                                      QMDs,
-                                      dred$diam_reduction, 
-                                      hun_hr_fsrt$flamgDRED$flam_DRED,
-                                      HS = "H")
+                                       QMDs,
+                                       dred$diam_reduction, 
+                                       hun_hr_fsrt$flamgDRED$flam_DRED,
+                                       HS = "H")
         
         tenK_fsrt_rot <- ccon_tenK_act(tenK_hr_rotten, 
-                                      QMDs,
-                                      dred$diam_reduction, 
-                                      hun_hr_fsrt$flamgDRED$flam_DRED,
-                                      HS = "S")
+                                       QMDs,
+                                       dred$diam_reduction, 
+                                       hun_hr_fsrt$flamgDRED$flam_DRED,
+                                       HS = "S")
         
         # consumption >10,000 hrs
         tnkp_fsrt_snd <- ccon_tnkp_act(dred$adjfm_1000hr,
-                                      hun_hr_fsrt$flamgDRED$flamg_portion,
-                                      tnkp_hr_sound,
-                                      HS = "H")
+                                       hun_hr_fsrt$flamgDRED$flamg_portion,
+                                       tnkp_hr_sound,
+                                       HS = "H")
         
         tnkp_fsrt_rot <- ccon_tnkp_act(dred$adjfm_1000hr,
-                                      hun_hr_fsrt$flamgDRED$flamg_portion,
-                                      tnkp_hr_rotten,
-                                      HS = "S")
+                                       hun_hr_fsrt$flamgDRED$flamg_portion,
+                                       tnkp_hr_rotten,
+                                       HS = "S")
         # forest floor reduction
         ffr <- ccon_ffr_activity(dred$diam_reduction,
                                  oneK_fsrt_snd, 
@@ -577,7 +578,7 @@ ccon_activity <- function(fm1000,
                                  ed$e_spp <- rownames(ed)
                                  
                                  return(ed)
-        })
+                         })
         
         # combine the list to a single data frame
         em_dat <- do.call("rbind", em_dat)
