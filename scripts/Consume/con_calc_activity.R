@@ -577,6 +577,8 @@ ccon_activity <- function(fm1000,
                                  
                                  ed$e_spp <- rownames(ed)
                                  
+                                 ed$size_class <- names(fsrt_list[i])
+                                 
                                  return(ed)
                          })
         
