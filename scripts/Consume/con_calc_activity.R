@@ -413,9 +413,9 @@ ccon_forest_floor <- function(litter_depth, litter_loading, ff_reduction, csd){
 
 # emissions calculations
 emiss_calc <- function(cons, ef){
-        return(list(flaming = cons$flaming * ef$flaming,
-                    smoldering = cons$smoldering * ef$smoldering,
-                    residual = cons$residual * ef$residual))
+        return(data.frame(flaming = cons$flaming * ef$flaming,
+                          smoldering = cons$smoldering * ef$smoldering,
+                          residual = cons$residual * ef$residual))
 }
 
 # function to calculate pile consumption, assumes 90% consumption equally 
@@ -435,6 +435,7 @@ ccon_activity <- function(fm1000,
                           fm10, 
                           days_since_rain,
                           LD){
+        
         # specify fuel load
         one_hr_sound <- LD[["one_hr_sound"]]
         ten_hr_sound <- LD[["ten_hr_sound"]] 
@@ -556,34 +557,46 @@ ccon_activity <- function(fm1000,
                                     "VOC" = 0.04902680))
         
         # create list of consumption values by emissions phase and size class
-        fsrt_list <- list("one" = one_fsrt,
-                          "ten" = ten_fsrt, 
-                          "hun_hr" = hun_hr_fsrt$hundredhr,
-                          "oneK_snd" = oneK_fsrt_snd, 
-                          "oneK_rot" = oneK_fsrt_rot,
-                          "tenK_snd" = tenK_fsrt_snd,
-                          "tenK_rot" = tenK_fsrt_rot,
-                          "tnkp_snd" = tnkp_fsrt_snd,
-                          "tnkp_rot" = tnkp_fsrt_rot,
-                          "litter" = lit_fsrt,
-                          "piled" = pile_fsrt)
+        cc_allclass <- data.frame("flaming" = Reduce("+", c(one_fsrt$flaming,
+                                                ten_fsrt$flaming, 
+                                                hun_hr_fsrt$hundredhr$flaming,
+                                                oneK_fsrt_snd$flaming, 
+                                                oneK_fsrt_rot$flaming,
+                                                tenK_fsrt_snd$flaming,
+                                                tenK_fsrt_rot$flaming,
+                                                tnkp_fsrt_snd$flaming,
+                                                tnkp_fsrt_rot$flaming,
+                                                lit_fsrt$flaming,
+                                                pile_fsrt$flaming)),
+                                  "smoldering" = Reduce("+", c(one_fsrt$smoldering,
+                                                ten_fsrt$smoldering, 
+                                                hun_hr_fsrt$hundredhr$smoldering,
+                                                oneK_fsrt_snd$smoldering, 
+                                                oneK_fsrt_rot$smoldering,
+                                                tenK_fsrt_snd$smoldering,
+                                                tenK_fsrt_rot$smoldering,
+                                                tnkp_fsrt_snd$smoldering,
+                                                tnkp_fsrt_rot$smoldering,
+                                                lit_fsrt$smoldering,
+                                                pile_fsrt$smoldering)),
+                                  "residual" = Reduce("+", c(one_fsrt$residual,
+                                                ten_fsrt$residual, 
+                                                hun_hr_fsrt$hundredhr$residual,
+                                                oneK_fsrt_snd$residual, 
+                                                oneK_fsrt_rot$residual,
+                                                tenK_fsrt_snd$residual,
+                                                tenK_fsrt_rot$residual,
+                                                tnkp_fsrt_snd$residual,
+                                                tnkp_fsrt_rot$residual,
+                                                lit_fsrt$residual,
+                                                pile_fsrt$residual)))
         
-        # create a list of data frames of emissions including spp and total
-        em_dat <- lapply(seq(1:length(fsrt_list)),
-                         function(i){
-                                 ed <- as.data.frame(emiss_calc(fsrt_list[[i]],
-                                                                ef_db))
-                                 ed$total <- rowSums(ed)
-                                 
-                                 ed$e_spp <- rownames(ed)
-                                 
-                                 ed$size_class <- names(fsrt_list[i])
-                                 
-                                 return(ed)
-                         })
+        # create a data frame of emissions including spp and total
+        em_dat <- emiss_calc(cc_allclass, ef_db)
         
-        # combine the list to a single data frame
-        em_dat <- do.call("rbind", em_dat)
+        em_dat$total <- rowSums(em_dat)
+        
+        em_dat$e_spp <- rownames(em_dat)
         
         return(em_dat)
 }
