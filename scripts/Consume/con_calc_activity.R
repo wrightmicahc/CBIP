@@ -522,6 +522,13 @@ ccon_activity <- function(fm1000,
                                       litter_loading, 
                                       ffr, 
                                       c(0.90, 0.10, 0.0))
+        
+        # upper duff consumption
+        duff_fsrt <- ccon_forest_floor(duff_upper_depth, 
+                                       duff_upper_loading, 
+                                       ffr, 
+                                       c(0.10, 0.70, 0.20))
+        
         # pile consumption
         pile_fsrt <- ccon_piled(pile_load)
         
@@ -567,6 +574,7 @@ ccon_activity <- function(fm1000,
                                                 tnkp_fsrt_snd$flaming,
                                                 tnkp_fsrt_rot$flaming,
                                                 lit_fsrt$flaming,
+                                                duff_fsrt$flaming,
                                                 pile_fsrt$flaming)),
                                   "smoldering" = Reduce("+", c(one_fsrt$smoldering,
                                                 ten_fsrt$smoldering, 
@@ -578,6 +586,7 @@ ccon_activity <- function(fm1000,
                                                 tnkp_fsrt_snd$smoldering,
                                                 tnkp_fsrt_rot$smoldering,
                                                 lit_fsrt$smoldering,
+                                                duff_fsrt$smoldering,
                                                 pile_fsrt$smoldering)),
                                   "residual" = Reduce("+", c(one_fsrt$residual,
                                                 ten_fsrt$residual, 
@@ -589,6 +598,7 @@ ccon_activity <- function(fm1000,
                                                 tnkp_fsrt_snd$residual,
                                                 tnkp_fsrt_rot$residual,
                                                 lit_fsrt$residual,
+                                                duff_fsrt$residual,
                                                 pile_fsrt$residual)))
         
         # create a data frame of emissions including spp and total
