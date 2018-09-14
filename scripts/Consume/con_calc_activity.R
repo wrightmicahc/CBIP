@@ -386,10 +386,10 @@ ccon_ffr_activity <- function(diam_reduction,
 }
 
 # compare forest floor reduction to litter layer depth
-calc_and_reduce_ff <- function(litter_depth, ff_reduction){
+calc_and_reduce_ff <- function(layer_depth, ff_reduction){
         # if the depth of the layer is less than the available reduction
         #  use the depth of the layer. Otherwise, use the available reduction
-        layer_reduction <- ifelse(litter_depth < ff_reduction, litter_depth, ff_reduction)
+        layer_reduction <- ifelse(layer_depth < ff_reduction, layer_depth, ff_reduction)
         # reduce the available reduction by the calculated amount
         ff_reduction <- ff_reduction - layer_reduction
         # should never be less than zero
