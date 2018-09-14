@@ -1,0 +1,144 @@
+---
+title: "FCCS Data Fuel Proportions by Size Class"
+author: "Micah Wright"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = normalizePath("../..")) 
+```
+
+Load the necessary packages.
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(stringr)
+library(knitr)
+theme_set(theme_classic() + theme(strip.background = element_blank()))
+```
+
+# FCCS
+
+Load the FCCS fuel model data from Landfire. The csv is in a Consume-specific format that we need to change for R to understand the column names.
+
+```{r}
+# load the consume fuel loadings table, accessed from landfire on 06/04/2018
+FCCS <- read.csv("data/FCCS/tabular/LF_consume.csv", 
+                 stringsAsFactors = FALSE,
+                 header = FALSE)
+
+# get the header rows, which are needed for consume to run
+KeepHead <- FCCS[1:2, ]
+
+# subset the rows so they only contain the values (no headers)
+FCCS <- FCCS[3:nrow(FCCS), ]
+
+# assign column names
+names(FCCS) <- KeepHead[2, ]
+
+# inspect the first few rows
+head(FCCS)
+
+# how many values?
+length(unique(FCCS$fuelbed_number))
+
+# make a summary table and save to a file
+FCCS <- FCCS %>% mutate_at(vars(-fuelbed_number,
+                                -filename,
+                                -cover_type,
+                                -ecoregion), as.numeric)
+
+FCCS_summary_vals <- as.data.frame(do.call(cbind, lapply(FCCS, summary)))
+
+write_csv(FCCS_summary_vals, "data/FCCS/tabular/FCCS_summary_vals.csv")
+```
+
+There are quite a few columns we don't need. Select the fuelbed number and loading columns of interest, in this case sound fuels up to 20 inches, as well as forest floor loading and depth values.
+
+```{r}
+FCCS <- transmute(FCCS,
+                  fuelbed_number = as.integer(fuelbed_number),
+                  one_hr_sound = as.numeric(w_sound_0_quarter_loading),
+                  ten_hr_sound = as.numeric(w_sound_quarter_1_loading),
+                  hun_hr_sound = as.numeric(w_sound_1_3_loading),
+                  oneK_hr_sound = as.numeric(w_sound_3_9_loading),
+                  tenK_hr_sound = as.numeric(w_sound_9_20_loading), 
+                  tnkp_hr_sound = as.numeric(w_sound_gt20_loading),
+                  oneK_hr_rotten = as.numeric(w_rotten_3_9_loading), 
+                  tenK_hr_rotten = as.numeric(w_rotten_9_20_loading),
+                  tnkp_hr_rotten = as.numeric(w_rotten_gt20_loading),
+                  litter_loading = as.numeric(litter_loading),
+                  litter_depth = as.numeric(litter_depth),
+                  duff_upper_depth = as.numeric(duff_upper_depth),
+                  duff_upper_loading = as.numeric(duff_upper_loading),
+                  duff_lower_depth = as.numeric(duff_lower_depth),
+                  duff_lower_loading = as.numeric(duff_lower_loading),
+                  lichen_depth = as.numeric(lichen_depth),
+                  lichen_loading = as.numeric(lichen_loading),
+                  moss_depth = as.numeric(moss_depth),
+                  moss_loading = as.numeric(moss_loading))
+```
+
+The following table shows the assumed size class break down. "-" indicats that  value is repeated.
+
+```{r}
+readxl::read_xlsx("data/Other/UW_v_FCCS_size_class.xlsx") %>%
+        replace_na(list(UW = "-", FCCS = "-")) %>%
+        kable
+```
+
+Calculate the total loading and use it to estimate the proportion of the total load occupied by each size class for each fuelbed. This also calculates the forest floor depth to load ratio, $$\textrm{ff ratio}=\frac{\textrm{ff load}^{tons/acre}}{\textrm{ff depth}^{inches}}$$
+
+```{r}
+# function to avoid issues when dividing by 0
+zero_div <- function(x, y) {
+        return(ifelse(x == 0 & y == 0, 0, x / y))
+}
+
+FCCS_prop <- FCCS %>%
+        mutate(branch_total = rowSums(select(., c("one_hr_sound",
+                                                  "ten_hr_sound",
+                                                  "hun_hr_sound"))),
+               ge4lt9_total = oneK_hr_sound,
+               ge9_total = rowSums(select(., c("tenK_hr_sound",
+                                               "tnkp_hr_sound")))) %>%
+        transmute(fuelbed_number = fuelbed_number,
+                  litter_ratio = zero_div(litter_loading,
+                                          litter_depth),
+                  duff_upper_ratio = zero_div(duff_upper_loading,
+                                              duff_upper_depth),
+                  duff_lower_ratio = zero_div(duff_lower_loading,
+                                              duff_lower_depth),
+                  one_hr_sound_prop = zero_div(one_hr_sound,
+                                               branch_total),
+                  ten_hr_sound_prop = zero_div(ten_hr_sound,
+                                                 branch_total),
+                  hun_hr_sound_prop = zero_div(hun_hr_sound,
+                                               branch_total),
+                  oneK_hr_sound_prop = zero_div(oneK_hr_sound,
+                                                ge4lt9_total),
+                  tenK_hr_sound_prop = zero_div(tenK_hr_sound,
+                                                ge9_total),
+                  tnkp_hr_sound_prop = zero_div(tnkp_hr_sound,
+                                                ge9_total))
+```
+
+Inspect the results with a histogram.
+
+```{r}
+FCCS_prop %>%
+        gather(key, value, -fuelbed_number) %>%
+        ggplot(aes(value)) +
+        geom_histogram(bins = 20) +
+        facet_wrap(~key, scales = "free", ncol = 2)
+```
+
+Save the file for later use.
+
+```{r}
+write_csv(FCCS_prop, "data/FCCS/tabular/FCCS_fuel_load_proportions.csv")
+```
+
