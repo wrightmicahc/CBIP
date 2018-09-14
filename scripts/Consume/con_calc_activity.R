@@ -447,6 +447,7 @@ ccon_activity <- function(fm1000,
         tnkp_hr_sound <- LD[["tnkp_hr_sound"]]
         tnkp_hr_rotten <- LD[["tnkp_hr_rotten"]]
         duff_upper_depth <- LD[["duff_upper_depth"]] 
+        duff_upper_loading <- LD[["duff_upper_loading"]] 
         duff_lower_depth <- LD[["duff_lower_depth"]]
         litter_depth <- LD[["litter_depth"]]
         litter_loading <- LD[["litter_loading"]] 
