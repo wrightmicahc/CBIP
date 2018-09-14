@@ -1,0 +1,101 @@
+---
+title: "FCCS"
+author: "Micah Wright"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "../..")
+```
+
+# Purpose
+
+This document performs a (more or less) full run of the wildfire biomass emissions calculations on a tile.
+
+### Dependencies
+
+This document relies on several third-party packages, imported below. Additionally, it imports data sets processed using several other scripts. 
+
+* List dependencies
+
+# Setup
+
+Load the necessary packages and set ggplot2 theme.
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse) # loads core tidyverse packages
+library(stringr) # for character string manipulation
+
+
+theme_set(theme_classic() + 
+                  theme(panel.grid.major = element_line(color = "grey90",
+                                                        size = 0.2),
+                        strip.background = element_blank()))
+```
+
+Load the FCCS fuel model data from Landfire. 
+
+```{r}
+FCCS <- read.csv("data/FCCS/tabular/LF_consume.csv", 
+                 stringsAsFactors = FALSE,
+                 header = FALSE)
+```
+
+The csv is in a Consume-specific format that we need to change for R to understand the column names. First extract the header rows
+
+```{r}
+KeepHead <- FCCS[1:2, ]
+```
+
+Now subset the rows so they only contain the loading values (no headers).
+
+```{r}
+FCCS <- FCCS[3:nrow(FCCS), ]
+```
+
+Ressign the column names, extracted above. Change the fuelbed number to numeric for later matching.
+
+```{r}
+names(FCCS) <- KeepHead[2, ]
+```
+
+Inspect the column names.
+
+```{r}
+names(FCCS)
+```
+
+The FCCS data has a lot of columns. Select the columns that we want to use and convert those columns to the appropriate class.
+
+```{r}
+FCCS <- dplyr::transmute(FCCS,
+                  fuelbed_number = as.integer(fuelbed_number),
+                  one_hr_sound = as.numeric(w_sound_0_quarter_loading),
+                  ten_hr_sound = as.numeric(w_sound_quarter_1_loading),
+                  hun_hr_sound = as.numeric(w_sound_1_3_loading),
+                  oneK_hr_sound = as.numeric(w_sound_3_9_loading),
+                  tenK_hr_sound = as.numeric(w_sound_9_20_loading), 
+                  tnkp_hr_sound = as.numeric(w_sound_gt20_loading),
+                  oneK_hr_rotten = as.numeric(w_rotten_3_9_loading), 
+                  tenK_hr_rotten = as.numeric(w_rotten_9_20_loading),
+                  tnkp_hr_rotten = as.numeric(w_rotten_gt20_loading),
+                  litter_loading = as.numeric(litter_loading),
+                  litter_depth = as.numeric(litter_depth),
+                  duff_upper_loading = as.numeric(duff_upper_loading),
+                  duff_upper_depth = as.numeric(duff_upper_depth),
+                  duff_lower_loading = as.numeric(duff_lower_loading),
+                  duff_lower_depth = as.numeric(duff_lower_depth),
+                  lichen_depth = as.numeric(lichen_depth),
+                  moss_depth = as.numeric(moss_depth))
+```
+
+Save it to a file.
+
+```{r}
+write_csv(FCCS, "data/FCCS/tabular/FCCS_fuelbed.csv")
+```
+
