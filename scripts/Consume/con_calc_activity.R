@@ -398,15 +398,15 @@ calc_and_reduce_ff <- function(layer_depth, ff_reduction){
 }
 
 # litter consumption
-ccon_forest_floor <- function(litter_depth, litter_loading, ff_reduction, csd){
+ccon_forest_floor <- function(layer_depth, layer_loading, ff_reduction, csd){
         # get litter layer reduction
-        layer_reduction <- calc_and_reduce_ff(litter_depth, ff_reduction)
+        layer_reduction <- calc_and_reduce_ff(layer_depth, ff_reduction)
         
         #how much was it reduced relative to the layer depth
-        proportional_reduction <- ifelse(litter_depth > 0.0,
-                                         layer_reduction / litter_depth, 0.0)
+        proportional_reduction <- ifelse(layer_depth > 0.0,
+                                         layer_reduction / layer_depth, 0.0)
         
-        total <- proportional_reduction * litter_loading
+        total <- proportional_reduction * layer_loading
         
         return(csdist(total, csd))
 }
