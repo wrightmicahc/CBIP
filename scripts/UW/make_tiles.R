@@ -37,7 +37,7 @@ SplitRas <- function(r, numtiles_x, numtiles_y) {
 }
 
 # make a bunch of extents
-ext_list <- SplitRas(FCID, 125, 125)
+ext_list <- SplitRas(FCID, 200, 200)
 
 # function to make the extents spatialpolygons
 CreatePoly <- function(ext) {
@@ -70,7 +70,11 @@ poly <- poly[srtm, ]
 plot(poly)
 
 # how big are the tiles?
-area(poly[599])
+area_fun <- function(shp) {
+        cat("Area: ", area(shp)/10000, " Hectares")
+}
+
+area_fun(poly[599])
 
 # Remove any old tiles to avoid overwrite issues
 lapply(list.files("data/Tiles", full.names = TRUE), file.remove)
