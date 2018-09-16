@@ -20,13 +20,14 @@ This document combines the attribute tables from the UW treatment rasters, calcu
 
 Load the necessary packages and set ggplot2 theme.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 library(sf)
 library(tools)
 library(foreign)
 library(stringr)
 library(knitr)
+library(ggridges)
 
 theme_set(theme_classic() + 
                   theme(panel.grid.major = element_line(color = "grey90",
@@ -115,9 +116,9 @@ Inspect the data with some plots.
 
 ```{r}
 Residue_by_treat %>% 
+        mutate(Treatment = str_replace(Treatment, "Treatment_", "")) %>%
         gather(key, value, -Treatment, -FCID2018) %>%
-        ggplot(aes(value, color = Treatment)) +
-        geom_density() +
+        ggplot(aes(value, Treatment)) +
+        geom_density_ridges() +
         facet_wrap(~key, scales = "free")
 ```
-
