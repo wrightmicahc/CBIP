@@ -1,0 +1,123 @@
+---
+title: "University of Washington Treatment Data Aggregation and Inspection"
+author: "Micah Wright"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "../..")
+```
+
+# Purpose
+
+This document combines the attribute tables from the UW treatment rasters, calculates residual biomass for harvest breakage and pulp logs, and saves the result before performing a brief summary analysis.
+
+# Setup
+
+Load the necessary packages and set ggplot2 theme.
+
+```{r}
+library(tidyverse)
+library(sf)
+library(tools)
+library(foreign)
+library(stringr)
+library(knitr)
+
+theme_set(theme_classic() + 
+                  theme(panel.grid.major = element_line(color = "grey90",
+                                                        size = 0.2)))
+```
+
+
+# Load Data
+
+List the files in the grouping raster geodatabase.
+
+```{r}
+group_files <- rgdal::ogrListLayers("data/UW/Grouping.gdb")
+```
+
+Load and print the first few lines of the attribute table. This returns a warning, which we can ignore because it's just an attribute table without any of the associated geometry.
+
+```{r}
+group_df <- st_read(dsn = "data/UW/Grouping.gdb", 
+                    layer = group_files,
+                    stringsAsFactors = FALSE)
+
+
+# inspect
+head(group_df)
+```
+
+Load the GNN management history table.
+
+```{r}
+GNN_mngmt_hist <- read.dbf("data/UW/GNN_management_history.dbf", as.is = TRUE)
+```
+
+Load treatment raster attribute tables. I exported these as .dbf files from within Arc, so no script exists. The column names were truncated during the export process, so they don't match the documentation exactly, but the column order is the same. This chunk assumes that 10% from the 4-6", 6-9", and >9" catagories is always added due to harvest breakage, and that bark is attached to the stems. The remaining 90% from these columns is placed in seperate columns as pulp log biomass. Units are lbs/acre, so we need to convert to tons/acre to match FCCS. Save to a file.
+
+```{r}
+# first get a list of file names
+treat_att_list <- list.files("data/UW/batch_out",
+                             pattern = ".dbf$",
+                             full.names = TRUE)
+
+# list the ones we don't want due to no effect
+no_treat <- c("data/UW/batch_out/Treatment_NoAction.dbf",
+              "data/UW/batch_out/Treatment_Snags.dbf")
+
+# remove these
+treat_att_list <- treat_att_list[!treat_att_list %in% no_treat]
+
+# name the elements of the list, this will help create treatment columns later
+treat_names <- sub(".*>>", "",file_path_sans_ext(basename(treat_att_list)))
+
+# assign names
+names(treat_att_list) <- treat_names
+
+# load the files, and merge into one big df
+# break out 4-9 sizes into breakage and pulplog, as well as 9+ breakage
+Residue_by_treat <- map_df(treat_att_list,
+                           function(x) read.dbf(x, as.is = TRUE),
+                           .id = "Treatment") %>% 
+        transmute(FCID2018 = Value,
+                  Treatment = Treatment,
+                  Pulp_6t9_tonsAcre = (rowSums(select(., c("CutStem6BL",
+                                                           "CutBarkSte"))) * 0.9)/2000,
+                  Break_6t9_tonsAcre = (rowSums(select(., c("CutStem6BL",
+                                                            "CutBarkSte"))) * 0.1)/2000,
+                  Pulp_4t6_tonsAcre = (rowSums(select(., c("CutStem4To",
+                                                           "CutBarkS_2"))) * 0.9)/2000,
+                  Break_4t6_tonsAcre = (rowSums(select(., c("CutStem4To",
+                                                            "CutBarkS_2"))) * 0.1)/2000,
+                  Break_ge9_tonsAcre = (rowSums(select(., c("CutStem6BG",
+                                                            "CutBarkS_1"))) * 0.1)/2000,
+                  Branch_tonsAcre = CutBranchB/2000,
+                  Foliage_tonsAcre = CutFoliage/2000) %>%
+        mutate(Break_4t9_tonsAcre = rowSums(select(.,
+                                                      c("Break_4t6_tonsAcre",
+                                                      "Break_6t9_tonsAcre"))))
+
+write_csv(Residue_by_treat, "data/UW/Residue_by_treat.csv")
+
+Residue_summary_vals <- as.data.frame(do.call(cbind, lapply(Residue_by_treat, summary)))
+
+write_csv(Residue_summary_vals, "data/UW/Residue_summary_vals.csv")
+```
+
+Inspect the data with some plots.
+
+```{r}
+Residue_by_treat %>% 
+        gather(key, value, -Treatment, -FCID2018) %>%
+        ggplot(aes(value, color = Treatment)) +
+        geom_density() +
+        facet_wrap(~key, scales = "free")
+```
+
