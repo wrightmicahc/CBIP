@@ -1,0 +1,454 @@
+---
+title: "Wildfire biomass emissions: Full Test Run"
+author: "Micah Wright"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "../..")
+```
+
+# Purpose
+
+This document performs a (more or less) full run of the wildfire biomass emissions calculations on a tile.
+
+### Dependencies
+
+This document relies on several third-party packages, imported below. Additionally, it imports data sets processed using several other scripts (not all are listed).
+
+* FCCS_fuel_proportion.Rmd 
+
+* UW_treatments.Rmd
+
+*
+
+### Assumptions & To Do
+
+* This document does not incorporate decay, or any other affect related to time.
+
+* No pulp market is assumed to exist.
+
+* All residues are assumed to be sound (not rotten).
+
+* Piled proportions are randomly assigned to either 25, 50, or 90%. 
+
+* Fires are burning under extreme conditions.
+
+* The emissions factor database will be expanded- currently, it only has the Consume 4.2 defaults and Fire Emission Production Simulator emissions factors. Susan Prichard of Consume noted that updated emissions factors should be out in the next year or so.
+
+# Setup
+
+Load the necessary packages and set ggplot2 theme.
+
+```{r message=FALSE, warning=FALSE}
+library(raster) # raster data
+library(rgdal) # raster and polygon 
+library(data.table)
+library(ggplot2)
+library(parallel)
+library(microbenchmark)
+
+theme_set(theme_classic() + 
+                  theme(panel.grid.major = element_line(color = "grey90",
+                                                        size = 0.2),
+                        strip.background = element_blank()))
+```
+
+# Model Run
+
+### Raster Import
+
+Make a list with the file names of all the necessary 30m rasters:
+
+* FCID2018: UW FCID numbers. Can be reclassified to any UW output via attribute tables.
+
+* Slope: NED slope, %.
+
+* fuelbed_number: FCCS fuelbed number.
+
+* Fm10: Gridmet 10 hour fuel moisture, %.
+
+* FM1000: Gridmet 1000 hour fuel moisture, %.
+
+* Wind: Gridmet 10m windspeed, converted to mph. This needs to be corrected to midflame windspeed eventually.
+
+* TPI: Terrain position index, standardized. 
+
+```{r}
+files <- list("FCID2018" = "data/UW/UW_FCID.tif",
+              "Slope" = "data/Other/DEM/Slope_NAD83.tif",
+              "fuelbed_number" = "data/FCCS/spatial/FCCS_NAD83.tif", 
+              "Fm10" = "data/GEE/temp/fm10.tif",
+              "Fm1000" = "data/GEE/temp/fm1000.tif",
+              "Wind" = "data/GEE/temp/windv.tif",
+              "TPI" = "data/Other/DEM/dem_dev_2g_NAD83.tif")
+```
+
+Load a tile. Tile size is customizable in make_tiles.R.
+
+```{r}
+tiles <- readOGR("data/Tiles",
+                     "tiles")
+
+tile <- tiles[tiles$ID == 2180, ]
+
+rm(tiles)
+```
+
+How big is the tile?
+
+```{r}
+area_fun <- function(shp) {
+        cat("Area: ", area(shp)/10000, " Hectares")
+}
+
+area_fun(tile)
+```
+
+Make a function that loads and crops each raster to the polygon.
+
+```{r}
+get_raster_fun <- function(x, poly){
+       r <- raster(x)
+       rc <- crop(r, poly)
+       return(rc)
+}
+```
+
+Apply the function to the list of raster file paths. This ouputs a list of rasters the size of the tile, so all extents are the same (NOTE `r format(Sys.Date(), "%B %d, %Y")`: with an updated slope layer, this might not matter anymore). CRS and resolution were taken care of previously.
+
+```{r}
+rast_list <- lapply(files, function(x) get_raster_fun(x, tile))
+```
+
+How many cells?
+
+```{r}
+ cat(ncell(rast_list$FCID2018), " 30 meter cells")
+```
+
+Create a stack from the list, then remove the list.
+
+```{r}
+rstack <-stack(rast_list)
+
+rm(rast_list)
+```
+
+### Tabulate Raster 
+
+Create a data frame from the stack, make sure to remove missing values. Convert it to a data.table.
+
+```{r}
+rast_df <- as.data.frame(rstack, 
+                         xy = TRUE,
+                         na.rm = TRUE) 
+
+rast_df <- as.data.table(rast_df)
+```
+
+Remove all rows with fuelbed numbers of 900 or higher- these are water, urban, etc. 
+
+```{r}
+rast_df <- rast_df[fuelbed_number < 900]
+```
+
+Get the number of non-na rows for later use.
+
+```{r}
+rdf_rows <- nrow(rast_df)
+```
+
+Get raster crs for later use.
+
+```{r}
+rast_crs <- crs(rstack)
+```
+
+Remove the stack and the tile.
+
+```{r}
+rm(rstack)
+
+rm(tile)
+```
+
+### Fuel and Residue Import & Processing
+
+Load the data for fuel proportions and residue loads, created in FCCS_fuel_proportion and UW_treatments .Rmd files, respectively. Filter each data set so they only contain FCID and FCCS fuelbed numbers found in the test area. 
+
+```{r message=FALSE}
+fuel_prop <- fread("data/FCCS/tabular/FCCS_fuel_load_proportions.csv", 
+                   verbose = FALSE) 
+        
+fuel_prop <- fuel_prop[fuelbed_number %in% rast_df$fuelbed_number]
+
+residue <-  fread("data/UW/Residue_by_treat.csv",
+                  verbose = FALSE) 
+
+residue <- residue[FCID2018 %in% rast_df$FCID2018]
+```
+
+Join the fuel proportionand the raster data frame.
+
+```{r}
+rast_df <- merge(rast_df, fuel_prop, by = "fuelbed_number")
+```
+
+Join the residue data to the raster data. This multiplies the number of rows by 13 (number of treatments). 
+
+```{r}
+fuel_df <- merge(rast_df, residue, by = "FCID2018", allow.cartesian = TRUE)
+```
+
+Remove the residue and fuel proportion data.
+
+```{r}
+rm(fuel_prop)
+
+rm(residue)
+
+rm(rast_df)
+```
+
+Load the FCCS fuel model data from Landfire, processed in FCCS_fuelbed_processing.Rmd.
+
+```{r}
+FCCS <- fread("data/FCCS/tabular/FCCS_fuelbed.csv", verbose = FALSE)
+```
+
+Inspect the first few rows
+
+```{r}
+head(FCCS)
+```
+
+Join the FCCS data to the main data set. 
+
+```{r}
+fuel_df <-  merge(fuel_df, FCCS, by = "fuelbed_number")
+```
+
+Check the column names.
+
+```{r}
+names(fuel_df)
+```
+
+Create some functions to add and remove fuel by proportion and to avoid dividing by 0.
+
+```{r}
+
+addfuel <- function(load, add, prop) {
+        fuel <- load + (add * prop)
+        return(fuel)
+}
+
+takefuel <- function(load, prop) {
+        fuel_remaining <- load * (1 - prop)
+        return(fuel_remaining)
+}
+
+zero_div <- function(x, y) {
+        return(ifelse(y == 0, 0, x / y))
+}
+```
+
+### Specify piled proportions
+
+Randomly specify pile proportions.
+
+```{r}
+fuel_df[, piled_prop := sample(c(0.25, 0.50, 0.90), nrow(fuel_df), replace = TRUE)]
+```
+
+### Add Residue to Fuel Bed
+
+Create a data set that has the residue added to each size class, including both the depth (inches) and tons/acre for the litter layer. NOTE `r format(Sys.Date(), "%B %d, %Y")`: This will need to be modified if residue is added to the duff layer to over time. Also, there's no litter in the piles as of `r format(Sys.Date(), "%B %d, %Y")`.
+
+```{r}
+fuel_added <- fuel_df[, .(x = x,
+                          y = y,
+                          fuelbed_number = fuelbed_number,
+                          FCID2018 = FCID2018,
+                          Treatment = Treatment,
+                          Slope = Slope,
+                          Fm10 = Fm10,
+                          Fm1000 = Fm1000,
+                          Wind = Wind,
+                          TPI = TPI,
+                          litter_loading = addfuel(litter_loading,
+                                                   Foliage_tonsAcre, 
+                                                   1),
+                          duff_upper_depth = duff_upper_depth,
+                          duff_lower_depth = duff_lower_depth,
+                          lichen_depth = lichen_depth,
+                          moss_depth = moss_depth,
+                          one_hr_sound = addfuel(one_hr_sound,
+                                                 Branch_tonsAcre * (1 - piled_prop), 
+                                                 one_hr_sound_prop),
+                          ten_hr_sound = addfuel(ten_hr_sound,
+                                                 Branch_tonsAcre * (1 - piled_prop), 
+                                                 ten_hr_sound_prop),
+                          hun_hr_sound = addfuel(hun_hr_sound,
+                                                 Branch_tonsAcre * (1 - piled_prop), 
+                                                 hun_hr_sound_prop),
+                          oneK_hr_sound = addfuel(oneK_hr_sound,
+                                                  Break_4t9_tonsAcre * (1 - piled_prop),
+                                                  oneK_hr_sound_prop),
+                          tenK_hr_sound = addfuel(tenK_hr_sound,
+                                                  Break_ge9_tonsAcre * (1 - piled_prop), 
+                                                  tenK_hr_sound_prop),
+                          tnkp_hr_sound = addfuel(tnkp_hr_sound,
+                                                  Break_ge9_tonsAcre * (1 - piled_prop), 
+                                                  tnkp_hr_sound_prop),
+                          oneK_hr_rotten = oneK_hr_rotten,
+                          tenK_hr_rotten = tenK_hr_rotten,
+                          tnkp_hr_rotten = tnkp_hr_rotten,
+                          biomass_removed = 0)]
+```
+
+Calculate the pile load.
+
+```{r}
+fuel_added$piled_load <- rowSums(fuel_df[, c("Break_4t9_tonsAcre",
+                                             "Break_ge9_tonsAcre",
+                                             "Pulp_4t6_tonsAcre",
+                                             "Pulp_6t9_tonsAcre",
+                                             "Branch_tonsAcre")]) * fuel_df$piled_prop
+```
+
+Calculate the litter depth.
+
+```{r}
+fuel_added$litter_depth <- zero_div(fuel_added$litter_loading,
+                                    fuel_df$litter_ratio)
+```
+
+Double check that all the new values make sense.
+
+```{r}
+summary(fuel_added)
+```
+
+Remove FCCS data.
+
+```{r}
+rm(FCCS)
+```
+
+Inspect the column names again.
+
+```{r}
+names(fuel_added)
+```
+
+Remove the fuel df.
+
+```{r}
+rm(fuel_df)
+```
+
+### Run the Consumption Algorithm
+
+Source the fuel consumption script.
+
+```{r}
+source("scripts/Consume/con_calc_activity.R")
+```
+
+Run consume. This will return a  list of data frames with fuel emissions by emissions species and combustion phase.
+
+```{r}
+system.time(consumption_list <- mclapply(seq(1:nrow(fuel_added)),
+                                         mc.cores = detectCores() - 1,
+                                         function(i){
+                                                 z <- ccon_activity(fm1000 = fuel_added[i, Fm1000],
+                                                                    fm_type = "NFDRS_Th",
+                                                                    wind = fuel_added[i, Wind],
+                                                                    slope = fuel_added[i, Slope],
+                                                                    fm10 = fuel_added[i, Fm10],
+                                                                    days_since_rain = 50,
+                                                                    LD = fuel_added[i,])
+                                                 z$x <- fuel_added[i, x]
+                                                 z$y <- fuel_added[i, y]
+                                                 z$Treatment <- fuel_added[i, Treatment]
+                                                 z$biomass_removed <- fuel_added[i, biomass_removed]
+                                                 return(as.data.table(z))
+                                         }))
+```
+
+Create a data frame with all the consumption values.
+
+```{r}
+consumption_df <- rbindlist(consumption_list)
+
+consumption_df <- melt(consumption_df, 
+                       id.vars = c("x",
+                                   "y",
+                                   "e_spp",
+                                   "Treatment",
+                                   "biomass_removed"),
+                       measure.vars = c("flaming",
+                                        "smoldering",
+                                        "residual",
+                                        "total"),
+                       variable.name = "c_phase", 
+                       value.name = "emissions",
+                       variable.factor = FALSE)
+```
+
+Plot the results for CO2. 
+
+```{r fig.height=11, fig.width=8}
+ggplot(consumption_df[e_spp == "CO2" & c_phase == "total"],
+       aes(x, y, fill = emissions)) +
+        geom_raster() +
+        scale_fill_gradientn("CO2 Emissions",
+                             colors = c("navy", "beige", "red")) +
+        coord_equal() +
+        labs(x = NULL, y = NULL) +
+        theme(axis.text = element_blank(),
+              axis.ticks = element_blank()) +
+        facet_wrap(~Treatment,
+                   ncol= 3)
+```
+
+Make a raster of total emissions (not split into seperate phases). The following function creates a raster brick from for each treatment, with a layer for each emissions species. Save each treatment-level brick to a file.
+
+```{r}
+total_emissions <- dcast(consumption_df[c_phase == "total"],
+                         x + y + Treatment + biomass_removed ~ e_spp,
+                         value.var = "emissions")
+
+
+total_list <- split(total_emissions, by = c("Treatment", "biomass_removed"))
+
+out_list <- lapply(total_list, function(i)
+        rasterFromXYZ(i[, c("x", 
+                            "y",
+                            "CH4", "CO", "CO2", "NH3", "NOx", "PM10", "PM2.5",
+                            "SO2", "VOC" )],
+                      res = c(30, 30),
+                      crs = rast_crs))
+
+
+lapply(seq(1:length(out_list)), function(i)
+        writeRaster(out_list[[i]], 
+                    paste0("data/output/small_test",
+                           names(out_list[i]),
+                           ".tif"), 
+            options = "INTERLEAVE=BAND", 
+            overwrite=TRUE))
+```
+
+Save the full tabular output to a file.
+
+```{r}
+fwrite(consumption_df, "data/output/small_test.csv")
+```
+
