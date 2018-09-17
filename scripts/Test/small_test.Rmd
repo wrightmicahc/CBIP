@@ -376,6 +376,8 @@ system.time(consumption_list <- mclapply(seq(1:nrow(fuel_added)),
                                                                     LD = fuel_added[i,])
                                                  z$x <- fuel_added[i, x]
                                                  z$y <- fuel_added[i, y]
+                                                 z$fuelbed_number <- fuel_added[i, fuelbed_number]
+                                                 z$FCID2018 <- fuel_added[i, FCID2018]
                                                  z$Treatment <- fuel_added[i, Treatment]
                                                  z$biomass_removed <- fuel_added[i, biomass_removed]
                                                  return(as.data.table(z))
@@ -391,6 +393,8 @@ consumption_df <- melt(consumption_df,
                        id.vars = c("x",
                                    "y",
                                    "e_spp",
+                                   "fuelbed_number",
+                                   "FCID2018",
                                    "Treatment",
                                    "biomass_removed"),
                        measure.vars = c("flaming",
@@ -418,13 +422,12 @@ ggplot(consumption_df[e_spp == "CO2" & c_phase == "total"],
                    ncol= 3)
 ```
 
-Make a raster of total emissions (not split into seperate phases). The following function creates a raster brick from for each treatment, with a layer for each emissions species. Save each treatment-level brick to a file.
+Make a raster of total emissions (not split into seperate phases). The following code chunk creates a raster brick from for each treatment, with a layer for each emissions species. Save each treatment-level brick to a file.
 
-```{r}
+```{r message=FALSE}
 total_emissions <- dcast(consumption_df[c_phase == "total"],
-                         x + y + Treatment + biomass_removed ~ e_spp,
+                         x + y + fuelbed_number + FCID2018 + Treatment + biomass_removed ~ e_spp,
                          value.var = "emissions")
-
 
 total_list <- split(total_emissions, by = c("Treatment", "biomass_removed"))
 
