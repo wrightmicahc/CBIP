@@ -70,8 +70,7 @@ treat_att_list <- list.files("data/UW/batch_out",
                              full.names = TRUE)
 
 # list the ones we don't want due to no effect
-no_treat <- c("data/UW/batch_out/Treatment_NoAction.dbf",
-              "data/UW/batch_out/Treatment_Snags.dbf")
+no_treat <- c("data/UW/batch_out/Treatment_Snags.dbf")
 
 # remove these
 treat_att_list <- treat_att_list[!treat_att_list %in% no_treat]
@@ -114,11 +113,13 @@ write_csv(Residue_summary_vals, "data/UW/Residue_summary_vals.csv")
 
 Inspect the data with some plots.
 
-```{r}
+```{r fig.width=8, fig.height=11}
 Residue_by_treat %>% 
         mutate(Treatment = str_replace(Treatment, "Treatment_", "")) %>%
         gather(key, value, -Treatment, -FCID2018) %>%
         ggplot(aes(value, Treatment)) +
         geom_density_ridges() +
-        facet_wrap(~key, scales = "free")
+        facet_wrap(~key,
+                   scales = "free", 
+                   ncol = 1)
 ```
