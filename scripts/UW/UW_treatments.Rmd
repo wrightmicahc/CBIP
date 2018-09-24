@@ -101,8 +101,11 @@ Residue_by_treat <- map_df(treat_att_list,
                   Branch_tonsAcre = CutBranchB/2000,
                   Foliage_tonsAcre = CutFoliage/2000) %>%
         mutate(Break_4t9_tonsAcre = rowSums(select(.,
-                                                      c("Break_4t6_tonsAcre",
-                                                      "Break_6t9_tonsAcre"))))
+                                                   c("Break_4t6_tonsAcre",
+                                                     "Break_6t9_tonsAcre"))),
+               Pulp_4t9_tonsAcre = rowSums(select(.,
+                                                  c("Pulp_4t6_tonsAcre",
+                                                    "Pulp_6t9_tonsAcre"))))
 
 write_csv(Residue_by_treat, "data/UW/Residue_by_treat.csv")
 
