@@ -5,7 +5,7 @@
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
-add_residue <- function(dt, remove, pile){
+add_residue <- function(dt, remove){
         
         if(!is.data.table(dt)) stop("input must be a data.table")
         
