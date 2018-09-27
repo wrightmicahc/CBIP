@@ -88,6 +88,7 @@ Residue_by_treat <- map_df(treat_att_list,
                            .id = "Treatment") %>% 
         transmute(FCID2018 = Value,
                   Treatment = Treatment,
+                  TPA = TPA,
                   Pulp_6t9_tonsAcre = (rowSums(select(., c("CutStem6BL",
                                                            "CutBarkSte"))) * 0.9)/2000,
                   Break_6t9_tonsAcre = (rowSums(select(., c("CutStem6BL",
