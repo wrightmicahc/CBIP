@@ -5,8 +5,9 @@
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
-wind_correction <- function(wind, tpa, tpi) {
+wind_correction <- function(dt, Wind, TPA, TPI) {
         
+        # make a nested list of wind adjustment factors
         waf_dict <- list("ridge" = list("unsheltered" = 0.5,
                                         "partially_sheltered" = 0.4,
                                         "sheltered" = 0.3),
@@ -20,24 +21,37 @@ wind_correction <- function(wind, tpa, tpi) {
                                          "partially_sheltered" = 0.2,
                                          "sheltered" = 0.1))
         
+        # write function to access waf_dict for each row based on lf_class and 
+        # shelter_class
+        make_waf <- function(lf_class, shelter_class) {
+                z <- lapply(seq(1:length(lf_class)), function(i)
+                        waf_dict[[lf_class[i]]][[shelter_class[i]]])
+                
+                return(unlist(z))
+        }
+        
         # classify landform based on terrain prominence
-        lf_class <- ifelse(tpi < -0.5, "valley", 
-                           ifelse(tpi >= -0.5 & tpi < 0, 
-                                  "lower_slope",
-                                  ifelse(tpi >= 0 & tpi < 0.5,
-                                         "upper_slope",
-                                         "ridge")))
+        dt[, lf_class := ifelse(TPI < -0.5, "valley", 
+                                ifelse(TPI >= -0.5 & TPI < 0, 
+                                       "lower_slope",
+                                       ifelse(TPI >= 0 & TPI < 0.5,
+                                              "upper_slope",
+                                              "ridge")))]
         
         # classify shelter based on tpa
-        shelter_class <- ifelse(tpa <= 10, 
-                                "unsheltered",
-                                ifelse(tpa > 10 & tpa <= 100,
-                                       "partially_sheltered",
-                                       "sheltered"))
+        dt[, shelter_class := ifelse(TPA <= 10, 
+                                     "unsheltered",
+                                     ifelse(TPA > 10 & TPA <= 100,
+                                            "partially_sheltered",
+                                            "sheltered"))]
         
-        waf <- waf_dict[[lf_class]][[shelter_class]]
+        # get waf
+        dt[, waf := make_waf(lf_class, shelter_class)]
         
-        wind_corrected <- wind * waf
+        # correct windspeed
+        dt[, Wind_corrected := Wind * waf]
         
-        return(wind_corrected)
+        # remove old columns
+        dt[, c("lf_class", "shelter_class", "waf") := NULL ]
+        
 }
