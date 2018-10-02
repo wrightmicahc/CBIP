@@ -239,23 +239,17 @@ Check the column names.
 names(fuel_df)
 ```
 
-Create some functions to add and remove fuel by proportion and to avoid dividing by 0.
+### Correct Midflame Windspeed
+
+Correct the wind to reflect midflame windspeeds.
 
 ```{r}
+source("scripts/Other/wind_correction.R")
 
-addfuel <- function(load, add, prop) {
-        fuel <- load + (add * prop)
-        return(fuel)
-}
-
-takefuel <- function(load, prop) {
-        fuel_remaining <- load * (1 - prop)
-        return(fuel_remaining)
-}
-
-zero_div <- function(x, y) {
-        return(ifelse(y == 0, 0, x / y))
-}
+wind_correction(fuel_df,
+                Wind,
+                TPA,
+                TPI)
 ```
 
 ### Specify piled proportions
@@ -271,62 +265,9 @@ fuel_df[, piled_prop := sample(c(0.25, 0.50, 0.90), nrow(fuel_df), replace = TRU
 Create a data set that has the residue added to each size class, including both the depth (inches) and tons/acre for the litter layer. NOTE `r format(Sys.Date(), "%B %d, %Y")`: This will need to be modified if residue is added to the duff layer to over time. Also, there's no litter in the piles as of `r format(Sys.Date(), "%B %d, %Y")`.
 
 ```{r}
-fuel_added <- fuel_df[, .(x = x,
-                          y = y,
-                          fuelbed_number = fuelbed_number,
-                          FCID2018 = FCID2018,
-                          Treatment = Treatment,
-                          Slope = Slope,
-                          Fm10 = Fm10,
-                          Fm1000 = Fm1000,
-                          Wind = Wind,
-                          TPI = TPI,
-                          litter_loading = addfuel(litter_loading,
-                                                   Foliage_tonsAcre, 
-                                                   1),
-                          duff_upper_depth = duff_upper_depth,
-                          duff_lower_depth = duff_lower_depth,
-                          lichen_depth = lichen_depth,
-                          moss_depth = moss_depth,
-                          one_hr_sound = addfuel(one_hr_sound,
-                                                 Branch_tonsAcre * (1 - piled_prop), 
-                                                 one_hr_sound_prop),
-                          ten_hr_sound = addfuel(ten_hr_sound,
-                                                 Branch_tonsAcre * (1 - piled_prop), 
-                                                 ten_hr_sound_prop),
-                          hun_hr_sound = addfuel(hun_hr_sound,
-                                                 Branch_tonsAcre * (1 - piled_prop), 
-                                                 hun_hr_sound_prop),
-                          oneK_hr_sound = addfuel(oneK_hr_sound,
-                                                  Break_4t9_tonsAcre * (1 - piled_prop),
-                                                  oneK_hr_sound_prop),
-                          tenK_hr_sound = addfuel(tenK_hr_sound,
-                                                  Break_ge9_tonsAcre * (1 - piled_prop), 
-                                                  tenK_hr_sound_prop),
-                          tnkp_hr_sound = addfuel(tnkp_hr_sound,
-                                                  Break_ge9_tonsAcre * (1 - piled_prop), 
-                                                  tnkp_hr_sound_prop),
-                          oneK_hr_rotten = oneK_hr_rotten,
-                          tenK_hr_rotten = tenK_hr_rotten,
-                          tnkp_hr_rotten = tnkp_hr_rotten,
-                          biomass_removed = 0)]
-```
+source("scripts/Other/add_residue.R")
 
-Calculate the pile load.
-
-```{r}
-fuel_added$piled_load <- rowSums(fuel_df[, c("Break_4t9_tonsAcre",
-                                             "Break_ge9_tonsAcre",
-                                             "Pulp_4t6_tonsAcre",
-                                             "Pulp_6t9_tonsAcre",
-                                             "Branch_tonsAcre")]) * fuel_df$piled_prop
-```
-
-Calculate the litter depth.
-
-```{r}
-fuel_added$litter_depth <- zero_div(fuel_added$litter_loading,
-                                    fuel_df$litter_ratio)
+fuel_added <- add_residue(fuel_df, 0.5)
 ```
 
 Double check that all the new values make sense.
@@ -420,33 +361,6 @@ ggplot(consumption_df[e_spp == "CO2" & c_phase == "total"],
               axis.ticks = element_blank()) +
         facet_wrap(~Treatment,
                    ncol= 3)
-```
-
-Make a raster of total emissions (not split into seperate phases). The following code chunk creates a raster brick from for each treatment, with a layer for each emissions species. Save each treatment-level brick to a file.
-
-```{r message=FALSE}
-total_emissions <- dcast(consumption_df[c_phase == "total"],
-                         x + y + fuelbed_number + FCID2018 + Treatment + biomass_removed ~ e_spp,
-                         value.var = "emissions")
-
-total_list <- split(total_emissions, by = c("Treatment", "biomass_removed"))
-
-out_list <- lapply(total_list, function(i)
-        rasterFromXYZ(i[, c("x", 
-                            "y",
-                            "CH4", "CO", "CO2", "NH3", "NOx", "PM10", "PM2.5",
-                            "SO2", "VOC" )],
-                      res = c(30, 30),
-                      crs = rast_crs))
-
-
-lapply(seq(1:length(out_list)), function(i)
-        writeRaster(out_list[[i]], 
-                    paste0("data/output/small_test",
-                           names(out_list[i]),
-                           ".tif"), 
-            options = "INTERLEAVE=BAND", 
-            overwrite=TRUE))
 ```
 
 Save the full tabular output to a file.
