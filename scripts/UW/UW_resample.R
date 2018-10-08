@@ -69,7 +69,3 @@ writeOGR(rc_poly,
 
 # delete the resampled rasters
 file.remove("data/UW/UW_FCID_900m.tif")
-
-list.files("data/UW", 
-           pattern = "UW_FCID_900m",
-           full.names = TRUE)
