@@ -56,14 +56,20 @@ poly <- do.call(bind, poly_list)
 # define projection
 proj4string(poly) <- crs(FCID)
 
-# load CA 1 degree srtm
+# load mask poly
+CA_mask <- readOGR("data/UW",
+                   "UW_poly_300m")
+
+# load srtm to clip
 srtm <- readOGR("data/Other/srtm_1_deg",
                 "srtm_1_deg")
 
 # reproject
+CA_mask <- spTransform(CA_mask, proj4string(poly))
 srtm <- spTransform(srtm, proj4string(poly))
 
-# crop extents to CA
+# crop extents to CA and srtm, otherwise the tiles go into Oregon
+poly <- poly[CA_mask, ]
 poly <- poly[srtm, ]
 
 # check with a plot
