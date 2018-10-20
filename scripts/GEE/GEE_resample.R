@@ -31,12 +31,16 @@ resampleFun <- function(master, infile, outfile){
 }
 
 # get a list of input file names
-infile <- list.files("data/GEE",
+infile <- list.files("data/GEE/raw",
                      pattern = ".tif$",
+                     recursive = TRUE,
                      full.names = TRUE)
 
+# clean out resampled folder to avoid overwrite issues
+lapply(list.files("data/GEE/resampled", full.names = TRUE), file.remove)
+
 # make a list of output file names
-outfile <- paste0("data/GEE/temp/", 
+outfile <- paste0("data/GEE/resampled/", 
                   sub(".*/", "", infile))
 
 # run the function
