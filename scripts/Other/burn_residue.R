@@ -5,30 +5,52 @@
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
-burn_residue <- function(dt) {
+burn_residue <- function(dt, scenario) {
         
         library(parallel)
         
-        browser()
+        if(scenario %in% c("scenario_one",
+                           "scenario_three", 
+                           "scenario_four", 
+                           "scenario_five")) {
+                
+                consumption_list <- mclapply(seq(1:nrow(dt)),
+                                             mc.cores = detectCores() - 1,
+                                             function(i){
+                                                     z <- ccon_activity(fm1000 = dt[i, Fm1000],
+                                                                        fm_type = "NFDRS_Th",
+                                                                        wind = dt[i, Wind_corrected],
+                                                                        slope = dt[i, Slope],
+                                                                        fm10 = dt[i, Fm10],
+                                                                        days_since_rain = 50,
+                                                                        LD = dt[i,])
+                                                     z$x <- dt[i, x]
+                                                     z$y <- dt[i, y]
+                                                     z$fuelbed_number <- dt[i, fuelbed_number]
+                                                     z$FCID2018 <- dt[i, FCID2018]
+                                                     z$Treatment <- dt[i, Treatment]
+                                                     z$biomass_removed <- dt[i, biomass_removed]
+                                                     return(as.data.table(z))
+                                             })
+                
+        }
         
-        consumption_list <- mclapply(seq(1:nrow(dt)),
-                                     mc.cores = detectCores() - 1,
-                                     function(i){
-                                             z <- ccon_activity(fm1000 = dt[i, Fm1000],
-                                                                fm_type = "NFDRS_Th",
-                                                                wind = dt[i, Wind_corrected],
-                                                                slope = dt[i, Slope],
-                                                                fm10 = dt[i, Fm10],
-                                                                days_since_rain = 50,
-                                                                LD = dt[i,])
-                                             z$x <- dt[i, x]
-                                             z$y <- dt[i, y]
-                                             z$fuelbed_number <- dt[i, fuelbed_number]
-                                             z$FCID2018 <- dt[i, FCID2018]
-                                             z$Treatment <- dt[i, Treatment]
-                                             z$biomass_removed <- dt[i, biomass_removed]
-                                             return(as.data.table(z))
-                                     })
+        if(scenario == "scenario_two") {
+                
+                consumption_list <- mclapply(seq(1:nrow(dt)),
+                                             mc.cores = detectCores() - 1,
+                                             function(i){
+                                                     z <- ccon_activity_pile_only(LD = dt[i,])
+                                                     z$x <- dt[i, x]
+                                                     z$y <- dt[i, y]
+                                                     z$fuelbed_number <- dt[i, fuelbed_number]
+                                                     z$FCID2018 <- dt[i, FCID2018]
+                                                     z$Treatment <- dt[i, Treatment]
+                                                     z$biomass_removed <- dt[i, biomass_removed]
+                                                     return(as.data.table(z))
+                                             })
+                
+        }
         
         consumption_df <- rbindlist(consumption_list)
         
