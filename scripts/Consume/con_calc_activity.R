@@ -421,9 +421,9 @@ emiss_calc <- function(cons, ef){
 # function to calculate pile consumption, assumes 90% consumption equally 
 # weighted between combustion phase
 ccon_piled <- function(pile_load) {
-        return(list("flaming" = pile_load * 0.3,                           
-                    "smoldering" = pile_load * 0.3,      
-                    "residual" = pile_load * 0.3)  ) 
+        return(list("flaming" = pile_load * 0.7,                           
+                    "smoldering" = pile_load * 0.15,      
+                    "residual" = pile_load * 0.15)  ) 
 }
 
 # combine all functions together to get consumption in tons/acre for each load
@@ -601,6 +601,60 @@ ccon_activity <- function(fm1000,
                                                 lit_fsrt$residual,
                                                 duff_fsrt$residual,
                                                 pile_fsrt$residual)))
+        
+        # create a data frame of emissions including spp and total
+        em_dat <- emiss_calc(cc_allclass, ef_db)
+        
+        em_dat$total <- rowSums(em_dat)
+        
+        em_dat$e_spp <- rownames(em_dat)
+        
+        return(em_dat)
+}
+
+ccon_activity_piled_only <- function(LD){
+        
+        # specify fuel load
+        pile_load <- LD[["pile_load"]]
+        
+        # pile consumption
+        pile_fsrt <- ccon_piled(pile_load)
+        
+        # emissions factors data
+        ef_db <- list("flaming" = c("CH4" =  0.00382000,
+                                    "CO" = 0.07180000,
+                                    "CO2" = 1.64970000,
+                                    "NH3" = 0.00120640,
+                                    "NOx" = 0.00242000,
+                                    "PM10" = 0.00859040,
+                                    "PM2.5" = 0.00728000,
+                                    "SO2" = 0.00098000,
+                                    "VOC" = 0.01734200),
+                      
+                      "smoldering"= c("CH4" = 0.00986800,
+                                      "CO" = 0.21012000,
+                                      "CO2" = 1.39308000,
+                                      "NH3" = 0.00341056,
+                                      "NOx" = 0.00090800,
+                                      "PM10" = 0.01962576,
+                                      "PM2.5" = 0.01663200,
+                                      "SO2" = 0.00098000,
+                                      "VOC" = 0.04902680),
+                      
+                      "residual"= c("CH4" = 0.00986800,
+                                    "CO" = 0.21012000,
+                                    "CO2" = 1.39308000,
+                                    "NH3" = 0.00341056,
+                                    "NOx" = 0.00090800,
+                                    "PM10" = 0.01962576,
+                                    "PM2.5" = 0.01663200,
+                                    "SO2" = 0.00098000,
+                                    "VOC" = 0.04902680))
+        
+        # create list of consumption values by emissions phase and size class
+        cc_allclass <- data.frame("flaming" = pile_fsrt$flaming,
+                                  "smoldering" = pile_fsrt$smoldering,
+                                  "residual" = pile_fsrt$residual)
         
         # create a data frame of emissions including spp and total
         em_dat <- emiss_calc(cc_allclass, ef_db)
