@@ -32,6 +32,37 @@ cdic <- list("spring" = list("MEAS_Th" = c(-0.097, 4.747),
                           "ADJ_Th" = 1,
                           "NFDRS_Th" = 1.4))
 
+# emissions factors data
+ef_db <- list("flaming" = c("CH4" =  0.00382000,
+                            "CO" = 0.07180000,
+                            "CO2" = 1.64970000,
+                            "NH3" = 0.00120640,
+                            "NOx" = 0.00242000,
+                            "PM10" = 0.00859040,
+                            "PM2.5" = 0.00728000,
+                            "SO2" = 0.00098000,
+                            "VOC" = 0.01734200),
+              
+              "smoldering"= c("CH4" = 0.00986800,
+                              "CO" = 0.21012000,
+                              "CO2" = 1.39308000,
+                              "NH3" = 0.00341056,
+                              "NOx" = 0.00090800,
+                              "PM10" = 0.01962576,
+                              "PM2.5" = 0.01663200,
+                              "SO2" = 0.00098000,
+                              "VOC" = 0.04902680),
+              
+              "residual"= c("CH4" = 0.00986800,
+                            "CO" = 0.21012000,
+                            "CO2" = 1.39308000,
+                            "NH3" = 0.00341056,
+                            "NOx" = 0.00090800,
+                            "PM10" = 0.01962576,
+                            "PM2.5" = 0.01663200,
+                            "SO2" = 0.00098000,
+                            "VOC" = 0.04902680))
+
 # portions consumption by consumption stage for small fuels
 # tot: total fuel loading
 # csd: % consumed
@@ -533,37 +564,6 @@ ccon_activity <- function(fm1000,
         # pile consumption
         pile_fsrt <- ccon_piled(pile_load)
         
-        # emissions factors data
-        ef_db <- list("flaming" = c("CH4" =  0.00382000,
-                                    "CO" = 0.07180000,
-                                    "CO2" = 1.64970000,
-                                    "NH3" = 0.00120640,
-                                    "NOx" = 0.00242000,
-                                    "PM10" = 0.00859040,
-                                    "PM2.5" = 0.00728000,
-                                    "SO2" = 0.00098000,
-                                    "VOC" = 0.01734200),
-                      
-                      "smoldering"= c("CH4" = 0.00986800,
-                                      "CO" = 0.21012000,
-                                      "CO2" = 1.39308000,
-                                      "NH3" = 0.00341056,
-                                      "NOx" = 0.00090800,
-                                      "PM10" = 0.01962576,
-                                      "PM2.5" = 0.01663200,
-                                      "SO2" = 0.00098000,
-                                      "VOC" = 0.04902680),
-                      
-                      "residual"= c("CH4" = 0.00986800,
-                                    "CO" = 0.21012000,
-                                    "CO2" = 1.39308000,
-                                    "NH3" = 0.00341056,
-                                    "NOx" = 0.00090800,
-                                    "PM10" = 0.01962576,
-                                    "PM2.5" = 0.01663200,
-                                    "SO2" = 0.00098000,
-                                    "VOC" = 0.04902680))
-        
         # create list of consumption values by emissions phase and size class
         cc_allclass <- data.frame("flaming" = Reduce("+", c(one_fsrt$flaming,
                                                 ten_fsrt$flaming, 
@@ -619,37 +619,6 @@ ccon_activity_piled_only <- function(LD){
         
         # pile consumption
         pile_fsrt <- ccon_piled(pile_load)
-        
-        # emissions factors data
-        ef_db <- list("flaming" = c("CH4" =  0.00382000,
-                                    "CO" = 0.07180000,
-                                    "CO2" = 1.64970000,
-                                    "NH3" = 0.00120640,
-                                    "NOx" = 0.00242000,
-                                    "PM10" = 0.00859040,
-                                    "PM2.5" = 0.00728000,
-                                    "SO2" = 0.00098000,
-                                    "VOC" = 0.01734200),
-                      
-                      "smoldering"= c("CH4" = 0.00986800,
-                                      "CO" = 0.21012000,
-                                      "CO2" = 1.39308000,
-                                      "NH3" = 0.00341056,
-                                      "NOx" = 0.00090800,
-                                      "PM10" = 0.01962576,
-                                      "PM2.5" = 0.01663200,
-                                      "SO2" = 0.00098000,
-                                      "VOC" = 0.04902680),
-                      
-                      "residual"= c("CH4" = 0.00986800,
-                                    "CO" = 0.21012000,
-                                    "CO2" = 1.39308000,
-                                    "NH3" = 0.00341056,
-                                    "NOx" = 0.00090800,
-                                    "PM10" = 0.01962576,
-                                    "PM2.5" = 0.01663200,
-                                    "SO2" = 0.00098000,
-                                    "VOC" = 0.04902680))
         
         # create list of consumption values by emissions phase and size class
         cc_allclass <- data.frame("flaming" = pile_fsrt$flaming,
