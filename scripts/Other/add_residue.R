@@ -76,11 +76,11 @@ add_residue <- function(dt, remove){
                           tnkp_hr_rotten = tnkp_hr_rotten,
                           biomass_removed = remove)]
         
-        dt_plus$piled_load <- rowSums(dt[, c("Break_4t9_tonsAcre",
-                                             "Break_ge9_tonsAcre",
-                                             "Pulp_4t6_tonsAcre",
-                                             "Pulp_6t9_tonsAcre",
-                                             "Branch_tonsAcre")]) * dt$piled_prop
+        dt_plus$pile_load <- rowSums(dt[, c("Break_4t9_tonsAcre",
+                                            "Break_ge9_tonsAcre",
+                                            "Pulp_4t6_tonsAcre",
+                                            "Pulp_6t9_tonsAcre",
+                                            "Branch_tonsAcre")]) * dt$piled_prop
         
         dt_plus$litter_depth <- zero_div(dt_plus$litter_loading,
                                          dt$litter_ratio)
