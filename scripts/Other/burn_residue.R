@@ -40,7 +40,7 @@ burn_residue <- function(dt, scenario) {
                 consumption_list <- mclapply(seq(1:nrow(dt)),
                                              mc.cores = detectCores() - 1,
                                              function(i){
-                                                     z <- ccon_activity_pile_only(LD = dt[i,])
+                                                     z <- ccon_activity_piled_only(LD = dt[i,])
                                                      z$x <- dt[i, x]
                                                      z$y <- dt[i, y]
                                                      z$fuelbed_number <- dt[i, fuelbed_number]
