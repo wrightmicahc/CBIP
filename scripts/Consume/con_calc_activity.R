@@ -449,12 +449,12 @@ emiss_calc <- function(cons, ef){
                           residual = cons$residual * ef$residual))
 }
 
-# function to calculate pile consumption, assumes 90% consumption equally 
-# weighted between combustion phase
+# function to calculate pile consumption, assumes 90% consumption weighted 
+# 70:15:15 between combustion phases
 ccon_piled <- function(pile_load) {
-        return(list("flaming" = pile_load * 0.7,                           
-                    "smoldering" = pile_load * 0.15,      
-                    "residual" = pile_load * 0.15)  ) 
+        return(list("flaming" = (pile_load * 0.9) * 0.7,                           
+                    "smoldering" = (pile_load * 0.9) * 0.15,      
+                    "residual" = (pile_load * 0.9) * 0.15)) 
 }
 
 # combine all functions together to get consumption in tons/acre for each load
@@ -613,7 +613,7 @@ ccon_activity <- function(fm1000,
 }
 
 ccon_activity_piled_only <- function(LD){
-        
+
         # specify fuel load
         pile_load <- LD[["pile_load"]]
         
