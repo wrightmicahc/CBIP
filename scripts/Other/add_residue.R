@@ -5,15 +5,11 @@
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
-add_residue <- function(dt, remove){
+add_residue <- function(dt){
         
-        if(!is.data.table(dt)) stop("input must be a data.table")
-        
-        if(remove < 0 | remove > 1) stop("proportion removed must be between 0 and 1")
-           
-        # function for adding fuel
-        addfuel <- function(load, add, remove, pile, prop) {
-                fuel <- load + (((add * (1 - remove)) * (1 - pile)) * prop)
+         # function for adding fuel
+        addfuel <- function(load, add, pile, prop) {
+                fuel <- load + ((add * (1 - pile)) * prop)
                 return(fuel)
         }
         
@@ -21,6 +17,7 @@ add_residue <- function(dt, remove){
         zero_div <- function(x, y) {
                 return(ifelse(y == 0, 0, x / y))
         }
+        
         
         # update fuelbed
         dt_plus <- dt[, .(x = x,
@@ -35,7 +32,6 @@ add_residue <- function(dt, remove){
                           litter_loading = addfuel(litter_loading,
                                                    Foliage_tonsAcre, 
                                                    0,
-                                                   0,
                                                    1),
                           duff_upper_depth = duff_upper_depth,
                           duff_lower_depth = duff_lower_depth,
@@ -43,38 +39,31 @@ add_residue <- function(dt, remove){
                           moss_depth = moss_depth,
                           one_hr_sound = addfuel(one_hr_sound,
                                                  Branch_tonsAcre, 
-                                                 remove,
                                                  piled_prop,
                                                  one_hr_sound_prop),
                           ten_hr_sound = addfuel(ten_hr_sound,
                                                  Branch_tonsAcre, 
-                                                 remove,
                                                  piled_prop,
                                                  ten_hr_sound_prop),
                           hun_hr_sound = addfuel(hun_hr_sound,
                                                  Branch_tonsAcre,
-                                                 remove,
                                                  piled_prop, 
                                                  hun_hr_sound_prop),
                           oneK_hr_sound = addfuel(oneK_hr_sound,
                                                   Break_4t9_tonsAcre,
-                                                  remove,
                                                   piled_prop,
                                                   oneK_hr_sound_prop),
                           tenK_hr_sound = addfuel(tenK_hr_sound,
                                                   Break_ge9_tonsAcre, 
-                                                  remove,
                                                   piled_prop, 
                                                   tenK_hr_sound_prop),
                           tnkp_hr_sound = addfuel(tnkp_hr_sound,
                                                   Break_ge9_tonsAcre,
-                                                  remove,
                                                   piled_prop, 
                                                   tnkp_hr_sound_prop),
                           oneK_hr_rotten = oneK_hr_rotten,
                           tenK_hr_rotten = tenK_hr_rotten,
-                          tnkp_hr_rotten = tnkp_hr_rotten,
-                          biomass_removed = remove)]
+                          tnkp_hr_rotten = tnkp_hr_rotten)]
         
         dt_plus$pile_load <- rowSums(dt[, c("Break_4t9_tonsAcre",
                                             "Break_ge9_tonsAcre",
