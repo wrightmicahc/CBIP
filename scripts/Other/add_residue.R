@@ -62,7 +62,8 @@ add_residue <- function(dt){
                                                   tnkp_hr_sound_prop),
                           oneK_hr_rotten = oneK_hr_rotten,
                           tenK_hr_rotten = tenK_hr_rotten,
-                          tnkp_hr_rotten = tnkp_hr_rotten)]
+                          tnkp_hr_rotten = tnkp_hr_rotten,
+                          total_load)]
         
         dt_plus$pile_load <- rowSums(dt[, c("Break_4t9_tonsAcre",
                                             "Break_ge9_tonsAcre",
