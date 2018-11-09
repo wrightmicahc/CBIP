@@ -5,20 +5,19 @@
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
+# function for adding fuel
+addfuel <- function(load, add, pile, prop) {
+        fuel <- load + ((add * (1 - pile)) * prop)
+        return(fuel)
+}
+
+# function to allow dividing by 0
+zero_div <- function(x, y) {
+        return(ifelse(y == 0, 0, x / y))
+}
+
 add_residue <- function(dt){
-        
-         # function for adding fuel
-        addfuel <- function(load, add, pile, prop) {
-                fuel <- load + ((add * (1 - pile)) * prop)
-                return(fuel)
-        }
-        
-        # function to allow dividing by 0
-        zero_div <- function(x, y) {
-                return(ifelse(y == 0, 0, x / y))
-        }
-        
-        
+
         # update fuelbed
         dt_plus <- dt[, .(x = x,
                           y = y,
