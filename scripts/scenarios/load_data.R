@@ -11,13 +11,13 @@
 # source the raster list function
 source("scripts/scenarios/get_raster_list.R")
 
+# load the necessary packages
+library(raster)
+library(rgdal)
+library(data.table)
+
 # define function
 load_data <- function(scenario, tile_number) {
-        
-        # load the necessary packages
-        library(raster)
-        library(rgdal)
-        library(data.table)
         
         # file path to tile shapefile
         tile_path <- "data/Tiles/tiles"
@@ -99,6 +99,13 @@ load_data <- function(scenario, tile_number) {
         # filter residue data
         residue <- residue[FCID2018 %in% rdf$FCID2018]
         
+        # calculate total biomass load
+        # Does not include foliage, which is assumed to be litter and not
+        # recoverable
+        residue$total_load <- rowSums(residue[, c("Break_ge9_tonsAcre",
+                                                  "Branch_tonsAcre",
+                                                  "Break_4t9_tonsAcre",
+                                                  "Pulp_4t9_tonsAcre")])
         # merge data 
         rdf <- merge(rdf, fuel_prop, by = "fuelbed_number")
         
