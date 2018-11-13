@@ -1,18 +1,17 @@
 ################################################################################
-# This script selects the file paths for raster data based on scenario name 
+# This script selects the file paths for raster data based on burn scenario name 
 #
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
 get_raster_list <- function(scenario) {
         
-        stopifnot(scenario %in% c("scenario_one", 
-                                  "scenario_two", 
-                                  "scenario_three", 
-                                  "scenario_four",
-                                  "scenario_five"))
+        stopifnot(scenario %in% c("none", 
+                                  "pile", 
+                                  "broadcast", 
+                                  "jackpot"))
         
-        if(scenario %in% c("scenario_one", "scenario_four", "scenario_five")) 
+        if(scenario == "none") 
         {
                 files <- list("FCID2018" = "data/UW/UW_FCID.tif",
                               "Slope" = "data/Other/DEM/Slope_NAD83.tif",
@@ -23,7 +22,7 @@ get_raster_list <- function(scenario) {
                               "TPI" = "data/Other/DEM/dem_dev_2g_NAD83.tif")
         }
         
-        if(scenario %in% c("scenario_two", "scenario_three")) 
+        if(scenario %in% c("pile", "broadcast", "jackpot")) 
         {
                 files <- list("FCID2018" = "data/UW/UW_FCID.tif",
                               "Slope" = "data/Other/DEM/Slope_NAD83.tif",
