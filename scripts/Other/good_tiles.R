@@ -61,3 +61,8 @@ good_tiles <- tiles[tiles$ID %in% good_id, ]
 shapefile(good_tiles, 
           filename = paste0("data/Tiles/good_tiles.shp"), 
           overwrite=TRUE)
+
+# Remove the old tiles 
+lapply(list.files(path = "data/Tiles", 
+                  pattern = "^tiles.",
+                  full.names = TRUE), file.remove)
