@@ -19,6 +19,8 @@ clrcut <- clrcut[1, ]
 # update by hand, as if it was whole tree ground (breakage 0.14)
 proof <- clrcut[, .(FCID2018 = Value,
                     Treatment = "Clearcut",
+                    Harvest_type = "Whole_Tree", 
+                    Harvest_system = "Ground",
                     TPA = TPA,
                     Pulp_6t9_tonsAcre = ((CutStem6BL + CutBarkSte) * (1 - 0.14))/2000,
                     Break_6t9_tonsAcre = ((CutStem6BL + CutBarkSte) * 0.14)/2000,
