@@ -2,7 +2,8 @@
 # This script loads the raster and tabular data and combines them into a single
 # data.table as part of the California Biopower Impact Project. 
 # 
-# scenario: character, scenario number with underscore. Example: "scenario_one".
+# scenario: character, rx burn scenario. Either "none", "pile", "broadcast", or
+# "jackpot".
 # tile_number: numeric tile number.
 #
 # Author: Micah Wright, Humboldt State University
@@ -17,13 +18,13 @@ library(rgdal)
 library(data.table)
 
 # define function
-load_data <- function(scenario, tile_number) {
+load_data <- function(burn_scenario, tile_number) {
         
         # file path to tile shapefile
         tile_path <- "data/Tiles/tiles"
         
         # file path to residue table
-        residue_path <- "data/UW/Residue_by_treat.csv" 
+        residue_path <- "data/UW/Residue_by_treat.csv"
         
         # file path to fuel proportion table, used to divide residue 
         fuel_prop_path <- "data/FCCS/tabular/FCCS_fuel_load_proportions.csv"
@@ -32,7 +33,7 @@ load_data <- function(scenario, tile_number) {
         fuelbed_path <- "data/FCCS/tabular/FCCS_fuelbed.csv"
         
         # raster file paths
-        raster_path <- get_raster_list(scenario)
+        raster_path <- get_raster_list(burn_scenario)
                 
         # check raster input
         stopifnot(is.list(raster_path), length(raster_path) == 7) 
@@ -94,7 +95,7 @@ load_data <- function(scenario, tile_number) {
         
         # load residue data
         residue <-  fread(residue_path,
-                          verbose = FALSE) 
+                          verbose = FALSE)
         
         # filter residue data
         residue <- residue[FCID2018 %in% rdf$FCID2018]
@@ -104,8 +105,10 @@ load_data <- function(scenario, tile_number) {
         # recoverable
         residue$total_load <- rowSums(residue[, c("Break_ge9_tonsAcre",
                                                   "Branch_tonsAcre",
-                                                  "Break_4t9_tonsAcre",
-                                                  "Pulp_4t9_tonsAcre")])
+                                                  "Break_4t6_tonsAcre",
+                                                  "Pulp_4t6_tonsAcre",
+                                                  "Break_6t9_tonsAcre",
+                                                  "Pulp_6t9_tonsAcre")])
         # merge data 
         rdf <- merge(rdf, fuel_prop, by = "fuelbed_number")
         
