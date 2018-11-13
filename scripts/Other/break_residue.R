@@ -61,6 +61,8 @@ break_residue <- function(treatment, harvest_type, harvest_system) {
         # update 
         broken_residue <- residue[, .(FCID2018 = Value,
                                       Treatment = Treatment,
+                                      Harvest_type = harvest_type, 
+                                      Harvest_system = harvest_system,
                                       TPA = TPA,
                                       Pulp_6t9_tonsAcre = sum_residue(dt = residue,
                                                                       columns = c("CutStem6BL",
