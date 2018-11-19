@@ -9,11 +9,21 @@
 
 pile_residue <- function(dt, pm) {
         
-        pile_prop <- function(tp, syst) {
-                gets_piled <- ifelse(tp == "Whole_Tree" & syst == "Ground", 
-                                     0.7,
-                                     ifelse(tp == "Whole_Tree" & syst == "Cable",
-                                            0.6, 0.0)) 
+        pile_prop <- function(tp, syst, location) {
+                if(location == "landing") {
+                        gets_piled <- ifelse(tp == "Whole_Tree" & syst == "Ground", 
+                                             0.7,
+                                             ifelse(tp == "Whole_Tree" & syst == "Cable",
+                                                    0.6, 0.0)) 
+                }
+                
+                if(location == "field") {
+                        gets_piled <- ifelse(tp == "CTL" & syst == "Ground", 
+                                             0.7,
+                                             ifelse(tp == "CTL" & syst == "Cable",
+                                                    0.6, 0.0)) 
+                }
+                
                 return(gets_piled)
         }
         
@@ -25,7 +35,17 @@ pile_residue <- function(dt, pm) {
                                            Break_ge9_tonsAcre +
                                            Foliage_tonsAcre) *
                            pile_prop(Harvest_type,
-                                     Harvest_system)]
+                                     Harvest_system,
+                                     "landing")]
+                
+                dt[, pile_field := (Break_4t6_tonsAcre +
+                                              Break_6t9_tonsAcre +
+                                              Branch_tonsAcre +
+                                              Break_ge9_tonsAcre +
+                                              Foliage_tonsAcre) *
+                           pile_prop(Harvest_type,
+                                     Harvest_system,
+                                     "field")]
                 
         }
         
@@ -39,8 +59,19 @@ pile_residue <- function(dt, pm) {
                                            Pulp_6t9_tonsAcre +
                                            Foliage_tonsAcre) *
                            pile_prop(Harvest_type,
-                                     Harvest_system)]
-                
+                                     Harvest_system,
+                                     "landing")]
+
+                dt[, pile_field := (Break_4t6_tonsAcre +
+                                              Break_6t9_tonsAcre +
+                                              Branch_tonsAcre +
+                                              Break_ge9_tonsAcre +
+                                              Pulp_4t6_tonsAcre +
+                                              Pulp_6t9_tonsAcre +
+                                              Foliage_tonsAcre) *
+                           pile_prop(Harvest_type,
+                                     Harvest_system,
+                                     "field")]                
         }
         
         return(dt)
