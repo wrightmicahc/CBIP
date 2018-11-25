@@ -27,18 +27,18 @@ break_residue <- function(treatment, harvest_type, harvest_system) {
         
         file_paths <- list("No_Action" = "data/UW/batch_out/Treatment_NoAction.dbf",
                            "Clearcut" = "data/UW/batch_out/Treatment_Remove100Percent.dbf",
-                           "Thin_Above_20" = "data/UW/batch_out/Treatment_ThinFromAboveRemove20PercentBA.dbf",
-                           "Thin_Above_40" = "data/UW/batch_out/Treatment_ThinFromAboveRemove40PercentBA.dbf",
-                           "Thin_Above_60" = "data/UW/batch_out/Treatment_ThinFromAboveRemove60PercentBA.dbf",
-                           "Thin_Above_80" = "data/UW/batch_out/Treatment_ThinFromAboveRemove80PercentBA.dbf",
-                           "Thin_Below_20" = "data/UW/batch_out/Treatment_ThinFromBelowRemove20PercentBA.dbf",
-                           "Thin_Below_40" = "data/UW/batch_out/Treatment_ThinFromBelowRemove40PercentBA.dbf",
-                           "Thin_Below_60" = "data/UW/batch_out/Treatment_ThinFromBelowRemove60PercentBA.dbf",
-                           "Thin_Below_80" = "data/UW/batch_out/Treatment_ThinFromBelowRemove80PercentBA.dbf",
-                           "Thin_Proportional_20" = "data/UW/batch_out/Treatment_ThinProportionalRemove20PercentBA.dbf",
-                           "Thin_Proportional_40" = "data/UW/batch_out/Treatment_ThinProportionalRemove40PercentBA.dbf",
-                           "Thin_Proportional_60" = "data/UW/batch_out/Treatment_ThinProportionalRemove60PercentBA.dbf",
-                           "Thin_Proportional_80" = "data/UW/batch_out/Treatment_ThinProportionalRemove80PercentBA.dbf")
+                           "20_Thin_from_Above" = "data/UW/batch_out/Treatment_ThinFromAboveRemove20PercentBA.dbf",
+                           "40_Thin_from_Above" = "data/UW/batch_out/Treatment_ThinFromAboveRemove40PercentBA.dbf",
+                           "60_Thin_from_Above" = "data/UW/batch_out/Treatment_ThinFromAboveRemove60PercentBA.dbf",
+                           "80_Thin_from_Above" = "data/UW/batch_out/Treatment_ThinFromAboveRemove80PercentBA.dbf",
+                           "20_Thin_from_Below" = "data/UW/batch_out/Treatment_ThinFromBelowRemove20PercentBA.dbf",
+                           "40_Thin_from_Below" = "data/UW/batch_out/Treatment_ThinFromBelowRemove40PercentBA.dbf",
+                           "60_Thin_from_Below" = "data/UW/batch_out/Treatment_ThinFromBelowRemove60PercentBA.dbf",
+                           "80_Thin_from_Below" = "data/UW/batch_out/Treatment_ThinFromBelowRemove80PercentBA.dbf",
+                           "20_Proportional_Thin" = "data/UW/batch_out/Treatment_ThinProportionalRemove20PercentBA.dbf",
+                           "40_Proportional_Thin" = "data/UW/batch_out/Treatment_ThinProportionalRemove40PercentBA.dbf",
+                           "60_Proportional_Thin" = "data/UW/batch_out/Treatment_ThinProportionalRemove60PercentBA.dbf",
+                           "80_Proportional_Thin" = "data/UW/batch_out/Treatment_ThinProportionalRemove80PercentBA.dbf")
         
         if(treatment == "No_Action") {
    
