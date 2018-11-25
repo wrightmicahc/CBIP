@@ -71,7 +71,7 @@ break_residue <- function(treatment, harvest_type, harvest_system) {
                         breakage <- 0.17
                 }
                 
-                if(harvest_type == "CTL" & harvest_system %in% c("Cable", "Ground")) {
+                if(harvest_type == "Cut_to_Length" & harvest_system %in% c("Cable", "Ground")) {
                         breakage <- 0.10
                 }
                 
