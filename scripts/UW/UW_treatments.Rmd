@@ -31,35 +31,34 @@ library(parallel)
 Load treatment raster attribute tables. I exported these as .dbf files from within Arc, so no script exists. The column names were truncated during the export process, so they don't match the documentation exactly, but the column order is the same. Currently, the break_residue function assumes that harvest breakage is a function of harvest type and harvest system, and that bark is attached to the stems by size class. The remaining percentage from the smaller (4-9") columns is placed in seperate columns as pulp log biomass. Units are lbs/acre from US, so the script also converts the units to tons/acre to match FCCS. 
 
 ```{r}
-treatment_combos <- expand.grid(treatment = c("Clearcut", 
-                                              "Thin_Above_20",
-                                              "Thin_Above_40",
-                                              "Thin_Above_60",
-                                              "Thin_Above_80",
-                                              "Thin_Below_20",
-                                              "Thin_Below_40",
-                                              "Thin_Below_60",
-                                              "Thin_Below_80",
-                                              "Thin_Proportional_20",
-                                              "Thin_Proportional_40",
-                                              "Thin_Proportional_60",
-                                              "Thin_Proportional_80"),
-                                harvest_type = c("Whole_Tree",
-                                                 "CTL"),
-                                harvest_system = c("Ground",
-                                                   "Cable"),
-                                stringsAsFactors = FALSE)
+treatment_combos <- fread("data/SERC/scenarios.csv", verbose = FALSE)
 
-treatment_combos <- as.data.table(treatment_combos)
+treatment_combos[, Silvicultural_Treatment := gsub(" ", "_", Silvicultural_Treatment)]
 
-treatment_combos <- rbind(treatment_combos, list("No_Action", "None", "None"))
+treatment_combos[, Silvicultural_Treatment := gsub("[%]", "", Silvicultural_Treatment)]
+
+# TODO: remove the next two commands when (if) updated snag data is obtained
+setkey(treatment_combos, Silvicultural_Treatment)
+
+treatment_combos <- treatment_combos[!"Standing_Dead"]
+
+treatment_combos[, Harvest_Type := gsub(" ", "_", Harvest_Type)]
+
+noaction <- data.table(ID = c(249L, 250L),
+                       Silvicultural_Treatment = c("No_Action", "No_Action"),
+                       Harvest_System = c("None", "None"),
+                       Harvest_Type = c("None", "None"),
+                       Burn_Type = c("None", "Broadcast Burn"),
+                       Biomass_Collection = c("None", "None"))
+
+treatment_combos <- rbind(treatment_combos, noaction)
 
 Residue_list <- mclapply(seq(1:nrow(treatment_combos)),
                          mc.cores = detectCores() - 1,
                          function(i) {
-                                 break_residue(treatment = treatment_combos[i, treatment],
-                                               harvest_type = treatment_combos[i, harvest_type], 
-                                               harvest_system = treatment_combos[i, harvest_system])
+                                 break_residue(treatment = treatment_combos[i, Silvicultural_Treatment],
+                                               harvest_type = treatment_combos[i, Harvest_Type], 
+                                               harvest_system = treatment_combos[i, Harvest_System])
                          })
 
 Residue_by_treat <- rbindlist(Residue_list)
