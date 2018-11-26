@@ -23,7 +23,7 @@ sum_residue <- function(dt, columns, breakage, is_pulp) {
 }
 
 # define function
-break_residue <- function(treatment, harvest_type, harvest_system) {
+break_residue <- function(treatment, harvest_type, harvest_system, burn_type, biomass_collection) {
          
         file_paths <- list("No_Action" = "data/UW/batch_out/Treatment_NoAction.dbf",
                            "Clearcut" = "data/UW/batch_out/Treatment_Remove100Percent.dbf",
@@ -53,6 +53,8 @@ break_residue <- function(treatment, harvest_type, harvest_system) {
                                               Treatment = Treatment,
                                               Harvest_type = harvest_type, 
                                               Harvest_system = harvest_system,
+                                              Burn_type = burn_type, 
+                                              Biomass_collection = biomass_collection,
                                               TPA = TPA,
                                               Pulp_6t9_tonsAcre = 0.0,
                                               Break_6t9_tonsAcre = 0.0,
@@ -87,6 +89,8 @@ break_residue <- function(treatment, harvest_type, harvest_system) {
                                               Treatment = Treatment,
                                               Harvest_type = harvest_type, 
                                               Harvest_system = harvest_system,
+                                              Burn_type = burn_type, 
+                                              Biomass_collection = biomass_collection,
                                               TPA = TPA,
                                               Pulp_6t9_tonsAcre = sum_residue(dt = residue,
                                                                               columns = c("CutStem6BL",
