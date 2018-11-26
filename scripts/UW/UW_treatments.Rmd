@@ -59,7 +59,7 @@ Residue_list <- mclapply(seq(1:nrow(treatment_combos)),
                                  break_residue(treatment = treatment_combos[i, Silvicultural_Treatment],
                                                harvest_type = treatment_combos[i, Harvest_Type], 
                                                harvest_system = treatment_combos[i, Harvest_System],
-                                               burn_type = treatment_combos[i, Burn_Type]
+                                               burn_type = treatment_combos[i, Burn_Type],
                                                biomass_collection = treatment_combos[i, Biomass_Collection])
                          })
 
