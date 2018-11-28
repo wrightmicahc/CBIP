@@ -83,12 +83,9 @@ get_sections <- function(fraction_type, range) {
         
         section <- section %>%
                 transmute(Type = fraction_type,
-                          Stem_GE9 = `Stem 9+`,
-                          Bark_GE9 = `Bark 9+`,
+                          Stem_ge9 = `Stem 9+`,
                           Stem_6t9 = `Stem 6-9`,
-                          Bark_6t9 = `Bark 6-9`,
                           Stem_4t6 = `Stem 4-6`,
-                          Bark_4t6 = `Bark 4-6`,
                           Branch = Branch,
                           Foliage = Foliage) 
 
