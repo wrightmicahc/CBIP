@@ -18,13 +18,27 @@ library(rgdal)
 library(data.table)
 
 # define function
-load_data <- function(burn_scenario, tile_number) {
+load_data <- function(treatment, harvest_system, harvest_type, burn_scenario, tile_number) {
         
         # file path to tile shapefile
-        tile_path <- "data/Tiles/tiles"
+        tile_path <- "data/Tiles/good_tiles"
         
-        # file path to residue table
-        residue_path <- "data/UW/Residue_by_treat.csv"
+        # file path to residue tables
+        residue_path <- list("No_Action" = "data/UW/residue/NoAction.csv",
+                             "Clearcut" = "data/UW/residue/Remove100Percent.csv",
+                             "20_Thin_from_Above" = "data/UW/residue/ThinFromAboveRemove20PercentBA.csv",
+                             "40_Thin_from_Above" = "data/UW/residue/ThinFromAboveRemove40PercentBA.csv",
+                             "60_Thin_from_Above" = "data/UW/residue/ThinFromAboveRemove60PercentBA.csv",
+                             "80_Thin_from_Above" = "data/UW/residue/ThinFromAboveRemove80PercentBA.csv",
+                             "20_Thin_from_Below" = "data/UW/residue/ThinFromBelowRemove20PercentBA.csv",
+                             "40_Thin_from_Below" = "data/UW/residue/ThinFromBelowRemove40PercentBA.csv",
+                             "60_Thin_from_Below" = "data/UW/residue/ThinFromBelowRemove60PercentBA.csv",
+                             "80_Thin_from_Below" = "data/UW/residue/ThinFromBelowRemove80PercentBA.csv",
+                             "20_Proportional_Thin" = "data/UW/residue/ThinProportionalRemove20PercentBA.csv",
+                             "40_Proportional_Thin" = "data/UW/residue/ThinProportionalRemove40PercentBA.csv",
+                             "60_Proportional_Thin" = "data/UW/residue/ThinProportionalRemove60PercentBA.csv",
+                             "80_Proportional_Thin" = "data/UW/residue/ThinProportionalRemove80PercentBA.csv",
+                             "Standing_Dead" = "data/UW/residue/Snags.csv")
         
         # file path to fuel proportion table, used to divide residue 
         fuel_prop_path <- "data/FCCS/tabular/FCCS_fuel_load_proportions.csv"
@@ -94,21 +108,18 @@ load_data <- function(burn_scenario, tile_number) {
         fuel_prop <- fuel_prop[fuelbed_number %in% rdf$fuelbed_number]
         
         # load residue data
-        residue <-  fread(residue_path,
-                          verbose = FALSE)
+        residue <- fread(residue_path[[treatment]], verbose = FALSE)
         
         # filter residue data
         residue <- residue[FCID2018 %in% rdf$FCID2018]
         
-        # calculate total biomass load
-        # Does not include foliage, which is assumed to be litter and not
-        # recoverable
-        residue$total_load <- rowSums(residue[, c("Break_ge9_tonsAcre",
-                                                  "Branch_tonsAcre",
-                                                  "Break_4t6_tonsAcre",
-                                                  "Pulp_4t6_tonsAcre",
-                                                  "Break_6t9_tonsAcre",
-                                                  "Pulp_6t9_tonsAcre")])
+        # specify treatment etc.
+        residue[, `:=`(Treatment = treatment, 
+                       Harvest_System = harvest_system,
+                       Harvest_Type = harvest_type, 
+                       Burn_Scenario = burn_scenario,
+                       Tile_Number = tile_number)]
+        
         # merge data 
         rdf <- merge(rdf, fuel_prop, by = "fuelbed_number")
         
