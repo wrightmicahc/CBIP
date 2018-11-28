@@ -14,56 +14,83 @@ knitr::opts_knit$set(root.dir = "../..")
 
 # Purpose
 
-This document combines the attribute tables from the UW treatment rasters, calculates residual biomass for harvest breakage and pulp logs, and saves the result before performing a brief summary analysis.
+This document saves the attribute tables from the UW treatment rasters as .csv files for later use.
 
 # Setup
 
 Load the necessary packages and functions.
 
 ```{r message=FALSE, warning=FALSE}
-source("scripts/Other/break_residue.R")
-
+library(foreign)
+library(data.table)
 library(parallel)
 ```
 
 # Load Data
 
-Load treatment raster attribute tables. I exported these as .dbf files from within Arc, so no script exists. The column names were truncated during the export process, so they don't match the documentation exactly, but the column order is the same. Currently, the break_residue function assumes that harvest breakage is a function of harvest type and harvest system, and that bark is attached to the stems by size class. The remaining percentage from the smaller (4-9") columns is placed in seperate columns as pulp log biomass. Units are lbs/acre from US, so the script also converts the units to tons/acre to match FCCS. 
+Load treatment raster attribute tables. I exported these as .dbf files from within Arc, so no script exists. The column names were truncated during the export process, so they don't match the documentation exactly, but the column order is the same. 
+
+First make a list of file names. Remove snags for now.
 
 ```{r}
-treatment_combos <- fread("data/SERC/scenarios.csv", verbose = FALSE)
+file_list <- list.files("data/UW/batch_out",
+                        pattern = ".dbf$",
+                        full.names = TRUE)
 
-treatment_combos[, Silvicultural_Treatment := gsub(" ", "_", Silvicultural_Treatment)]
+no_treat <- c("data/UW/batch_out/Treatment_Snags.dbf")
 
-treatment_combos[, Silvicultural_Treatment := gsub("[%]", "", Silvicultural_Treatment)]
-
-# TODO: remove the next two commands when (if) updated snag data is obtained
-setkey(treatment_combos, Silvicultural_Treatment)
-
-treatment_combos <- treatment_combos[!"Standing_Dead"]
-
-treatment_combos[, Harvest_Type := gsub(" ", "_", Harvest_Type)]
-
-noaction <- data.table(ID = c(249L, 250L),
-                       Silvicultural_Treatment = c("No_Action", "No_Action"),
-                       Harvest_System = c("None", "None"),
-                       Harvest_Type = c("None", "None"),
-                       Burn_Type = c("None", "Broadcast Burn"),
-                       Biomass_Collection = c("None", "None"))
-
-treatment_combos <- rbind(treatment_combos, noaction)
-
-Residue_list <- mclapply(seq(1:nrow(treatment_combos)),
-                         mc.cores = detectCores() - 1,
-                         function(i) {
-                                 break_residue(treatment = treatment_combos[i, Silvicultural_Treatment],
-                                               harvest_type = treatment_combos[i, Harvest_Type], 
-                                               harvest_system = treatment_combos[i, Harvest_System],
-                                               burn_type = treatment_combos[i, Burn_Type],
-                                               biomass_collection = treatment_combos[i, Biomass_Collection])
-                         })
-
-Residue_by_treat <- rbindlist(Residue_list)
-
-fwrite(Residue_by_treat, "data/UW/Residue_by_treat.csv")
+file_list <- file_list[!file_list %in% no_treat]
 ```
+
+Create a function to sum specified rows and convert to tons/acre.
+
+```{r}
+sum_residue <- function(dt, columns) {
+        
+        net_res <- Reduce("+", dt[, columns, with = FALSE]) 
+        
+        return(net_res/2000)
+}
+```
+
+Write a function that loads the file, sums the appropriate columns, and saves the .csv.
+
+```{r}
+get_residue <- function(fullpath) {
+        
+        residue <- read.dbf(fullpath, as.is = TRUE)
+        
+        residue <- as.data.table(residue)
+        
+        treatment <- sub(".*_", "", fullpath)
+        
+        treatment <- sub("\\.dbf.*", "", treatment)
+        
+        # update 
+        residue <- residue[, .(FCID2018 = Value,
+                               Treatment = treatment,
+                               TPA = TPA,
+                               Stem_6t9_tonsAcre = sum_residue(dt = residue,
+                                                               columns = c("CutStem6BL",
+                                                                           "CutBarkSte")),
+                               Stem_4t6_tonsAcre = sum_residue(dt = residue,
+                                                               columns = c("CutStem4To",
+                                                                           "CutBarkS_2")),
+                               Stem_ge9_tonsAcre = sum_residue(dt = residue,
+                                                                columns = c("CutStem6BG",
+                                                                            "CutBarkS_1")),
+                               Branch_tonsAcre = CutBranchB/2000,
+                               Foliage_tonsAcre = CutFoliage/2000)]
+        
+        fwrite(residue, paste0("data/UW/residue/", treatment,".csv"))
+}
+```
+
+Iterate over the file list.
+
+```{r}
+mclapply(file_list, 
+         mc.cores = detectCores() - 1,
+         function(x) get_residue(x))
+```
+
