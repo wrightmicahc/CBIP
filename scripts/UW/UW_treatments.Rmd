@@ -68,7 +68,6 @@ get_residue <- function(fullpath) {
         
         # update 
         residue <- residue[, .(FCID2018 = Value,
-                               Treatment = treatment,
                                TPA = TPA,
                                Stem_6t9_tonsAcre = sum_residue(dt = residue,
                                                                columns = c("CutStem6BL",
@@ -86,9 +85,11 @@ get_residue <- function(fullpath) {
 }
 ```
 
-Iterate over the file list.
+Iterate over the file list after removing any old files.
 
 ```{r}
+lapply(list.files(path = "data/UW/residue", full.names = TRUE), file.remove)
+
 mclapply(file_list, 
          mc.cores = detectCores() - 1,
          function(x) get_residue(x))
