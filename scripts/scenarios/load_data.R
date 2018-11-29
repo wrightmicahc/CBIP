@@ -18,7 +18,7 @@ library(rgdal)
 library(data.table)
 
 # define function
-load_data <- function(treatment, harvest_system, harvest_type, burn_scenario, tile_number) {
+load_data <- function(treatment, harvest_system, harvest_type, burn_type, tile_number) {
         
         # file path to tile shapefile
         tile_path <- "data/Tiles/good_tiles"
@@ -47,7 +47,7 @@ load_data <- function(treatment, harvest_system, harvest_type, burn_scenario, ti
         fuelbed_path <- "data/FCCS/tabular/FCCS_fuelbed.csv"
         
         # raster file paths
-        raster_path <- get_raster_list(burn_scenario)
+        raster_path <- get_raster_list(burn_type)
                 
         # check raster input
         stopifnot(is.list(raster_path), length(raster_path) == 7) 
@@ -117,7 +117,7 @@ load_data <- function(treatment, harvest_system, harvest_type, burn_scenario, ti
         residue[, `:=`(Silvicultural_Treatment = treatment, 
                        Harvest_System = harvest_system,
                        Harvest_Type = harvest_type, 
-                       Burn_Scenario = burn_scenario,
+                       Burn_Type = burn_type,
                        Tile_Number = tile_number)]
         
         # merge data 
