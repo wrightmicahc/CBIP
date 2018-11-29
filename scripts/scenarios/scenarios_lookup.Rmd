@@ -79,8 +79,6 @@ get_sections <- function(fraction_type, range) {
         
         names(section) <- section_names
         
-        section <- bind_cols(scenarios[1:248, ], section)
-        
         section <- section %>%
                 transmute(Type = fraction_type,
                           Stem_ge9 = `Stem 9+`,
@@ -88,6 +86,8 @@ get_sections <- function(fraction_type, range) {
                           Stem_4t6 = `Stem 4-6`,
                           Branch = Branch,
                           Foliage = Foliage) 
+        
+        section <- bind_cols(scenarios[1:248, ], section)
 
         write_csv(section, paste0("data/SERC/lookup_tables/", fraction_type, ".csv"))
 
