@@ -114,7 +114,7 @@ load_data <- function(treatment, harvest_system, harvest_type, burn_scenario, ti
         residue <- residue[FCID2018 %in% rdf$FCID2018]
         
         # specify treatment etc.
-        residue[, `:=`(Treatment = treatment, 
+        residue[, `:=`(Silvicultural_Treatment = treatment, 
                        Harvest_System = harvest_system,
                        Harvest_Type = harvest_type, 
                        Burn_Scenario = burn_scenario,
