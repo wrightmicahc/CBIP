@@ -46,14 +46,15 @@ scenarios<- scenarios %>%
         mutate(Silvicultural_Treatment = gsub(" ", "_", 
                                               Silvicultural_Treatment),
                ID = as.integer(ID),
-               Harvest_Type = gsub(" ", "_", Harvest_Type)) %>%
+               Harvest_Type = gsub(" ", "_", Harvest_Type),
+               Burn_Type = gsub(" Burn", "", Burn_Type)) %>%
         mutate(Silvicultural_Treatment = gsub("[%]", "", Silvicultural_Treatment))
 
 noaction <- data.frame(ID = c(249L, 250L),
                        Silvicultural_Treatment = c("No_Action", "No_Action"),
                        Harvest_System = c("None", "None"),
                        Harvest_Type = c("None", "None"),
-                       Burn_Type = c("None", "Broadcast Burn"),
+                       Burn_Type = c("None", "Broadcast"),
                        Biomass_Collection = c("None", "None"),
                        stringsAsFactors = FALSE)
 
