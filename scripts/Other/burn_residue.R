@@ -5,14 +5,15 @@
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
-burn_residue <- function(dt, scenario) {
+# source function that calculates consumption and emissions
+source("scripts/Consume/con_calc_activity.R")
+
+library(parallel)
+
+burn_residue <- function(dt, burn_type) {
         
-        library(parallel)
-        
-        if(scenario %in% c("scenario_one",
-                           "scenario_three", 
-                           "scenario_four", 
-                           "scenario_five")) {
+        if(burn_type %in% c("None",
+                            "Broadcast")) {
                 
                 consumption_list <- mclapply(seq(1:nrow(dt)),
                                              mc.cores = detectCores() - 1,
@@ -28,14 +29,19 @@ burn_residue <- function(dt, scenario) {
                                                      z$y <- dt[i, y]
                                                      z$fuelbed_number <- dt[i, fuelbed_number]
                                                      z$FCID2018 <- dt[i, FCID2018]
-                                                     z$Treatment <- dt[i, Treatment]
-                                                     z$biomass_removed <- dt[i, biomass_removed]
+                                                     z$ID <- dt[i, ID]
+                                                     z$Silvicultural_Treatment <- dt[i, Silvicultural_Treatment]
+                                                     z$Harvest_Type <- dt[i, Harvest_Type]
+                                                     z$Harvest_System <- dt[i, Harvest_System]
+                                                     z$Burn_Type <- dt[i, Burn_Type]
+                                                     z$Biomass_Collection <- dt[i, Biomass_Collection]
                                                      return(as.data.table(z))
                                              })
                 
         }
         
-        if(scenario == "scenario_two") {
+        if(burn_type %in% c("Pile",
+                            "Jackpot")) {
                 
                 consumption_list <- mclapply(seq(1:nrow(dt)),
                                              mc.cores = detectCores() - 1,
@@ -45,8 +51,12 @@ burn_residue <- function(dt, scenario) {
                                                      z$y <- dt[i, y]
                                                      z$fuelbed_number <- dt[i, fuelbed_number]
                                                      z$FCID2018 <- dt[i, FCID2018]
-                                                     z$Treatment <- dt[i, Treatment]
-                                                     z$biomass_removed <- dt[i, biomass_removed]
+                                                     z$ID <- dt[i, ID]
+                                                     z$Silvicultural_Treatment <- dt[i, Silvicultural_Treatment]
+                                                     z$Harvest_Type <- dt[i, Harvest_Type]
+                                                     z$Harvest_System <- dt[i, Harvest_System]
+                                                     z$Burn_Type <- dt[i, Burn_Type]
+                                                     z$Biomass_Collection <- dt[i, Biomass_Collection]
                                                      return(as.data.table(z))
                                              })
                 
@@ -60,8 +70,12 @@ burn_residue <- function(dt, scenario) {
                                            "e_spp",
                                            "fuelbed_number",
                                            "FCID2018",
-                                           "Treatment",
-                                           "biomass_removed"),
+                                           "ID",
+                                           "Silvicultural_Treatment",
+                                           "Harvest_Type",
+                                           "Harvest_System",
+                                           "Burn_Type",
+                                           "Biomass_Collection"),
                                measure.vars = c("flaming",
                                                 "smoldering",
                                                 "residual",
