@@ -1,78 +1,78 @@
 ################################################################################
-# This script adds a column to specify a pile proportion for biomass residue as
-# part of the California Biopower Impact Project. 
+# This script adds columns to specify the pile load for biomass residue as part
+# of the California Biopower Impact Project. 
 # 
 # Currently, it is assumed that foliage is piled along with the branches
 #
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
-pile_residue <- function(dt, pm) {
+pile_residue <- function(dt) {
+        # load the lookup table for landing piles
+        lookup_landing <- fread("data/SERC/lookup_tables/piled_at_landing.csv", 
+                                verbose = FALSE)
         
-        pile_prop <- function(tp, syst, location) {
-                if(location == "landing") {
-                        gets_piled <- ifelse(tp == "Whole_Tree" & syst == "Ground", 
-                                             0.7,
-                                             ifelse(tp == "Whole_Tree" & syst == "Cable",
-                                                    0.6, 0.0)) 
-                }
-                
-                if(location == "field") {
-                        gets_piled <- ifelse(tp == "CTL" & syst == "Ground", 
-                                             0.7,
-                                             ifelse(tp == "CTL" & syst == "Cable",
-                                                    0.6, 0.0)) 
-                }
-                
-                return(gets_piled)
-        }
+        # merge lookup and dt
+        dt <-  merge(dt, 
+                     lookup_landing,
+                     by = c("ID",
+                            "Silvicultural_Treatment",
+                            "Harvest_System",
+                            "Harvest_Type",
+                            "Burn_Type",
+                            "Biomass_Collection"), 
+                     all.x = TRUE,
+                     all.y = FALSE,
+                     sort = FALSE,
+                     allow.cartesian = TRUE)
         
-        if(pm == "present") {
-                
-                dt[, pile_landing := (Break_4t6_tonsAcre +
-                                           Break_6t9_tonsAcre +
-                                           Branch_tonsAcre +
-                                           Break_ge9_tonsAcre +
-                                           Foliage_tonsAcre) *
-                           pile_prop(Harvest_type,
-                                     Harvest_system,
-                                     "landing")]
-                
-                dt[, pile_field := (Break_4t6_tonsAcre +
-                                              Break_6t9_tonsAcre +
-                                              Branch_tonsAcre +
-                                              Break_ge9_tonsAcre +
-                                              Foliage_tonsAcre) *
-                           pile_prop(Harvest_type,
-                                     Harvest_system,
-                                     "field")]
-                
-        }
+        # calculate landing pile load
+        dt[, pile_landing := ((Stem_ge9 * Stem_ge9_tonsAcre) + 
+                                      (Stem_6t9 * Stem_6t9_tonsAcre) +
+                                      (Stem_4t6 * Stem_4t6_tonsAcre) +
+                                      (Branch_tonsAcre * Branch) +
+                                      (Foliage_tonsAcre * Foliage))]
         
-        if(pm == "absent") {
-                
-                dt[, pile_landing := (Break_4t6_tonsAcre +
-                                           Break_6t9_tonsAcre +
-                                           Branch_tonsAcre +
-                                           Break_ge9_tonsAcre +
-                                           Pulp_4t6_tonsAcre +
-                                           Pulp_6t9_tonsAcre +
-                                           Foliage_tonsAcre) *
-                           pile_prop(Harvest_type,
-                                     Harvest_system,
-                                     "landing")]
-
-                dt[, pile_field := (Break_4t6_tonsAcre +
-                                              Break_6t9_tonsAcre +
-                                              Branch_tonsAcre +
-                                              Break_ge9_tonsAcre +
-                                              Pulp_4t6_tonsAcre +
-                                              Pulp_6t9_tonsAcre +
-                                              Foliage_tonsAcre) *
-                           pile_prop(Harvest_type,
-                                     Harvest_system,
-                                     "field")]                
-        }
+        # remove excess columns
+        dt[, c("Type",
+               "Stem_ge9",
+               "Stem_6t9",
+               "Stem_4t6",
+               "Branch",
+               "Foliage") := NULL]
+        
+        # load the lookup table for landing piles
+        lookup_field <- fread("data/SERC/lookup_tables/piled_in_field.csv", 
+                              verbose = FALSE)
+        
+        # merge lookup and dt
+        dt <-  merge(dt, 
+                     lookup_field,
+                     by = c("ID",
+                            "Silvicultural_Treatment",
+                            "Harvest_System",
+                            "Harvest_Type",
+                            "Burn_Type",
+                            "Biomass_Collection"), 
+                     all.x = TRUE,
+                     all.y = FALSE,
+                     sort = FALSE,
+                     allow.cartesian = TRUE)
+        
+        # calculate field pile load
+        dt[, pile_field := ((Stem_ge9 * Stem_ge9_tonsAcre) + 
+                                    (Stem_6t9 * Stem_6t9_tonsAcre) +
+                                    (Stem_4t6 * Stem_4t6_tonsAcre) +
+                                    (Branch_tonsAcre * Branch) +
+                                    (Foliage_tonsAcre * Foliage))]
+        
+        # remove excess columns
+        dt[, c("Type",
+               "Stem_ge9",
+               "Stem_6t9",
+               "Stem_4t6",
+               "Branch",
+               "Foliage") := NULL]
         
         return(dt)
 }
