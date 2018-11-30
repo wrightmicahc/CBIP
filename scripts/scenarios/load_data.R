@@ -18,7 +18,7 @@ library(rgdal)
 library(data.table)
 
 # define function
-load_data <- function(treatment, harvest_system, harvest_type, burn_type, tile_number) {
+load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, biomass_collection, tile_number) {
         
         # file path to tile shapefile
         tile_path <- "data/Tiles/good_tiles"
@@ -114,10 +114,12 @@ load_data <- function(treatment, harvest_system, harvest_type, burn_type, tile_n
         residue <- residue[FCID2018 %in% rdf$FCID2018]
         
         # specify treatment etc.
-        residue[, `:=`(Silvicultural_Treatment = treatment, 
+        residue[, `:=`(ID = id,
+                       Silvicultural_Treatment = treatment, 
                        Harvest_System = harvest_system,
                        Harvest_Type = harvest_type, 
                        Burn_Type = burn_type,
+                       Biomass_Collection = biomass_collection,
                        Tile_Number = tile_number)]
         
         # merge data 
