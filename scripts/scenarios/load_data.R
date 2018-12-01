@@ -20,9 +20,6 @@ library(data.table)
 # define function
 load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, biomass_collection, tile_number) {
         
-        # file path to tile shapefile
-        tile_path <- "data/Tiles/good_tiles"
-        
         # file path to residue tables
         residue_path <- list("No_Action" = "data/UW/residue/NoAction.csv",
                              "Clearcut" = "data/UW/residue/Remove100Percent.csv",
@@ -59,18 +56,8 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
                 return(rc)
         }
         
-        # split tile path into it's constituent components
-        tile_path <- strsplit(tile_path, "/")
-        
-        # get depth of file structure
-        tile_path_length <- length(tile_path[[1]]) 
-        
-        # load tiles
-        tiles <- readOGR(paste(tile_path[[1]][1], 
-                               tile_path[[1]][tile_path_length - 1],
-                               sep = "/"),
-                         tile_path[[1]][tile_path_length],
-                         verbose = FALSE)
+        tiles <- sf::st_read("data/Tiles/good_tiles.shp",
+                             quiet = TRUE)
         
         # subset tiles
         tile <- tiles[tiles$ID == tile_number, ]
