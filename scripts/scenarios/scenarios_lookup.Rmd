@@ -86,9 +86,15 @@ get_sections <- function(fraction_type, range) {
                           Stem_6t9 = `Stem 6-9`,
                           Stem_4t6 = `Stem 4-6`,
                           Branch = Branch,
-                          Foliage = Foliage) 
+                          Foliage = Foliage) %>%
+                add_row(Type = fraction_type,
+                        Stem_ge9 = c(0.0, 0.0),
+                        Stem_6t9 = c(0.0, 0.0),
+                        Stem_4t6 = c(0.0, 0.0),
+                        Branch = c(0.0, 0.0),
+                        Foliage = c(0.0, 0.0))
         
-        section <- bind_cols(scenarios[1:248, ], section)
+        section <- bind_cols(scenarios, section)
 
         write_csv(section, paste0("data/SERC/lookup_tables/", fraction_type, ".csv"))
 
