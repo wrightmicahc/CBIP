@@ -6,12 +6,12 @@
 
 get_raster_list <- function(scenario) {
         
-        stopifnot(scenario %in% c("none", 
-                                  "pile", 
-                                  "broadcast", 
-                                  "jackpot"))
+        stopifnot(scenario %in% c("None", 
+                                  "Pile", 
+                                  "Broadcast", 
+                                  "Jackpot"))
         
-        if(scenario == "none") 
+        if(scenario == "None") 
         {
                 files <- list("FCID2018" = "data/UW/UW_FCID.tif",
                               "Slope" = "data/Other/DEM/Slope_NAD83.tif",
@@ -22,7 +22,7 @@ get_raster_list <- function(scenario) {
                               "TPI" = "data/Other/DEM/dem_dev_2g_NAD83.tif")
         }
         
-        if(scenario %in% c("pile", "broadcast", "jackpot")) 
+        if(scenario %in% c("Pile", "Broadcast", "Jackpot")) 
         {
                 files <- list("FCID2018" = "data/UW/UW_FCID.tif",
                               "Slope" = "data/Other/DEM/Slope_NAD83.tif",
