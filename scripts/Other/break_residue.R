@@ -24,7 +24,7 @@ sum_residue <- function(dt, columns, breakage, is_pulp) {
 
 # define function
 break_residue <- function(treatment, harvest_type, harvest_system) {
-         
+
         file_paths <- list("No_Action" = "data/UW/batch_out/Treatment_NoAction.dbf",
                            "Clearcut" = "data/UW/batch_out/Treatment_Remove100Percent.dbf",
                            "20_Thin_from_Above" = "data/UW/batch_out/Treatment_ThinFromAboveRemove20PercentBA.dbf",
