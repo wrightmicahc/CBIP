@@ -43,7 +43,7 @@ residue_scenario <- function(tile_number) {
         
         # load data
         # this combines residue, raster, and FCCS data
-        emissions_list <- lapply(scenario_list[1:20], function(x) {
+        emissions_list <- lapply(scenario_list, function(x) {
                 
                 
                 ID <- x[1, ID]
