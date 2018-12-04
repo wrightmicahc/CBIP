@@ -1,0 +1,55 @@
+---
+title: "Wildfire biomass emissions: Full Test Run"
+author: "Micah Wright"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "../..")
+```
+
+# Purpose
+
+This document tests the time necessary to run all scenarios on a tile.
+
+# Setup
+
+Load ggplot for later use.
+
+```{r}
+library(ggplot2)
+
+theme_set(theme_classic() + 
+                  theme(panel.grid.major = element_line(color = "grey90",
+                                                        size = 0.2),
+                        strip.background = element_blank()))
+```
+
+Source the scenarios script. This is simply a wrapper function for loading the data, processing, and simulating emissions. It takes a numeric tile number as input, and returns a data.table of emissions estimates.
+
+```{r}
+source("scripts/scenarios/scenarios.R")
+```
+
+# Test
+
+Run the function on a tile full of pixels.
+
+```{r}
+system.time(test_1 <- residue_scenario(657))
+```
+
+Subset the data, and make some plots. I picked total emissions and a few random ID (treatment combinations). 
+
+```{r}
+total <- test_1[test_1$c_phase == "total" & test_1$ID %in% sample(unique(test_1$ID), size = 3), ]
+
+ggplot(total, aes(emissions)) +
+        geom_histogram() +
+        facet_wrap(~ID)
+```
+
