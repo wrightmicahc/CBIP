@@ -66,7 +66,11 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         rm(tiles)
         
         # get list of raster paths
-        rlist <- lapply(raster_path, function(x) get_raster_fun(x, tile))
+        rlist <- mclapply(raster_path,
+                          mc.cores = detectCores() - 1,
+                          function(x) { 
+                                  get_raster_fun(x, tile)
+                                  })
         
         # load raster stack
         rstack <- stack(rlist)
