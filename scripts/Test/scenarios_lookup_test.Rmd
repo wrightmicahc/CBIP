@@ -18,15 +18,8 @@ This document tests the time necessary to run all scenarios on a tile.
 
 # Setup
 
-Load ggplot for later use.
-
 ```{r}
-library(ggplot2)
-
-theme_set(theme_classic() + 
-                  theme(panel.grid.major = element_line(color = "grey90",
-                                                        size = 0.2),
-                        strip.background = element_blank()))
+write.csv(Sys.time(),file='~/Desktop/start-time.csv')
 ```
 
 Source the scenarios script. This is simply a wrapper function for loading the data, processing, and simulating emissions. It takes a numeric tile number as input, and returns a data.table of emissions estimates.
@@ -37,19 +30,10 @@ source("scripts/scenarios/scenarios.R")
 
 # Test
 
-Run the function on a tile full of pixels.
+Run the function on a tile full of pixels and then write the output to a .Rdata file.
 
 ```{r}
-system.time(test_1 <- residue_scenario(657))
+test_1 <- residue_scenario(657)
+save(test_1,file='/Volumes/744GB-Storage/fire-model-results.Rdata')
+write.csv(Sys.time(),file='~/Desktop/end-time.csv')
 ```
-
-Subset the data, and make some plots. I picked total emissions and a few random ID (treatment combinations). 
-
-```{r}
-total <- test_1[test_1$c_phase == "total" & test_1$ID %in% sample(unique(test_1$ID), size = 3), ]
-
-ggplot(total, aes(emissions)) +
-        geom_histogram() +
-        facet_wrap(~ID)
-```
-
