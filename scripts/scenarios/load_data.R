@@ -9,9 +9,6 @@
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
-# source the raster list function
-source("scripts/scenarios/get_raster_list.R")
-
 # load the necessary packages
 library(raster)
 library(rgdal)
@@ -43,50 +40,21 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         # file path to FCCS fuelbed table
         fuelbed_path <- "data/FCCS/tabular/FCCS_fuelbed.csv"
         
-        # raster file paths
-        raster_path <- get_raster_list(burn_type)
+        if(burn_type == "None") {
                 
-        # check raster input
-        stopifnot(is.list(raster_path), length(raster_path) == 7) 
-        
-        # function to load and crop raster to tile
-        get_raster_fun <- function(x, poly){
-                r <- raster(x)
-                rc <- crop(r, poly)
-                return(rc)
+                rdf <- fread(paste0("data/Tiles/wildfire/", 
+                                    tile_number, ".csv"), 
+                             verbose = FALSE)
+                
         }
         
-        tiles <- sf::st_read("data/Tiles/good_tiles.shp",
-                             quiet = TRUE)
-        
-        # subset tiles
-        tile <- tiles[tiles$ID == tile_number, ]
-        
-        # remove full tile polygon
-        rm(tiles)
-        
-        # get list of raster paths
-        rlist <- mclapply(raster_path,
-                          mc.cores = detectCores() - 1,
-                          function(x) { 
-                                  get_raster_fun(x, tile)
-                                  })
-        
-        # load raster stack
-        rstack <- stack(rlist)
-        
-        # remove raster file path list
-        rm(rlist)
-        
-        # create data.table from stack
-        rdf <- as.data.frame(rstack, 
-                             xy = TRUE,
-                             na.rm = TRUE) 
-        
-        rdf <- as.data.table(rdf)
-        
-        # remove stack
-        rm(rstack)
+        if(burn_type %in% c("Pile", "Broadcast", "Jackpot")) {
+                
+                rdf <- fread(paste0("data/Tiles/rx/", 
+                                    tile_number, ".csv"), 
+                             verbose = FALSE)
+                
+        }
         
         # remove any barren areas 
         rdf <- rdf[fuelbed_number < 900]
