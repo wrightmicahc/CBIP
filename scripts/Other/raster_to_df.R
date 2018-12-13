@@ -10,7 +10,6 @@ source("scripts/scenarios/get_raster_list.R")
 
 # load the necessary packages
 library(raster)
-library(rgdal)
 library(data.table)
 library(parallel)
 
@@ -25,7 +24,7 @@ get_raster_fun <- function(x, poly){
         return(rc)
 }
 
-tiles <- sf::st_read("data/Tiles/good_tiles.shp",
+tiles <- sf::st_read("data/Tiles/clipped_tiles/clipped_tiles.shp",
                      quiet = TRUE)
 
 # split tiles
