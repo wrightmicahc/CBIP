@@ -45,7 +45,6 @@ residue_scenario <- function(tile_number) {
         # this combines residue, raster, and FCCS data
         emissions_list <- lapply(scenario_list, function(x) {
                 
-                
                 ID <- x[1, ID]
                 Silvicultural_Treatment <- x[1, Silvicultural_Treatment]
                 Harvest_System <- x[1, Harvest_System]
