@@ -1,3 +1,11 @@
+################################################################################
+# This script removes the tiles in wilderness areas as part of the California
+# Biopower Impact Project. 
+#
+# Author: Micah Wright, Humboldt State University
+################################################################################
+
+# load the necessary packages
 library(sf)
 library(tidyverse)
 
