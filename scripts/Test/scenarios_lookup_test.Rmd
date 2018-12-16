@@ -22,7 +22,7 @@ This document tests the time necessary to run all scenarios on a tile.
 write.csv(Sys.time(),file='~/Desktop/start-time.csv')
 ```
 
-Source the scenarios script. This is simply a wrapper function for loading the data, processing, and simulating emissions. It takes a numeric tile number as input, and returns a data.table of emissions estimates.
+Source the scenarios script. This is simply a wrapper function for loading the data, processing, and simulating emissions. It takes a numeric tile number as input, and saves a .csv of emissions estimates.
 
 ```{r}
 source("scripts/scenarios/scenarios.R")
@@ -30,10 +30,9 @@ source("scripts/scenarios/scenarios.R")
 
 # Test
 
-Run the function on a tile full of pixels and then write the output to a .Rdata file.
+Run the function on a tile full of pixels.
 
 ```{r}
-test_1 <- residue_scenario(657)
-save(test_1,file='/Volumes/744GB-Storage/fire-model-results.Rdata')
+residue_scenario(657)
 write.csv(Sys.time(),file='~/Desktop/end-time.csv')
 ```
