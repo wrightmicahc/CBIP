@@ -56,3 +56,26 @@ mclapply(tile_list,
                                     ".csv"))
                  
          })
+
+mclapply(tile_list,
+         mc.cores = detectCores() - 1,
+         function(x) { 
+                 
+                 rlist <- lapply(raster_path_RX, 
+                                 function(i) {
+                                         
+                                         get_raster_fun(i, x)
+                                         
+                                 })
+                 
+                 rstack <- stack(rlist)
+                 
+                 rdf <- as.data.frame(rstack, 
+                                      xy = TRUE,
+                                      na.rm = TRUE) 
+                 
+                 fwrite(rdf, paste0("data/Tiles/rx/",
+                                    x$ID, 
+                                    ".csv"))
+                 
+         })
