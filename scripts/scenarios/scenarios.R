@@ -80,6 +80,11 @@ residue_scenario <- function(tile_number) {
                 
         })
         
-        return(rbindlist(emissions_list))
+        emissions_df <- rbindlist(emissions_list)
+        
+        fwrite(emissions_df, 
+               paste0("data/Tiles/output/", 
+                                    tile_number, ".csv"), 
+               verbose = FALSE)
         
 }
