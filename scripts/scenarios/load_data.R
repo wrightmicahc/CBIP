@@ -40,6 +40,9 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         # file path to FCCS fuelbed table
         fuelbed_path <- "data/FCCS/tabular/FCCS_fuelbed.csv"
         
+        # FCID with no residue
+        nores_path <- "data/UW/FCID_no_residue.csv"
+        
         if(burn_type == "None") {
                 
                 rdf <- fread(paste0("data/Tiles/wildfire/", 
@@ -58,6 +61,13 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         
         # remove any barren areas 
         rdf <- rdf[fuelbed_number < 900]
+        
+        # load FCID without residue
+        nores <- fread(nores_path, 
+                       verbose = FALSE)
+        
+        # remove any barren areas 
+        rdf <- rdf[!(FCID2018 %in% nores$FCID2018)]
         
         # load fuel proportions
         fuel_prop <- fread(fuel_prop_path, 
