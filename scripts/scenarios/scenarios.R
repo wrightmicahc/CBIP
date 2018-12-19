@@ -22,6 +22,8 @@ source("scripts/Other/add_residue.R")
 # source wrapper function for consumption and emissions function
 source("scripts/Other/burn_residue.R")
 
+library(parallel)
+
 residue_scenario <- function(tile_number) {
         
         stopifnot(is.numeric(tile_number))
