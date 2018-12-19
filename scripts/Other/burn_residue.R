@@ -44,7 +44,7 @@ burn_residue <- function(dt, burn_type) {
                             "Jackpot")) {
                 
                 consumption_list <- mclapply(seq(1:nrow(dt)),
-                                             mc.cores = detectCores() - 1,
+                                             mc.cores = detectCores(),
                                              function(i){
                                                      z <- ccon_activity_piled_only(LD = dt[i,])
                                                      z$x <- dt[i, x]
