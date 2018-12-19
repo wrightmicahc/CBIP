@@ -8,8 +8,6 @@
 # source function that calculates consumption and emissions
 source("scripts/Consume/con_calc_activity.R")
 
-library(parallel)
-
 burn_residue <- function(dt, burn_type) {
         
         if(burn_type %in% c("None",
