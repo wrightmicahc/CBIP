@@ -10,8 +10,6 @@
 ################################################################################
 
 # load the necessary packages
-library(raster)
-library(rgdal)
 library(data.table)
 
 # define function
@@ -62,11 +60,11 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         # remove any barren areas 
         rdf <- rdf[fuelbed_number < 900]
         
-        # load FCID without residue
+        # load lookup of FCID without residue
         nores <- fread(nores_path, 
                        verbose = FALSE)
         
-        # remove any barren areas 
+        # remove any FCID with no residue
         rdf <- rdf[!(FCID2018 %in% nores$FCID2018)]
         
         # load fuel proportions
