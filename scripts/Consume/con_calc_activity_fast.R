@@ -63,8 +63,8 @@ ef_db <- list("flaming" = c("CH4" =  0.00382000,
                             "VOC" = 0.04902680))
 
 
-ccon_activity_fast <- function(dt, fm_type, days_since_rain){
-
+ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
+        
         # combine all functions together to get consumption in tons/acre for each load
         # catagory
         ###################################################
@@ -111,7 +111,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain){
         dt[diam_reduction_seas < 0.5, diam_reduction_seas := (adjfm_1000hr / cdic$adj[[fm_type]] * (-0.005)) + 0.731]
         # Eq. K: High fuel moisture diameter reduction is not included here
         # because fuel moistures in CBIP are much lower
-        dt[, diam_reduction := diam_reduction_seas * (2/3)]
+        dt[, diam_reduction := diam_reduction_seas * DRR]
         ######
         # We need adjfm_1000hr and diam_reduction; we can probably delete mask_spring, mask_summer, mask_trans, diam_reduction_seas
         ######
