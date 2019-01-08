@@ -34,8 +34,6 @@ residue_scenario <- function(tile_number) {
         
         setkey(scenarios, Silvicultural_Treatment)
         
-        scenarios <- scenarios[!"Standing_Dead"]
-        
         scenarios[, Tile_Number := tile_number]
         
         setkey(scenarios, NULL)
