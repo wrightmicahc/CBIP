@@ -1,0 +1,108 @@
+---
+title: "University of Washington Snag Treatment Data Estimation by Size Class"
+author: "Micah Wright"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "../..")
+```
+
+# Purpose
+
+This document converts the snag treatment to size-class specific loading values based on the clearcut data set and saves a .csv file for later use.
+
+# Setup
+
+Load the necessary packages and functions.
+
+```{r message=FALSE, warning=FALSE}
+library(foreign)
+library(data.table)
+```
+
+# Load Data
+
+```{r}
+snags <- read.dbf("data/UW/batch_out/Treatment_Snags.dbf",
+                  as.is = TRUE)
+
+snags <- as.data.table(snags)
+
+clearcut <- fread("data/UW/residue/Remove100Percent.csv")
+```
+
+Calculate the total load for all fuel size classes in the clearcut data. NOTE: Foliage is excluded.
+
+```{r}
+clearcut[, total_load := Stem_6t9_tonsAcre + Stem_4t6_tonsAcre + Stem_ge9_tonsAcre + Branch_tonsAcre]
+```
+
+Calculate the proportion of total for each fuel size class.
+
+```{r}
+clearcut[, ':=' (Stem_6t9_prop = Stem_6t9_tonsAcre / total_load,
+                 Stem_4t6_prop = Stem_4t6_tonsAcre / total_load,
+                 Stem_ge9_prop = Stem_ge9_tonsAcre / total_load,
+                 Branch_prop = Branch_tonsAcre / total_load)]
+
+props <- clearcut[, .(FCID2018, 
+                            Stem_6t9_prop, 
+                            Stem_4t6_prop,
+                            Stem_ge9_prop,
+                            Branch_prop)]
+```
+
+Merge the data.
+
+```{r}
+snags[, FCID2018 := Value]
+snags <- merge(snags,
+               props,
+               by = "FCID2018")
+```
+
+Partition the snag load using the proportions calculated earlier. Include a foliage column, with 0 for all rows. This assumes foliage is lost.
+
+```{r}
+snags[, ':=' (Stem_6t9_tonsAcre = (Stem_6t9_prop * SnagB) / 2000,
+              Stem_4t6_tonsAcre = (Stem_4t6_prop * SnagB) / 2000,
+              Stem_ge9_tonsAcre = (Stem_ge9_prop * SnagB) / 2000,
+              Branch_tonsAcre = (Branch_prop * SnagB) /2000,
+              Foliage_tonsAcre = 0.0)]
+```
+
+Trim and save the output.
+
+```{r}
+output <- snags[, .(FCID2018 = FCID2018,
+                    TPA = SnagTPA,
+                    Stem_6t9_tonsAcre = Stem_6t9_tonsAcre,
+                    Stem_4t6_tonsAcre = Stem_4t6_tonsAcre,
+                    Stem_ge9_tonsAcre = Stem_ge9_tonsAcre,
+                    Branch_tonsAcre = Branch_tonsAcre,
+                    Foliage_tonsAcre = Foliage_tonsAcre)]
+
+fwrite(output, "data/UW/residue/Snags.csv")
+```
+
+Inspect some plots.
+
+```{r}
+col_list <- c("Stem_6t9_tonsAcre",
+              "Stem_4t6_tonsAcre",
+              "Stem_ge9_tonsAcre",
+              "Branch_tonsAcre",
+              "Foliage_tonsAcre")
+
+lapply(seq(1:length(col_list)), function(x) {
+        plot(clearcut[[col_list[x]]], snags[[col_list[x]]],
+             main = col_list[x])
+        abline(0, 1)
+})
+```
+
