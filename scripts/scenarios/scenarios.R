@@ -21,6 +21,7 @@ source("scripts/Other/add_residue.R")
 
 # source wrapper function for consumption and emissions function
 source("scripts/Other/burn_residue.R")
+# source("scripts/Other/burn_residue-old.R") # for testing
 
 library(parallel)
 
