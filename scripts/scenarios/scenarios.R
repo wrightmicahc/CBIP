@@ -35,8 +35,6 @@ residue_scenario <- function(tile_number) {
         
         setkey(scenarios, Silvicultural_Treatment)
         
-        scenarios <- scenarios[!"Standing_Dead"]
-        
         scenarios[, Tile_Number := tile_number]
         
         setkey(scenarios, NULL)
@@ -86,10 +84,8 @@ residue_scenario <- function(tile_number) {
                                    })
         
         emissions_df <- rbindlist(emissions_list)
-        
-        fwrite(emissions_df, 
-               paste0("data/Tiles/output/", 
-                      tile_number, ".csv"), 
-               verbose = FALSE)
+
+        # save output
+        save(emissions_df,file=paste('~/Desktop/emissions_df_',tile_number,".Rdata",sep=''))
         
 }

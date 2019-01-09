@@ -166,13 +166,13 @@ spring_summer_adjustment <- function(pct_hun_hr, adjfm_1000hr, fm_type) {
 
 # adjust for high intensity. This assumes highest intensity, and avoids needing 
 # to estimate ignition time or fire size
-high_intensity_adjustment <- function(diam_reduction){
-        dr <- diam_reduction * (2/3)
+high_intensity_adjustment <- function(diam_reduction, DRR){
+        dr <- diam_reduction * DRR
         return(dr)
 }
 
 # calculate diameter reduction for woody fuels
-diam_redux_calc <- function(pct_hun_hr, fm_1000hr, fm_type){
+diam_redux_calc <- function(pct_hun_hr, fm_1000hr, fm_type, DRR){
         
         adjfm_1000hr <- final1000hr(fm_1000hr, 
                                     fm_type)
@@ -181,7 +181,8 @@ diam_redux_calc <- function(pct_hun_hr, fm_1000hr, fm_type){
                                                         adjfm_1000hr,
                                                         fm_type)
         
-        diam_reduction_h_adj <- high_intensity_adjustment(diam_reduction_seas)
+        diam_reduction_h_adj <- high_intensity_adjustment(diam_reduction_seas,
+                                                          DRR)
         
         dred <- list("diam_reduction" = diam_reduction_h_adj,
                       "adjfm_1000hr" = adjfm_1000hr)
@@ -465,6 +466,7 @@ ccon_activity <- function(fm1000,
                           slope, 
                           fm10, 
                           days_since_rain,
+                          DRR,
                           LD){
         
         # specify fuel load
@@ -491,7 +493,7 @@ ccon_activity <- function(fm1000,
         pct_hun_hr <- pct_hun_hr_calc(wind, slope, fm10, hun_hr_sound)
         
         # diameter reduction
-        dred <- diam_redux_calc(pct_hun_hr, fm1000, fm_type)
+        dred <- diam_redux_calc(pct_hun_hr, fm1000, fm_type, DRR)
         
         # 100 hr consumption
         hun_hr_fsrt <- ccon_hun_act(pct_hun_hr, dred$diam_reduction, QMDs, hun_hr_sound)

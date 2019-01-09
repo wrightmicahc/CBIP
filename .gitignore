@@ -2,3 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+# ignore data
+data/
+# ignore .csv
+*.csv
