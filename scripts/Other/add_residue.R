@@ -57,6 +57,7 @@ add_residue <- function(dt) {
                                                    1),
                           duff_upper_depth = duff_upper_depth,
                           duff_lower_depth = duff_lower_depth,
+                          duff_upper_loading = duff_upper_loading, 
                           lichen_depth = lichen_depth,
                           moss_depth = moss_depth,
                           one_hr_sound = addfuel(one_hr_sound,
