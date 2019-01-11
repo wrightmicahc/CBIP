@@ -10,7 +10,7 @@ library(rgdal)
 library(parallel)
 
 # load the raster from UW 
-UW_FCID <- raster("data/UW/UW_FCID.tif")
+UW_FCID <- raster("data/UW/UW_FCID_no_wild.tif")
 
 # load the tiles created in make_tiles.R
 tiles <- readOGR("data/Tiles",
@@ -59,7 +59,7 @@ good_tiles <- tiles[tiles$ID %in% good_id, ]
 
 # save to a file
 shapefile(good_tiles, 
-          filename = paste0("data/Tiles/good_tiles.shp"), 
+          filename = "data/Tiles/clipped_tiles/clipped_tiles.shp", 
           overwrite=TRUE)
 
 # Remove the old tiles 
