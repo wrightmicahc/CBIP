@@ -569,47 +569,47 @@ ccon_activity <- function(fm1000,
         pile_landing_fsrt <- ccon_piled(pile_landing)
         
         # create list of consumption values by emissions phase and size class
-        cc_allclass <- data.frame("flaming" = Reduce("+", c(one_fsrt$flaming,
-                                                ten_fsrt$flaming, 
-                                                hun_hr_fsrt$hundredhr$flaming,
-                                                oneK_fsrt_snd$flaming, 
-                                                oneK_fsrt_rot$flaming,
-                                                tenK_fsrt_snd$flaming,
-                                                tenK_fsrt_rot$flaming,
-                                                tnkp_fsrt_snd$flaming,
-                                                tnkp_fsrt_rot$flaming,
-                                                lit_fsrt$flaming,
-                                                duff_fsrt$flaming,
-                                                pile_field_fsrt$flaming,
-                                                pile_landing_fsrt$flaming)),
-                                  "smoldering" = Reduce("+", c(one_fsrt$smoldering,
-                                                ten_fsrt$smoldering, 
-                                                hun_hr_fsrt$hundredhr$smoldering,
-                                                oneK_fsrt_snd$smoldering, 
-                                                oneK_fsrt_rot$smoldering,
-                                                tenK_fsrt_snd$smoldering,
-                                                tenK_fsrt_rot$smoldering,
-                                                tnkp_fsrt_snd$smoldering,
-                                                tnkp_fsrt_rot$smoldering,
-                                                lit_fsrt$smoldering,
-                                                duff_fsrt$smoldering,
-                                                pile_field_fsrt$flaming,
-                                                pile_landing_fsrt$flaming)),
-                                  "residual" = Reduce("+", c(one_fsrt$residual,
-                                                ten_fsrt$residual, 
-                                                hun_hr_fsrt$hundredhr$residual,
-                                                oneK_fsrt_snd$residual, 
-                                                oneK_fsrt_rot$residual,
-                                                tenK_fsrt_snd$residual,
-                                                tenK_fsrt_rot$residual,
-                                                tnkp_fsrt_snd$residual,
-                                                tnkp_fsrt_rot$residual,
-                                                lit_fsrt$residual,
-                                                duff_fsrt$residual,
-                                                pile_field_fsrt$flaming,
-                                                pile_landing_fsrt$flaming)))
-        
-        # create a data frame of emissions including spp and total
+        cc_allclass <- data.frame("flaming" = (one_fsrt$flaming +
+                                                       ten_fsrt$flaming + 
+                                                       hun_hr_fsrt$hundredhr$flaming +
+                                                       oneK_fsrt_snd$flaming + 
+                                                       oneK_fsrt_rot$flaming +
+                                                       tenK_fsrt_snd$flaming +
+                                                       tenK_fsrt_rot$flaming +
+                                                       tnkp_fsrt_snd$flaming +
+                                                       tnkp_fsrt_rot$flaming +
+                                                       lit_fsrt$flaming +
+                                                       duff_fsrt$flaming +
+                                                       pile_field_fsrt$flaming +
+                                                       pile_landing_fsrt$flaming),
+                                  "smoldering" = (one_fsrt$smoldering +
+                                                          ten_fsrt$smoldering + 
+                                                          hun_hr_fsrt$hundredhr$smoldering +
+                                                          oneK_fsrt_snd$smoldering + 
+                                                          oneK_fsrt_rot$smoldering +
+                                                          tenK_fsrt_snd$smoldering +
+                                                          tenK_fsrt_rot$smoldering +
+                                                          tnkp_fsrt_snd$smoldering +
+                                                          tnkp_fsrt_rot$smoldering +
+                                                          lit_fsrt$smoldering +
+                                                          duff_fsrt$smoldering +
+                                                          pile_field_fsrt$smoldering +
+                                                          pile_landing_fsrt$smoldering),
+                                  "residual" = (one_fsrt$residual +
+                                                        ten_fsrt$residual + 
+                                                        hun_hr_fsrt$hundredhr$residual +
+                                                        oneK_fsrt_snd$residual + 
+                                                        oneK_fsrt_rot$residual +
+                                                        tenK_fsrt_snd$residual +
+                                                        tenK_fsrt_rot$residual +
+                                                        tnkp_fsrt_snd$residual +
+                                                        tnkp_fsrt_rot$residual +
+                                                        lit_fsrt$residual +
+                                                        duff_fsrt$residual +
+                                                        pile_field_fsrt$residual +
+                                                        pile_landing_fsrt$residual))
+
+# create a data frame of emissions including spp and total
         em_dat <- emiss_calc(cc_allclass, ef_db)
         
         em_dat$total <- rowSums(em_dat)
@@ -630,12 +630,9 @@ ccon_activity_piled_only <- function(LD){
         pile_landing_fsrt <- ccon_piled(pile_landing)
         
         # create list of consumption values by emissions phase and size class
-        cc_allclass <- data.frame("flaming" = Reduce("+", c(pile_field_fsrt$flaming,
-                                                            pile_landing_fsrt$flaming)),
-                                  "smoldering" = Reduce("+", c(pile_field_fsrt$smoldering,
-                                                               pile_landing_fsrt$smoldering)),
-                                  "residual" = Reduce("+", c(pile_field_fsrt$residual,
-                                                             pile_landing_fsrt$residual)))
+        cc_allclass <- data.frame("flaming" = (pile_field_fsrt$flaming + pile_landing_fsrt$flaming),
+                                  "smoldering" = (pile_field_fsrt$smoldering + pile_landing_fsrt$smoldering),
+                                  "residual" = (pile_field_fsrt$residual + pile_landing_fsrt$residual))
         
         # create a data frame of emissions including spp and total
         em_dat <- emiss_calc(cc_allclass, ef_db)
