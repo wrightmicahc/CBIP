@@ -360,6 +360,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                  flaming_PM2.5 = flaming * ef_db$flaming[['PM2.5']], 
                  flaming_SO2 = flaming * ef_db$flaming[['SO2']], 
                  flaming_VOC = flaming * ef_db$flaming[['VOC']],
+
                  smoldering_CH4 = smoldering * ef_db$smoldering[['CH4']], 
                  smoldering_CO = smoldering * ef_db$smoldering[['CO']], 
                  smoldering_CO2 = smoldering * ef_db$smoldering[['CO2']], 
@@ -369,6 +370,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                  smoldering_PM2.5 = smoldering * ef_db$smoldering[['PM2.5']], 
                  smoldering_SO2 = smoldering * ef_db$smoldering[['SO2']], 
                  smoldering_VOC = smoldering * ef_db$smoldering[['VOC']],
+
                  residual_CH4 = residual * ef_db$residual[['CH4']], 
                  residual_CO = residual * ef_db$residual[['CO']], 
                  residual_CO2 = residual * ef_db$residual[['CO2']], 
