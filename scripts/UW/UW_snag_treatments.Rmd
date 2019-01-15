@@ -23,6 +23,7 @@ Load the necessary packages and functions.
 ```{r message=FALSE, warning=FALSE}
 library(foreign)
 library(data.table)
+library(ggplot2)
 ```
 
 # Load Data
@@ -45,10 +46,14 @@ clearcut[, total_load := Stem_6t9_tonsAcre + Stem_4t6_tonsAcre + Stem_ge9_tonsAc
 Calculate the proportion of total for each fuel size class.
 
 ```{r}
-clearcut[, ':=' (Stem_6t9_prop = Stem_6t9_tonsAcre / total_load,
-                 Stem_4t6_prop = Stem_4t6_tonsAcre / total_load,
-                 Stem_ge9_prop = Stem_ge9_tonsAcre / total_load,
-                 Branch_prop = Branch_tonsAcre / total_load)]
+get_proportion <- function(x, y) {
+        prop <- ifelse(y == 0, 0, x / y)
+}
+
+clearcut[, ':=' (Stem_6t9_prop = get_proportion(Stem_6t9_tonsAcre, total_load),
+                 Stem_4t6_prop = get_proportion(Stem_4t6_tonsAcre, total_load),
+                 Stem_ge9_prop = get_proportion(Stem_ge9_tonsAcre, total_load),
+                 Branch_prop = get_proportion(Branch_tonsAcre, total_load))]
 
 props <- clearcut[, .(FCID2018, 
                             Stem_6t9_prop, 
@@ -72,7 +77,7 @@ Partition the snag load using the proportions calculated earlier. Include a foli
 snags[, ':=' (Stem_6t9_tonsAcre = (Stem_6t9_prop * SnagB) / 2000,
               Stem_4t6_tonsAcre = (Stem_4t6_prop * SnagB) / 2000,
               Stem_ge9_tonsAcre = (Stem_ge9_prop * SnagB) / 2000,
-              Branch_tonsAcre = (Branch_prop * SnagB) /2000,
+              Branch_tonsAcre = (Branch_prop * SnagB) / 2000,
               Foliage_tonsAcre = 0.0)]
 ```
 
@@ -93,16 +98,46 @@ fwrite(output, "data/UW/residue/Snags.csv")
 Inspect some plots.
 
 ```{r}
-col_list <- c("Stem_6t9_tonsAcre",
-              "Stem_4t6_tonsAcre",
-              "Stem_ge9_tonsAcre",
-              "Branch_tonsAcre",
-              "Foliage_tonsAcre")
+output_melted <- melt(output[, .(FCID2018,
+                                 Stem_6t9_tonsAcre,
+                                 Stem_4t6_tonsAcre,
+                                 Stem_ge9_tonsAcre,
+                                 Branch_tonsAcre)], 
+                      id.vars = c("FCID2018"),
+                      measure.vars = c("Stem_6t9_tonsAcre",
+                                       "Stem_4t6_tonsAcre",
+                                       "Stem_ge9_tonsAcre",
+                                       "Branch_tonsAcre"),
+                      variable.name = "size_class", 
+                      value.name = "load",
+                      variable.factor = FALSE)
 
-lapply(seq(1:length(col_list)), function(x) {
-        plot(clearcut[[col_list[x]]], snags[[col_list[x]]],
-             main = col_list[x])
-        abline(0, 1)
-})
+output_melted[, data_set := "Snags"]
+
+clearcut_melted <- melt(clearcut[, .(FCID2018,
+                                 Stem_6t9_tonsAcre,
+                                 Stem_4t6_tonsAcre,
+                                 Stem_ge9_tonsAcre,
+                                 Branch_tonsAcre)], 
+                      id.vars = c("FCID2018"),
+                      measure.vars = c("Stem_6t9_tonsAcre",
+                                       "Stem_4t6_tonsAcre",
+                                       "Stem_ge9_tonsAcre",
+                                       "Branch_tonsAcre"),
+                      variable.name = "size_class", 
+                      value.name = "load",
+                      variable.factor = FALSE)
+
+clearcut_melted[, data_set := "Clearcut"]
+
+all_melted <- merge(clearcut_melted, 
+                    output_melted, 
+                    by = c("FCID2018", "size_class"),
+                    suffix = c("_clearcut", "_snags"))
+
+ggplot(all_melted, aes(load_clearcut, load_snags)) +
+        geom_point(alpha = 0.5) +
+        geom_abline(slope = 1, intercept = 0, color = "red") +
+        facet_wrap(~ size_class, scales = "free")
 ```
 
