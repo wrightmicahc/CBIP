@@ -347,9 +347,45 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         # we need to export a new data table with just the export data
         # TODO: possibly write a function for this?
         ###################################################
-        dt[,':='(flaming = (flamg_1 + flamg_10 + flamg_100 + flamg_OneK_snd + flamg_OneK_rot + flamg_tenK_snd + flamg_tenK_rot + flamg_tnkp_snd + flamg_tnkp_rot + flamg_litter + flamg_duff + flamg_pile_field + flamg_pile_landing),
-                 smoldering = (smoldg_1 + smoldg_10 + smoldg_100 + smoldg_OneK_snd + smoldg_OneK_rot + smoldg_tenK_snd + smoldg_tenK_rot + smoldg_tnkp_snd + smoldg_tnkp_rot + smoldg_litter + smoldg_duff + smoldg_pile_field + smoldg_pile_landing),
-                 residual = (resid_1 + resid_10 + resid_100 + resid_OneK_snd + resid_OneK_rot + resid_tenK_snd + resid_tenK_rot + resid_tnkp_snd + resid_tnkp_rot + resid_litter + resid_duff + resid_pile_field + resid_pile_landing))]
+        dt[,':='(flaming = (flamg_1 + 
+                                    flamg_10 + 
+                                    flamg_100 + 
+                                    flamg_OneK_snd +
+                                    flamg_OneK_rot + 
+                                    flamg_tenK_snd + 
+                                    flamg_tenK_rot + 
+                                    flamg_tnkp_snd + 
+                                    flamg_tnkp_rot + 
+                                    flamg_litter + 
+                                    flamg_duff +
+                                    flamg_pile_field + 
+                                    flamg_pile_landing),
+                 smoldering = (smoldg_1 + 
+                                       smoldg_10 + 
+                                       smoldg_100 + 
+                                       smoldg_OneK_snd +
+                                       smoldg_OneK_rot + 
+                                       smoldg_tenK_snd + 
+                                       smoldg_tenK_rot +
+                                       smoldg_tnkp_snd + 
+                                       smoldg_tnkp_rot + 
+                                       smoldg_litter + 
+                                       smoldg_duff + 
+                                       smoldg_pile_field +
+                                       smoldg_pile_landing),
+                 residual = (resid_1 + 
+                                     resid_10 + 
+                                     resid_100 + 
+                                     resid_OneK_snd +
+                                     resid_OneK_rot + 
+                                     resid_tenK_snd + 
+                                     resid_tenK_rot + 
+                                     resid_tnkp_snd +
+                                     resid_tnkp_rot +
+                                     resid_litter + 
+                                     resid_duff + 
+                                     resid_pile_field + 
+                                     resid_pile_landing))]
         
         dt[,':='(flaming_CH4 = flaming * ef_db$flaming[['CH4']],
                  flaming_CO = flaming * ef_db$flaming[['CO']], 
