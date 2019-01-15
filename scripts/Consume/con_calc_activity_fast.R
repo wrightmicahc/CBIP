@@ -129,7 +129,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         dt[, flam_DRED := flamg_portion * diam_reduction]
         # Flaming consumption 
         dt[, flamg_100 := total_100] 
-        dt[flam_DRED >= QMD_100hr, flamg_100 := hun_hr_sound * (1.0 - (((QMDs[1] - flam_DRED)^2) / (QMDs[1]^2)))] 
+        dt[flam_DRED < QMD_100hr, flamg_100 := hun_hr_sound * (1.0 - (((QMDs[1] - flam_DRED)^2) / (QMDs[1]^2)))] 
         # Flamg cannot exceed the total.
         dt[flamg_100 > total_100, flamg_100 := total_100]
         # Add smoldering and residual values
