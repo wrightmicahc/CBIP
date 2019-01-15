@@ -593,8 +593,8 @@ ccon_activity <- function(fm1000,
                                                           tnkp_fsrt_rot$smoldering +
                                                           lit_fsrt$smoldering +
                                                           duff_fsrt$smoldering +
-                                                          pile_field_fsrt$flaming +
-                                                          pile_landing_fsrt$flaming),
+                                                          pile_field_fsrt$smoldering +
+                                                          pile_landing_fsrt$smoldering),
                                   "residual" = (one_fsrt$residual +
                                                         ten_fsrt$residual + 
                                                         hun_hr_fsrt$hundredhr$residual +
@@ -606,8 +606,8 @@ ccon_activity <- function(fm1000,
                                                         tnkp_fsrt_rot$residual +
                                                         lit_fsrt$residual +
                                                         duff_fsrt$residual +
-                                                        pile_field_fsrt$flaming +
-                                                        pile_landing_fsrt$flaming)))
+                                                        pile_field_fsrt$residual +
+                                                        pile_landing_fsrt$residual)))
 
 # create a data frame of emissions including spp and total
         em_dat <- emiss_calc(cc_allclass, ef_db)
