@@ -607,7 +607,7 @@ ccon_activity <- function(fm1000,
                                                         lit_fsrt$residual +
                                                         duff_fsrt$residual +
                                                         pile_field_fsrt$residual +
-                                                        pile_landing_fsrt$residual)))
+                                                        pile_landing_fsrt$residual))
 
 # create a data frame of emissions including spp and total
         em_dat <- emiss_calc(cc_allclass, ef_db)
