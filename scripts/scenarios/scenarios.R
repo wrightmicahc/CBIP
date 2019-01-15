@@ -20,8 +20,8 @@ source("scripts/Other/pile_residue.R")
 source("scripts/Other/add_residue.R")
 
 # source wrapper function for consumption and emissions function
-source("scripts/Other/burn_residue.R")
-# source("scripts/Other/burn_residue-old.R") # for testing
+#source("scripts/Other/burn_residue.R")
+source("scripts/Other/burn_residue-old.R") # for testing
 
 library(parallel)
 
@@ -34,6 +34,8 @@ residue_scenario <- function(tile_number) {
                            verbose = FALSE)
         
         setkey(scenarios, Silvicultural_Treatment)
+        
+        scenarios <- scenarios[!"Standing_Dead"]
         
         scenarios[, Tile_Number := tile_number]
         
@@ -84,8 +86,10 @@ residue_scenario <- function(tile_number) {
                                    })
         
         emissions_df <- rbindlist(emissions_list)
-
-        # save output
-        save(emissions_df,file=paste('~/Desktop/emissions_df_',tile_number,".Rdata",sep=''))
+        
+        fwrite(emissions_df, 
+               paste0("data/Tiles/output/", 
+                      tile_number, ".csv"), 
+               verbose = TRUE)
         
 }

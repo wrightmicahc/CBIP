@@ -16,7 +16,17 @@ burn_residue <- function(dt, burn_type) {
                 
 #                consumption_df <- ccon_activity_fast(dt, fm_type = "NFDRS_Th", days_since_rain = 50)
 
-                # The old way
+                # The old way, with adjustments for DRR
+                if(burn_type  == "None") {
+                        # specify diameter reduction factor
+                        DRR  <- 2.0 / 3.0
+                }
+                
+                if(burn_type  == "Broadcast") {
+                        # specify diameter reduction factor
+                        DRR  <- 1 
+                }
+                
                 consumption_list <- lapply(seq(1:nrow(dt)),
                                            function(i){
                                                    z <- ccon_activity(fm1000 = dt[i, Fm1000],
@@ -25,6 +35,7 @@ burn_residue <- function(dt, burn_type) {
                                                                       slope = dt[i, Slope],
                                                                       fm10 = dt[i, Fm10],
                                                                       days_since_rain = 50,
+                                                                      DRR = DRR,
                                                                       LD = dt[i,])
                                                    z$x <- dt[i, x]
                                                    z$y <- dt[i, y]
