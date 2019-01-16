@@ -512,7 +512,7 @@ ccon_activity_piled_only_fast <- function(dt){
                                                  smoldering +
                                                  residual)]
         
-        dt[, piled_char := total_piled_consumption * 0.01]
+        dt[, total_char := total_piled_consumption * 0.01]
         
         dt[, ':=' (flaming_CH4 = flaming * ef_db$flaming[['CH4']], 
                    flaming_CO = flaming * ef_db$flaming[['CO']], 
@@ -552,7 +552,7 @@ ccon_activity_piled_only_fast <- function(dt){
                    total_SO2 = (flaming_SO2 + smoldering_SO2 + residual_SO2),
                    total_VOC = (flaming_VOC + smoldering_VOC + residual_VOC))]
         
-        out_dt <- dt[,list(x, y, fuelbed_number, FCID2018, ID, Silvicultural_Treatment, Harvest_Type, Harvest_System, Burn_Type, Biomass_Collection, flaming_CH4, flaming_CO, flaming_CO2, flaming_NH3, flaming_NOx, 
+        out_dt <- dt[,list(x, y, fuelbed_number, FCID2018, ID, Silvicultural_Treatment, Harvest_Type, Harvest_System, Burn_Type, Biomass_Collection, total_piled_consumption, total_char, flaming_CH4, flaming_CO, flaming_CO2, flaming_NH3, flaming_NOx, 
                            flaming_PM10, flaming_PM2.5, flaming_SO2, flaming_VOC, smoldering_CH4, smoldering_CO, smoldering_CO2, smoldering_NH3, smoldering_NOx, smoldering_PM10, smoldering_PM2.5, smoldering_SO2, 
                            smoldering_VOC, residual_CH4, residual_CO, residual_CO2, residual_NH3, residual_NOx, residual_PM10, residual_PM2.5, residual_SO2, residual_VOC, total_CH4, total_CO, total_CO2, total_NH3,
                            total_NOx, total_PM10, total_PM2.5, total_SO2, total_VOC)]
