@@ -386,6 +386,8 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                                      resid_duff + 
                                      resid_pile_field + 
                                      resid_pile_landing))]
+        # Calculate total consumption
+        dt[, total_consumption := flaming + smoldering + residual]
         
         dt[,':='(flaming_CH4 = flaming * ef_db$flaming[['CH4']],
                  flaming_CO = flaming * ef_db$flaming[['CO']], 
