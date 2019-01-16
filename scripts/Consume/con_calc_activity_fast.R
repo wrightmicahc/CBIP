@@ -429,7 +429,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         # calculate char
         dt[, ':='(unpiled_char =  total_unpiled_consumption * (11.30534 + -0.63064 * total_unpiled_consumption),
-                  piled_char = total_unpiled_consumption * 0.01)]
+                  piled_char = total_piled_consumption * 0.01)]
         
         # trim to positive
         dt[unpiled_char < 0, unpiled_char := 0]
@@ -507,6 +507,12 @@ ccon_activity_piled_only_fast <- function(dt){
         dt[, ':=' (flaming = (flamg_pile_field + flamg_pile_landing),
                    smoldering = (smoldg_pile_field + smoldg_pile_landing),
                    residual = (resid_pile_field + resid_pile_landing))]
+        
+        dt[, total_piled_consumption := (flaming +
+                                                 smoldering +
+                                                 residual)]
+        
+        dt[, piled_char := total_piled_consumption * 0.01]
         
         dt[, ':=' (flaming_CH4 = flaming * ef_db$flaming[['CH4']], 
                    flaming_CO = flaming * ef_db$flaming[['CO']], 
