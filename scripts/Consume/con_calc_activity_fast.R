@@ -396,8 +396,6 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                                                    flamg_tenK_rot + 
                                                    flamg_tnkp_snd + 
                                                    flamg_tnkp_rot + 
-                                                   flamg_litter + 
-                                                   flamg_duff +
                                                    smoldg_1 + 
                                                    smoldg_10 + 
                                                    smoldg_100 + 
@@ -407,8 +405,6 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                                                    smoldg_tenK_rot +
                                                    smoldg_tnkp_snd + 
                                                    smoldg_tnkp_rot + 
-                                                   smoldg_litter + 
-                                                   smoldg_duff +
                                                    resid_1 + 
                                                    resid_10 + 
                                                    resid_100 + 
@@ -417,9 +413,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                                                    resid_tenK_snd + 
                                                    resid_tenK_rot + 
                                                    resid_tnkp_snd +
-                                                   resid_tnkp_rot +
-                                                   resid_litter + 
-                                                   resid_duff),
+                                                   resid_tnkp_rot),
                   total_piled_consumption = (flamg_pile_field + 
                                                      flamg_pile_landing +
                                                      smoldg_pile_field +
