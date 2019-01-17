@@ -18,6 +18,9 @@ theme_set(theme_classic() +
 # load the test data set
 dt_test <- fread("data/Other/unit_test/test_fuel.csv")
 
+# remove any fuelbeds with 0
+dt_test <- dt_test[fuelbed_number != 0]
+
 # get the first row
 dt_trim <- dt_test[1, ]
 
@@ -151,9 +154,9 @@ out <- lapply(dt_list, function(x) burn_residue(x, x$Burn_Type))
 dt_out <- rbindlist(out)
 
 # melt out to match legacy
-# first get id variables
+# first get id variables, including char columns
 clmn_names <- names(dt_out)
-id_names <- clmn_names[1:10]
+id_names <- clmn_names[1:11]
 
 out_melt <- melt(dt_out, 
                  id.vars = id_names,
@@ -167,13 +170,15 @@ dt_comp <- merge(legacy_melt[, .(Burn_Type, variable, value)],
                  suffixes = c("_legacy", "_current"))
 
 # get the difference (absolute and proportional) in output
-dt_comp[, ':=' (v_diff = abs(value_legacy - value_current),
-                v_prop = v_diff/value_legacy)]
+dt_comp[,  v_diff := abs(value_legacy - value_current)]
+dt_comp[,  v_prop := v_diff/value_legacy]
 
 # plot
 ggplot(dt_comp, aes(variable, v_prop)) +
         geom_point() +
         geom_abline(slope = 0, intercept = 0) +
+        scale_y_continuous(limits = c(0, 0.01)) +
+        coord_flip() +
         facet_wrap(~ Burn_Type)
 
 # any diff that are more than a gram?  

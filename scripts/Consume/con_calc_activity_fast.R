@@ -129,7 +129,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         dt[, flam_DRED := flamg_portion * diam_reduction]
         # Flaming consumption 
         dt[, flamg_100 := total_100] 
-        dt[flam_DRED >= QMD_100hr, flamg_100 := hun_hr_sound * (1.0 - (((QMDs[1] - flam_DRED)^2) / (QMDs[1]^2)))] 
+        dt[flam_DRED < QMD_100hr, flamg_100 := hun_hr_sound * (1.0 - (((QMDs[1] - flam_DRED)^2) / (QMDs[1]^2)))] 
         # Flamg cannot exceed the total.
         dt[flamg_100 > total_100, flamg_100 := total_100]
         # Add smoldering and residual values
@@ -386,6 +386,50 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                                      resid_duff + 
                                      resid_pile_field + 
                                      resid_pile_landing))]
+        # Calculate total consumption
+        dt[, ':='(total_unpiled_consumption = (flamg_1 + 
+                                                   flamg_10 + 
+                                                   flamg_100 + 
+                                                   flamg_OneK_snd +
+                                                   flamg_OneK_rot + 
+                                                   flamg_tenK_snd + 
+                                                   flamg_tenK_rot + 
+                                                   flamg_tnkp_snd + 
+                                                   flamg_tnkp_rot + 
+                                                   smoldg_1 + 
+                                                   smoldg_10 + 
+                                                   smoldg_100 + 
+                                                   smoldg_OneK_snd +
+                                                   smoldg_OneK_rot + 
+                                                   smoldg_tenK_snd + 
+                                                   smoldg_tenK_rot +
+                                                   smoldg_tnkp_snd + 
+                                                   smoldg_tnkp_rot + 
+                                                   resid_1 + 
+                                                   resid_10 + 
+                                                   resid_100 + 
+                                                   resid_OneK_snd +
+                                                   resid_OneK_rot + 
+                                                   resid_tenK_snd + 
+                                                   resid_tenK_rot + 
+                                                   resid_tnkp_snd +
+                                                   resid_tnkp_rot),
+                  total_piled_consumption = (flamg_pile_field + 
+                                                     flamg_pile_landing +
+                                                     smoldg_pile_field +
+                                                     smoldg_pile_landing +
+                                                     resid_pile_field + 
+                                                     resid_pile_landing))]
+        
+        # calculate char
+        dt[, ':='(unpiled_char =  total_unpiled_consumption * ((11.30534 + -0.63064 * total_unpiled_consumption) / 100),
+                  piled_char = total_piled_consumption * 0.01)]
+        
+        # trim to positive
+        dt[unpiled_char < 0, unpiled_char := 0]
+        
+        # calculate total char
+        dt[, total_char := unpiled_char + piled_char]
         
         dt[,':='(flaming_CH4 = flaming * ef_db$flaming[['CH4']],
                  flaming_CO = flaming * ef_db$flaming[['CO']], 
@@ -425,7 +469,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                    total_SO2 = (flaming_SO2 + smoldering_SO2 + residual_SO2),
                    total_VOC = (flaming_VOC + smoldering_VOC + residual_VOC))]
         
-        out_dt <- dt[,list(x, y, fuelbed_number, FCID2018, ID, Silvicultural_Treatment, Harvest_Type, Harvest_System, Burn_Type, Biomass_Collection, flaming_CH4, flaming_CO, flaming_CO2, flaming_NH3, flaming_NOx, 
+        out_dt <- dt[,list(x, y, fuelbed_number, FCID2018, ID, Silvicultural_Treatment, Harvest_Type, Harvest_System, Burn_Type, Biomass_Collection, total_char, flaming_CH4, flaming_CO, flaming_CO2, flaming_NH3, flaming_NOx, 
                            flaming_PM10, flaming_PM2.5, flaming_SO2, flaming_VOC, smoldering_CH4, smoldering_CO, smoldering_CO2, smoldering_NH3, smoldering_NOx, smoldering_PM10, smoldering_PM2.5, smoldering_SO2, 
                            smoldering_VOC, residual_CH4, residual_CO, residual_CO2, residual_NH3, residual_NOx, residual_PM10, residual_PM2.5, residual_SO2, residual_VOC, total_CH4, total_CO, total_CO2, total_NH3,
                            total_NOx, total_PM10, total_PM2.5, total_SO2, total_VOC)]
@@ -457,6 +501,12 @@ ccon_activity_piled_only_fast <- function(dt){
         dt[, ':=' (flaming = (flamg_pile_field + flamg_pile_landing),
                    smoldering = (smoldg_pile_field + smoldg_pile_landing),
                    residual = (resid_pile_field + resid_pile_landing))]
+        
+        dt[, ':='(total_piled_consumption = (flaming +
+                                                 smoldering +
+                                                 residual))]
+        
+        dt[, total_char := total_piled_consumption * 0.01]
         
         dt[, ':=' (flaming_CH4 = flaming * ef_db$flaming[['CH4']], 
                    flaming_CO = flaming * ef_db$flaming[['CO']], 
@@ -496,7 +546,7 @@ ccon_activity_piled_only_fast <- function(dt){
                    total_SO2 = (flaming_SO2 + smoldering_SO2 + residual_SO2),
                    total_VOC = (flaming_VOC + smoldering_VOC + residual_VOC))]
         
-        out_dt <- dt[,list(x, y, fuelbed_number, FCID2018, ID, Silvicultural_Treatment, Harvest_Type, Harvest_System, Burn_Type, Biomass_Collection, flaming_CH4, flaming_CO, flaming_CO2, flaming_NH3, flaming_NOx, 
+        out_dt <- dt[,list(x, y, fuelbed_number, FCID2018, ID, Silvicultural_Treatment, Harvest_Type, Harvest_System, Burn_Type, Biomass_Collection, total_char, flaming_CH4, flaming_CO, flaming_CO2, flaming_NH3, flaming_NOx, 
                            flaming_PM10, flaming_PM2.5, flaming_SO2, flaming_VOC, smoldering_CH4, smoldering_CO, smoldering_CO2, smoldering_NH3, smoldering_NOx, smoldering_PM10, smoldering_PM2.5, smoldering_SO2, 
                            smoldering_VOC, residual_CH4, residual_CO, residual_CO2, residual_NH3, residual_NOx, residual_PM10, residual_PM2.5, residual_SO2, residual_VOC, total_CH4, total_CO, total_CO2, total_NH3,
                            total_NOx, total_PM10, total_PM2.5, total_SO2, total_VOC)]
