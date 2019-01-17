@@ -156,7 +156,7 @@ dt_out <- rbindlist(out)
 # melt out to match legacy
 # first get id variables, including char columns
 clmn_names <- names(dt_out)
-id_names <- clmn_names[1:13]
+id_names <- clmn_names[1:11]
 
 out_melt <- melt(dt_out, 
                  id.vars = id_names,
