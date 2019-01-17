@@ -422,7 +422,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                                                      resid_pile_landing))]
         
         # calculate char
-        dt[, ':='(unpiled_char =  total_unpiled_consumption * (11.30534 + -0.63064 * total_unpiled_consumption),
+        dt[, ':='(unpiled_char =  total_unpiled_consumption * ((11.30534 + -0.63064 * total_unpiled_consumption) / 100),
                   piled_char = total_piled_consumption * 0.01)]
         
         # trim to positive
