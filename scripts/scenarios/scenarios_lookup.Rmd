@@ -30,7 +30,7 @@ library(tidyverse)
 Load the scenario matrix, and extract the different scenarios. Note that this excludes pulp market scenarios.
 
 ```{r}
-scenarios <- read_xlsx("data/SERC/Scenario_Matrix_v5.xlsx",
+scenarios <- read_xlsx("data/SERC/Scenario_Matrix_v6.xlsx",
                        col_names = FALSE, 
                        range = "A1:F250")
 
@@ -70,7 +70,7 @@ Creat a helper function that saves the scenario-specific biomass fate lookup tab
 ```{r}
 get_sections <- function(fraction_type, range) {
         
-        section <- read_xlsx("data/SERC/Scenario_Matrix_v5.xlsx",
+        section <- read_xlsx("data/SERC/Scenario_Matrix_v6.xlsx",
                              col_names = FALSE, 
                              range = range)
         
