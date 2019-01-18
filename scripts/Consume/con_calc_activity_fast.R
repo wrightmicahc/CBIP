@@ -506,7 +506,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                            smoldering_VOC, residual_CH4, residual_CO, residual_CO2, residual_NH3, residual_NOx, residual_PM10, residual_PM2.5, residual_SO2, residual_VOC, total_CH4, total_CO, total_CO2, total_NH3,
                            total_NOx, total_PM10, total_PM2.5, total_SO2, total_VOC)]
         
-        return(out_dt)
+        return(list("out_dt" = out_dt, "dt_resid" = dt_resid))
 
 }
 
@@ -583,6 +583,6 @@ ccon_activity_piled_only_fast <- function(dt){
                            smoldering_VOC, residual_CH4, residual_CO, residual_CO2, residual_NH3, residual_NOx, residual_PM10, residual_PM2.5, residual_SO2, residual_VOC, total_CH4, total_CO, total_CO2, total_NH3,
                            total_NOx, total_PM10, total_PM2.5, total_SO2, total_VOC)]
         
-        return(list("out_dt" = out_dt, "dt_resid" = dt_resid))
+        return(out_dt)
 }
         
