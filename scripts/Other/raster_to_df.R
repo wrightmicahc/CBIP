@@ -33,7 +33,7 @@ tile_list <- split(tiles, tiles$ID)
 # remove full tile polygon
 rm(tiles)
 
-# make a .csv and save it for each tile
+# make a dt and save it for each tile
 mclapply(tile_list,
          mc.cores = detectCores() - 1,
          function(x) { 
@@ -51,9 +51,12 @@ mclapply(tile_list,
                                       xy = TRUE,
                                       na.rm = TRUE) 
                  
-                 fwrite(rdf, paste0("data/Tiles/wildfire/",
+                 rdf <- as.data.table(rdf)
+                 
+                 save(rdf,
+                      file = paste0("data/Tiles/wildfire/",
                                     x$ID, 
-                                    ".csv"))
+                                    ".Rdata"))
                  
          })
 
@@ -74,8 +77,11 @@ mclapply(tile_list,
                                       xy = TRUE,
                                       na.rm = TRUE) 
                  
-                 fwrite(rdf, paste0("data/Tiles/rx/",
+                 rdf <- as.data.table(rdf)
+                 
+                 save(rdf, 
+                      fiel = paste0("data/Tiles/rx/",
                                     x$ID, 
-                                    ".csv"))
+                                    ".Rdata"))
                  
          })
