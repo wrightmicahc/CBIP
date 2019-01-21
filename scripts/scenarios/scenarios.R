@@ -162,13 +162,13 @@ residue_scenario <- function(tile_number) {
 
         # save output
         save(emissions_df,
-             file = paste("data/Tiles/output/emissions",
+             file = paste("data/Tiles/output/emissions/",
                         tile_number,
                         ".Rdata", 
                         sep = ""))
         
         save(residual_df,
-             file = paste("data/Tiles/output/residual_fuels",
+             file = paste("data/Tiles/output/residual_fuels/",
                           tile_number,
                           ".Rdata",
                           sep = ""))
