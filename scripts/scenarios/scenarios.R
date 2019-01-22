@@ -161,16 +161,14 @@ residue_scenario <- function(tile_number) {
                                         pile_landing)]
 
         # save output
-        save(emissions_df,
-             file = paste("data/Tiles/output/emissions/",
-                        tile_number,
-                        ".Rdata", 
-                        sep = ""))
+        saveRDS(emissions_df,
+                file = paste0("data/Tiles/output/emissions/",
+                             tile_number,
+                             ".rds"))
         
-        save(residual_df,
-             file = paste("data/Tiles/output/residual_fuels/",
-                          tile_number,
-                          ".Rdata",
-                          sep = ""))
+        saveRDS(residual_df,
+                file = paste0("data/Tiles/output/residual_fuels/",
+                             tile_number,
+                             ".rds"))
         
 }
