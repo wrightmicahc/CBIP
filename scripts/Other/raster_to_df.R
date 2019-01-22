@@ -53,10 +53,10 @@ mclapply(tile_list,
                  
                  rdf <- as.data.table(rdf)
                  
-                 save(rdf,
-                      file = paste0("data/Tiles/wildfire/",
-                                    x$ID, 
-                                    ".Rdata"))
+                 saveRDS(rdf,
+                         file = paste0("data/Tiles/wildfire/",
+                                       x$ID, 
+                                       ".rds"))
                  
          })
 
@@ -79,9 +79,9 @@ mclapply(tile_list,
                  
                  rdf <- as.data.table(rdf)
                  
-                 save(rdf, 
-                      fiel = paste0("data/Tiles/rx/",
-                                    x$ID, 
-                                    ".Rdata"))
+                 saveRDS(rdf, 
+                         file = paste0("data/Tiles/rx/",
+                                       x$ID, 
+                                       ".rds"))
                  
          })
