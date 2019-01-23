@@ -524,15 +524,15 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                  residual_VOC = residual * ef_db$residual[['VOC']],
                  residual_VOC_piled = residual_piled * ef_db_pile$residual[['VOC']])]
         
-        dt[, ':=' (total_CH4 = (flaming_CH4 + smoldering_CH4 + residual_CH4), 
-                   total_CO = (flaming_CO + smoldering_CO + residual_CO), 
-                   total_CO2 = (flaming_CO2 + smoldering_CO2 + residual_CO2), 
-                   total_NH3 = (flaming_NH3 + smoldering_NH3 + residual_NH3),
-                   total_NOx = (flaming_NOx + smoldering_NOx + residual_NOx),
-                   total_PM10 = (flaming_PM10 + smoldering_PM10 + residual_PM10),
-                   total_PM2.5 = (flaming_PM2.5 + smoldering_PM2.5 + residual_PM2.5),
-                   total_SO2 = (flaming_SO2 + smoldering_SO2 + residual_SO2),
-                   total_VOC = (flaming_VOC + smoldering_VOC + residual_VOC))]
+        dt[, ':=' (total_CH4 = (flaming_CH4 + flaming_CH4_piled + smoldering_CH4 + smoldering_CH4_piled + residual_CH4 + residual_CH4_piled), 
+                   total_CO = (flaming_CO + flaming_CO_piled + smoldering_CO + smoldering_CO_piled + residual_CO + residual_CO_piled),
+                   total_CO2 = (flaming_CO2 + flaming_CO2_piled + smoldering_CO2 + smoldering_CO2_piled + residual_CO2 + residual_CO2_piled),
+                   total_NH3 = (flaming_NH3 + flaming_NH3_piled + smoldering_NH3 + smoldering_NH3_piled + residual_NH3 + residual_NH3_piled),
+                   total_NOx = (flaming_NOx + flaming_NOx_piled + smoldering_NOx + smoldering_NOx_piled + residual_NOx + residual_NOx_piled),
+                   total_PM10 = (flaming_PM10 + flaming_PM10_piled_clean + smoldering_PM10 + smoldering_PM10_piled_clean + residual_PM10 + residual_PM10_piled_clean),
+                   total_PM2.5 = (flaming_PM2.5 + flaming_PM2.5_piled_clean + smoldering_PM2.5 + smoldering_PM2.5_piled_clean + residual_PM2.5 + residual_PM2.5_piled_clean),
+                   total_SO2 = (flaming_SO2 + flaming_SO2_piled + smoldering_SO2 + smoldering_SO2_piled + residual_SO2 + residual_SO2_piled),
+                   total_VOC = (flaming_VOC + flaming_VOC_piled + smoldering_VOC + smoldering_VOC_piled + residual_VOC + residual_VOC_piled))]
         
         out_dt <- dt[,list(x, 
                            y,
