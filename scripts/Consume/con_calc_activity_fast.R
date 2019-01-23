@@ -389,9 +389,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                                     flamg_tnkp_snd + 
                                     flamg_tnkp_rot + 
                                     flamg_litter + 
-                                    flamg_duff +
-                                    flamg_pile_field + 
-                                    flamg_pile_landing),
+                                    flamg_duff),
+                 flaming_piled = (flamg_pile_field + 
+                                          flamg_pile_landing),
                  smoldering = (smoldg_1 + 
                                        smoldg_10 + 
                                        smoldg_100 + 
@@ -402,9 +402,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                                        smoldg_tnkp_snd + 
                                        smoldg_tnkp_rot + 
                                        smoldg_litter + 
-                                       smoldg_duff + 
-                                       smoldg_pile_field +
-                                       smoldg_pile_landing),
+                                       smoldg_duff),
+                 smoldering_piled = (smoldg_pile_field +
+                                             smoldg_pile_landing),
                  residual = (resid_1 + 
                                      resid_10 + 
                                      resid_100 + 
@@ -415,9 +415,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                                      resid_tnkp_snd +
                                      resid_tnkp_rot +
                                      resid_litter + 
-                                     resid_duff + 
-                                     resid_pile_field + 
-                                     resid_pile_landing))]
+                                     resid_duff),
+                 residual_piled = (resid_pile_field + 
+                                          resid_pile_landing))]
         # Calculate total consumption
         dt[, ':='(total_unpiled_consumption = (flamg_1 + 
                                                    flamg_10 + 
