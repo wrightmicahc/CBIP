@@ -705,9 +705,9 @@ ccon_activity_piled_only_fast <- function(dt){
                    smoldering_PM2.5_piled_clean = smoldering * ef_db_pile$pm$clean[['PM2.5']], 
                    smoldering_PM2.5_piled_vdirty = smoldering * ef_db_pile$pm$vdirty[['PM2.5']], 
                    smoldering_SO2 = 0,
-                   smoldering_SO2 = smoldering * ef_db_pile$smoldering[['SO2']], 
+                   smoldering_SO2_piled = smoldering * ef_db_pile$smoldering[['SO2']], 
                    smoldering_VOC = 0,
-                   smoldering_VOC = smoldering * ef_db_pile$smoldering[['VOC']],
+                   smoldering_VOC_piled = smoldering * ef_db_pile$smoldering[['VOC']],
                    residual_CH4 = 0,
                    residual_CH4_piled = residual * ef_db_pile$residual[['CH4']], 
                    residual_CO = 0,
@@ -725,9 +725,9 @@ ccon_activity_piled_only_fast <- function(dt){
                    residual_PM2.5_piled_clean = residual * ef_db_pile$pm$clean[['PM2.5']], 
                    residual_PM2.5_piled_vdirty = residual * ef_db_pile$pm$vdirty[['PM2.5']], 
                    residual_SO2 = 0,
-                   residual_SO2 = residual * ef_db_pile$residual[['SO2']], 
+                   residual_SO2_piled = residual * ef_db_pile$residual[['SO2']], 
                    residual_VOC = 0,
-                   residual_VOC = residual * ef_db_pile$residual[['VOC']])]
+                   residual_VOC_piled = residual * ef_db_pile$residual[['VOC']])]
         
         dt[, ':=' (total_CH4 = (flaming_CH4_piled + smoldering_CH4_piled + residual_CH4_piled), 
                    total_CO = (flaming_CO_piled + smoldering_CO_piled + residual_CO_piled),
