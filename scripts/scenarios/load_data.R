@@ -43,17 +43,15 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         
         if(burn_type == "None") {
                 
-                rdf <- fread(paste0("data/Tiles/wildfire/", 
-                                    tile_number, ".csv"), 
-                             verbose = FALSE)
+                rdf <- readRDS(paste0("data/Tiles/wildfire/", 
+                                    tile_number, ".rds"))
                 
         }
         
         if(burn_type %in% c("Pile", "Broadcast", "Jackpot")) {
                 
-                rdf <- fread(paste0("data/Tiles/rx/", 
-                                    tile_number, ".csv"), 
-                             verbose = FALSE)
+                rdf <- readRDS(paste0("data/Tiles/rx/", 
+                                    tile_number, ".rds"))
                 
         }
         
