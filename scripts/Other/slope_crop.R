@@ -14,7 +14,8 @@ gdaldem(mode = "slope",
         input_dem = "data/Other/DEM/DEM_Mosaic.tif", 
         output = "data/Other/DEM/Slope.tif", 
         of = "GTiff", 
-        p = TRUE)
+        p = TRUE,
+        output_Raster=TRUE)
 
 # load the raster from UW to use as a template
 UW_FCID <- raster("data/UW/UW_FCID.tif")
