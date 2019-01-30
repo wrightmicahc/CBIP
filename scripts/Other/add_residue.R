@@ -18,7 +18,7 @@ zero_div <- function(x, y) {
 
 add_residue <- function(dt) {
         
-        # load the lookup table for landing piles
+        # load the lookup table for scattered fuels
         lookup_scattered <- fread("data/SERC/lookup_tables/scattered_in_field.csv", 
                                   verbose = FALSE)
         
