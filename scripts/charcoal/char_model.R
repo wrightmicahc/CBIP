@@ -4,6 +4,15 @@
 #
 # Author: Micah Wright, Humboldt State University
 ################################################################################
+
+# load ggplot and define theme
+library(ggplot2)
+
+theme_set(theme_classic() + 
+                  theme(panel.grid.major = element_line(color = "grey90",
+                                                        size = 0.2),
+                        strip.background = element_blank()))
+
 # define data
 # values taken from figure 3 in Pingree et al. 2012 "Long and Short-Term Effects
 # of Fire on Soil Charcoal of a Conifer Forest in Southwest Oregon"
@@ -23,12 +32,6 @@ chrcl <- data.frame(fuel_consumed_tonsAcre = c(15.5,
 # model
 chrcl_mod <- lm(char_produced_percent ~ fuel_consumed_tonsAcre, data = chrcl)
 
-# plot results
-plot(chrcl$fuel_consumed_tonsAcre, chrcl$char_produced_percent,
-     xlab = "Fuel Consumed (Tons/Acre)",
-     ylab = "Char Produced (%)")
-abline(chrcl_mod)
-
 # look at the summary
 summary(chrcl_mod)
 
@@ -36,6 +39,17 @@ summary(chrcl_mod)
 chrcl_coef <- coef(chrcl_mod)
 
 chrcl_coef
+
+# plot results
+ggplot(chrcl, aes(fuel_consumed_tonsAcre, char_produced_percent)) +
+        geom_point() +
+        labs(x = "Fuel Consumed (Tons/Acre)",
+             y = "Char Produced (%)") +
+        geom_abline(intercept = chrcl_coef["(Intercept)"],
+                    slope = chrcl_coef["fuel_consumed_tonsAcre"],
+                    lty = 2) + 
+        ggsave("figures/char_mod.png",
+               width = 6, height = 4)
 
 # save
 saveRDS(chrcl_coef, "data/Other/charcoal/chrcl_coef.rds")
