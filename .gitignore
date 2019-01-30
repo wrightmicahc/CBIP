@@ -6,3 +6,5 @@
 data/
 # ignore .csv
 *.csv
+# ignore consume original
+Consume4_2/
