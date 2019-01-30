@@ -88,7 +88,13 @@ add_residue <- function(dt) {
                           tenK_hr_rotten = tenK_hr_rotten,
                           tnkp_hr_rotten = tnkp_hr_rotten,
                           pile_landing = pile_landing,
-                          pile_field = pile_field)]
+                          pile_field = pile_field,
+                          one_hr_sound_prop = one_hr_sound_prop,
+                          ten_hr_sound_prop = ten_hr_sound_prop,
+                          hun_hr_sound_prop = hun_hr_sound_prop,
+                          oneK_hr_sound_prop = oneK_hr_sound_prop,
+                          tenK_hr_sound_prop = tenK_hr_sound_prop,
+                          tnkp_hr_sound_prop = tnkp_hr_sound_prop)]
         
         dt_plus$litter_depth <- zero_div(dt_plus$litter_loading,
                                          dt$litter_ratio)
