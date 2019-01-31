@@ -64,7 +64,7 @@ add_residue <- function(dt, timestep) {
                           duff_upper_depth = duff_upper_depth,
                           duff_lower_depth = duff_lower_depth,
                           duff_upper_loading = duff_upper_loading + decay_foliage(Foliage_tonsAcre, 
-                                                                                  foliage_K, 
+                                                                                  Foliage_K, 
                                                                                   timestep,
                                                                                   "duff"), 
                           duff_lower_loading = duff_lower_loading,
@@ -126,7 +126,6 @@ add_residue <- function(dt, timestep) {
                                                     duff_upper_ratio),
                         litter_depth = zero_div(litter_loading,
                                                 litter_ratio))]
-        
        
         return(dt_plus)
 }
