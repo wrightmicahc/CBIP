@@ -59,12 +59,10 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         rdf <- rdf[fuelbed_number < 900]
         
         # simulate K values
+        # TODO: Remove these once real K values are available
         rdf[, ':=' (CWD_K = runif(.N, 0.001, 0.19),
                     FWD_K = runif(.N, 0.001, 0.19),
-                    Foliage_K = runif(.N, 0.01, 0.19),
-                    CWD_K_piled = runif(.N, 0.001, 0.19),
-                    FWD_K_piled = runif(.N, 0.001, 0.19),
-                    Foliage_K_piled = runif(.N, 0.01, 0.19))]
+                    Foliage_K = runif(.N, 0.01, 0.19))]
         
         # load lookup of FCID without residue
         nores <- fread(nores_path, 
