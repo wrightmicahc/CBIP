@@ -19,6 +19,9 @@ source("scripts/Other/pile_residue.R")
 # source function that adds residue to FCCS fuelbeds
 source("scripts/Other/add_residue.R")
 
+# source decay function
+source("scripts/Other/decay_residue.R")
+
 # source wrapper function for consumption and emissions function
 source("scripts/Other/burn_residue.R")
 
@@ -69,16 +72,39 @@ residue_scenario <- function(tile_number) {
                                                            TPA,
                                                            TPI)
                                            
-                                           # calculate piled load
-                                           fuel_df <- pile_residue(fuel_df)
+                                           # create a vector from 0-100 years
+                                           timestep <- seq(0, 100, 1)
+                                           names(timestep) <- as.character(timestep)
                                            
-                                           # add the remaining residue to the fuelbed
-                                           fuel_df <-  add_residue(fuel_df)
+                                           fuel_list <- lapply(timestep, function(i) {
+                                                   
+                                                   # calculate piled load
+                                                   fuel_df <- pile_residue(fuel_df, i)
+                                                   
+                                                   # add the remaining residue to the fuelbed
+                                                   fuel_df <-  add_residue(fuel_df, i)
+                                                   
+                                                   return(fuel_df)
+                                           })
+                                           
+                                           # save fuel
+                                           saveRDS(fuel_list,
+                                                   file = paste0("data/Tiles/decayed/",
+                                                                 paste(tile_number, 
+                                                                       Silvicultural_Treatment,
+                                                                       Harvest_System,
+                                                                       Harvest_Type,
+                                                                       Burn_Type,
+                                                                       sep = "-"),
+                                                                 ".rds"))
                                            
                                            # calculate emissions
-                                           output <- try(burn_residue(fuel_df, Burn_Type))
+                                           output_list <- lapply(c("0", "25", "50", "75", "100"), function(i) {
+                                                   try(burn_residue(fuel_list[[i]], Burn_Type))
+                                                   })
                                            
-                                           return(output)
+                                           
+                                           return(rbindlist(output_list))
                                            
                                    })
         
