@@ -7,7 +7,7 @@
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
-pile_residue <- function(dt) {
+pile_residue <- function(dt, timestep) {
         # load the lookup table for landing piles
         lookup_landing <- fread("data/SERC/lookup_tables/piled_at_landing.csv", 
                                 verbose = FALSE)
@@ -27,11 +27,21 @@ pile_residue <- function(dt) {
                      allow.cartesian = TRUE)
         
         # calculate landing pile load
-        dt[, pile_landing := ((Stem_ge9 * Stem_ge9_tonsAcre) + 
-                                      (Stem_6t9 * Stem_6t9_tonsAcre) +
-                                      (Stem_4t6 * Stem_4t6_tonsAcre) +
-                                      (Branch_tonsAcre * Branch) +
-                                      (Foliage_tonsAcre * Foliage))]
+        dt[, pile_landing := ((Stem_ge9 * decay_fun(Stem_ge9_tonsAcre,
+                                                    CWD_K_piled,
+                                                    timestep)) + 
+                                      (Stem_6t9 * decay_fun(Stem_6t9_tonsAcre,
+                                                            CWD_K_piled,
+                                                            timestep)) +
+                                      (Stem_4t6 * decay_fun(Stem_4t6_tonsAcre,
+                                                            CWD_K_piled,
+                                                            timestep)) +
+                                      (Branch_tonsAcre * decay_fun(Branch, 
+                                                                   FWD_K_piled,
+                                                                   timestep)) +
+                                      (Foliage_tonsAcre * decay_fun(Foliage,
+                                                                    Foliage_K_piled,
+                                                                    timestep)))]
         
         # remove excess columns
         dt[, c("Type",
@@ -60,11 +70,21 @@ pile_residue <- function(dt) {
                      allow.cartesian = TRUE)
         
         # calculate field pile load
-        dt[, pile_field := ((Stem_ge9 * Stem_ge9_tonsAcre) + 
-                                    (Stem_6t9 * Stem_6t9_tonsAcre) +
-                                    (Stem_4t6 * Stem_4t6_tonsAcre) +
-                                    (Branch_tonsAcre * Branch) +
-                                    (Foliage_tonsAcre * Foliage))]
+        dt[, pile_field := ((Stem_ge9 * decay_fun(Stem_ge9_tonsAcre,
+                                                  CWD_K_piled,
+                                                  timestep)) + 
+                                    (Stem_6t9 * decay_fun(Stem_6t9_tonsAcre,
+                                                          CWD_K_piled,
+                                                          timestep)) +
+                                    (Stem_4t6 * decay_fun(Stem_4t6_tonsAcre,
+                                                          CWD_K_piled,
+                                                          timestep)) +
+                                    (Branch_tonsAcre * decay_fun(Branch, 
+                                                                 FWD_K_piled,
+                                                                 timestep)) +
+                                    (Foliage_tonsAcre * decay_fun(Foliage,
+                                                                  Foliage_K_piled,
+                                                                  timestep)))]
         
         # remove excess columns
         dt[, c("Type",
