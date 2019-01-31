@@ -51,13 +51,22 @@ add_residue <- function(dt, timestep) {
                           Fm10 = Fm10,
                           Fm1000 = Fm1000,
                           Wind_corrected = Wind_corrected,
+                          litter_ratio = litter_ratio,
                           litter_loading = addfuel(litter_loading,
-                                                   Foliage_tonsAcre, 
+                                                   decay_foliage(Foliage_tonsAcre, 
+                                                                 Foliage_K,
+                                                                 timestep,
+                                                                 "foliage"),
                                                    Foliage,
                                                    1),
+                          duff_upper_ratio = duff_upper_ratio,
                           duff_upper_depth = duff_upper_depth,
                           duff_lower_depth = duff_lower_depth,
-                          duff_upper_loading = duff_upper_loading, 
+                          duff_upper_loading = duff_upper_loading + decay_foliage(Foliage_tonsAcre, 
+                                                                                  foliage_K, 
+                                                                                  timestep,
+                                                                                  "duff"), 
+                          duff_lower_loading = duff_lower_loading,
                           lichen_depth = lichen_depth,
                           moss_depth = moss_depth,
                           one_hr_sound = addfuel(one_hr_sound,
@@ -111,7 +120,12 @@ add_residue <- function(dt, timestep) {
                           tenK_hr_sound_prop = tenK_hr_sound_prop,
                           tnkp_hr_sound_prop = tnkp_hr_sound_prop)]
         
-        dt_plus$litter_depth <- zero_div(dt_plus$litter_loading,
-                                         dt$litter_ratio)
+        # update upper duff depth with additional loading from foliage, if any
+        dt_plus[, ':=' (duff_upper_depth = zero_div(duff_upper_loading,
+                                                    duff_upper_ratio),
+                        litter_depth = zero_div(litter_loading,
+                                                litter_ratio))]
+        
+       
         return(dt_plus)
 }
