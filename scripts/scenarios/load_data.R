@@ -58,6 +58,14 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         # remove any barren areas 
         rdf <- rdf[fuelbed_number < 900]
         
+        # simulate K values
+        rdf[, ':=' (CWD_K = runif(.N, 0.001, 0.19),
+                    FWD_K = runif(.N, 0.001, 0.19),
+                    Foliage_K = runif(.N, 0.01, 0.19),
+                    CWD_K_piled = runif(.N, 0.001, 0.19),
+                    FWD_K_piled = runif(.N, 0.001, 0.19),
+                    Foliage_K_piled = runif(.N, 0.01, 0.19))]
+        
         # load lookup of FCID without residue
         nores <- fread(nores_path, 
                        verbose = FALSE)
@@ -79,7 +87,7 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         residue <- residue[FCID2018 %in% rdf$FCID2018]
         
         # specify treatment etc.
-        residue[, `:=`(ID = id,
+        residue[, ':=' (ID = id,
                        Silvicultural_Treatment = treatment, 
                        Harvest_System = harvest_system,
                        Harvest_Type = harvest_type, 
