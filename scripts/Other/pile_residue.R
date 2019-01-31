@@ -28,20 +28,21 @@ pile_residue <- function(dt, timestep) {
         
         # calculate landing pile load
         dt[, pile_landing := ((Stem_ge9 * decay_fun(Stem_ge9_tonsAcre,
-                                                    CWD_K_piled,
+                                                    CWD_K * 0.7,
                                                     timestep)) + 
                                       (Stem_6t9 * decay_fun(Stem_6t9_tonsAcre,
-                                                            CWD_K_piled,
+                                                            CWD_K * 0.7,
                                                             timestep)) +
                                       (Stem_4t6 * decay_fun(Stem_4t6_tonsAcre,
-                                                            CWD_K_piled,
+                                                            CWD_K  * 0.7,
                                                             timestep)) +
                                       (Branch_tonsAcre * decay_fun(Branch, 
-                                                                   FWD_K_piled,
+                                                                   FWD_K * 0.7,
                                                                    timestep)) +
-                                      (Foliage_tonsAcre * decay_fun(Foliage,
-                                                                    Foliage_K_piled,
-                                                                    timestep)))]
+                                      (Foliage_tonsAcre * decay_foliage(Foliage,
+                                                                        Foliage_K * 0.7,
+                                                                        timestep,
+                                                                        "foliage")))]
         
         # remove excess columns
         dt[, c("Type",
@@ -71,20 +72,21 @@ pile_residue <- function(dt, timestep) {
         
         # calculate field pile load
         dt[, pile_field := ((Stem_ge9 * decay_fun(Stem_ge9_tonsAcre,
-                                                  CWD_K_piled,
+                                                  CWD_K * 0.7,
                                                   timestep)) + 
                                     (Stem_6t9 * decay_fun(Stem_6t9_tonsAcre,
-                                                          CWD_K_piled,
+                                                          CWD_K * 0.7,
                                                           timestep)) +
                                     (Stem_4t6 * decay_fun(Stem_4t6_tonsAcre,
-                                                          CWD_K_piled,
+                                                          CWD_K  * 0.7,
                                                           timestep)) +
                                     (Branch_tonsAcre * decay_fun(Branch, 
-                                                                 FWD_K_piled,
+                                                                 FWD_K * 0.7,
                                                                  timestep)) +
-                                    (Foliage_tonsAcre * decay_fun(Foliage,
-                                                                  Foliage_K_piled,
-                                                                  timestep)))]
+                                    (Foliage_tonsAcre * decay_foliage(Foliage,
+                                                                      Foliage_K * 0.7,
+                                                                      timestep,
+                                                                      "foliage")))]
         
         # remove excess columns
         dt[, c("Type",
