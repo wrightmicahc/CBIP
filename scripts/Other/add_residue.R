@@ -47,6 +47,7 @@ add_residue <- function(dt, timestep) {
                           Harvest_System = Harvest_System,
                           Burn_Type = Burn_Type,
                           Biomass_Collection = Biomass_Collection,
+                          Year = timestep,
                           Slope = Slope,
                           Fm10 = Fm10,
                           Fm1000 = Fm1000,
