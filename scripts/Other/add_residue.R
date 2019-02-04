@@ -63,10 +63,23 @@ add_residue <- function(dt, timestep) {
                           duff_upper_ratio = duff_upper_ratio,
                           duff_upper_depth = duff_upper_depth,
                           duff_lower_depth = duff_lower_depth,
-                          duff_upper_loading = duff_upper_loading + decay_foliage(Foliage_tonsAcre, 
-                                                                                  Foliage_K, 
-                                                                                  timestep,
-                                                                                  "duff"), 
+                          duff_upper_loading = duff_upper_loading + 
+                                  decay_foliage(Foliage_tonsAcre, 
+                                                Foliage_K, 
+                                                timestep,
+                                                "duff") + 
+                                  to_duff((Branch_tonsAcre * Branch),
+                                          FWD_K,
+                                          timestep) +
+                                  to_duff((Stem_4t6_tonsAcre * Stem_4t6),
+                                          CWD_K,
+                                          timestep) +
+                                  to_duff((Stem_6t9_tonsAcre * Stem_6t9),
+                                          CWD_K,
+                                          timestep) +
+                                  to_duff((Stem_ge9_tonsAcre * Stem_ge9),
+                                          CWD_K,
+                                          timestep),
                           duff_lower_loading = duff_lower_loading,
                           lichen_depth = lichen_depth,
                           moss_depth = moss_depth,
