@@ -190,6 +190,8 @@ scenario_emissions <- function(tile_number) {
                                  # save output
                                  saveRDS(emissions_df,
                                          file = paste0("data/Tiles/output/emissions/",
+                                                       tile_number,
+                                                       "/",
                                                        paste(Silvicultural_Treatment,
                                                              Harvest_System,
                                                              Harvest_Type,
@@ -201,6 +203,8 @@ scenario_emissions <- function(tile_number) {
                                  
                                  saveRDS(residual_df,
                                          file = paste0("data/Tiles/output/residual_fuels/",
+                                                       tile_number,
+                                                       "/",
                                                        paste(Silvicultural_Treatment,
                                                              Harvest_System,
                                                              Harvest_Type,
