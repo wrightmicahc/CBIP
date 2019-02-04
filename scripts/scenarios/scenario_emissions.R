@@ -30,6 +30,17 @@ library(parallel)
 
 scenario_emissions <- function(tile_number) {
         
+        # create output tile folders if missiong
+        em_path <- "data/Tiles/output/emissions/"
+        res_path <- "data/Tiles/output/residual_fuels/"
+        
+        lapply(c(em_path, res_path), function(x) {
+                
+                if(!dir.exists(paste0(x, tile_number))) {
+                        dir.create(paste0(x, tile_number))
+                }
+        })
+        
         # load scenarios
         scenarios <- fread("data/SERC/scenarios.csv", 
                            verbose = FALSE)
