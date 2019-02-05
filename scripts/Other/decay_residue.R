@@ -18,16 +18,21 @@ decay_foliage <- function(residue, k_val, t, toggle) {
         
         decayed <- decay_fun(residue, k_val, t)
         
+        still_litter <- decayed >= residue * 0.5
+        
         if(toggle == "foliage") {
                 
-                decayed_adj <- ifelse(decayed >= residue * 0.5, decayed, 0)
+                decayed_adj <- ifelse(still_litter, decayed, 0)
                 
-                return(decayed_adj)
+                dfa <- ifelse(still_litter, to_duff(residue, k_val, t), 0)
+                
+                return(list("decay" = decayed_adj, "duff" = dfa))
         }
         
         if(toggle == "duff") {
                 
                 decayed_adj <- ifelse(decayed < residue * 0.5, decayed, 0)
+                
                 
                 return(decayed_adj)
         }
