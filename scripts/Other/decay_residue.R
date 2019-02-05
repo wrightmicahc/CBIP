@@ -36,6 +36,20 @@ decay_foliage <- function(residue, k_val, t, toggle) {
 # add woody fuels to duff at 2% of decayed mass per year
 to_duff <- function(residue, k_val, t) {
         
-        ifelse(t == 0, 0, (decay_fun(residue, k_val, t - 1) - decay_fun(residue, k_val, t)) * 0.02)
+        # make a sequence of numbers from 0-t
+        tn <- seq(0, t, 1)
+        
+        # create a list of residue to be added to duff for every year in the sequence
+        dfa_list <- lapply(tn, function(i) {
+                
+                added <- ifelse(i == 0, 0, (decay_fun(residue, k_val, i - 1) - decay_fun(residue, k_val, i)) * 0.02)
+                
+        })
+        
+        duff_added <- sum(unlist(dfa_list))
+        
+        net <- decay_fun(duff_added, 0.002, t)
+        
+        return(net)
         
 }
