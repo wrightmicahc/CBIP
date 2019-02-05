@@ -12,30 +12,19 @@ decay_fun <- function(residue, k_val, t) {
         
 }
 
-# decay function that either calculates decayed foliage or additions to duff
-# depending on a toggle
-decay_foliage <- function(residue, k_val, t, toggle) {
+# decay function that calculates decayed foliage and additions to duff
+decay_foliage <- function(residue, k_val, t) {
         
         decayed <- decay_fun(residue, k_val, t)
         
         still_litter <- decayed >= residue * 0.5
         
-        if(toggle == "foliage") {
-                
-                decayed_adj <- ifelse(still_litter, decayed, 0)
-                
-                dfa <- ifelse(still_litter, to_duff(residue, k_val, t), 0)
-                
-                return(list("decay" = decayed_adj, "duff" = dfa))
-        }
+        decayed_adj <- ifelse(still_litter, decayed, 0)
         
-        if(toggle == "duff") {
-                
-                decayed_adj <- ifelse(decayed < residue * 0.5, decayed, 0)
-                
-                
-                return(decayed_adj)
-        }
+        dfa <- ifelse(still_litter, to_duff(residue, k_val, t), 
+                      decay_fun(residue, 0.002, t))
+        
+        return(list("decay" = decayed_adj, "duff" = dfa))
 }
 
 # add woody fuels to duff at 2% of decayed mass per year
