@@ -8,6 +8,10 @@
 ################################################################################
 
 pile_residue <- function(dt, timestep) {
+        
+        # specify the coefficient for pile K
+        pK_coeff <- 0.721265744184168
+
         # load the lookup table for landing piles
         lookup_landing <- fread("data/SERC/lookup_tables/piled_at_landing.csv", 
                                 verbose = FALSE)
@@ -28,19 +32,19 @@ pile_residue <- function(dt, timestep) {
         
         # calculate landing pile load
         dt[, pile_landing := ((Stem_ge9 * decay_fun(Stem_ge9_tonsAcre,
-                                                    CWD_K * 0.7,
+                                                    CWD_K * pK_coeff,
                                                     timestep)) + 
                                       (Stem_6t9 * decay_fun(Stem_6t9_tonsAcre,
-                                                            CWD_K * 0.7,
+                                                            CWD_K * pK_coeff,
                                                             timestep)) +
                                       (Stem_4t6 * decay_fun(Stem_4t6_tonsAcre,
-                                                            CWD_K  * 0.7,
+                                                            CWD_K  * pK_coeff,
                                                             timestep)) +
                                       (Branch_tonsAcre * decay_fun(Branch, 
-                                                                   FWD_K * 0.7,
+                                                                   FWD_K * pK_coeff,
                                                                    timestep)) +
                                       (Foliage_tonsAcre * decay_foliage(Foliage,
-                                                                        Foliage_K * 0.7,
+                                                                        Foliage_K * pK_coeff,
                                                                         timestep,
                                                                         "foliage")))]
         
@@ -72,19 +76,19 @@ pile_residue <- function(dt, timestep) {
         
         # calculate field pile load
         dt[, pile_field := ((Stem_ge9 * decay_fun(Stem_ge9_tonsAcre,
-                                                  CWD_K * 0.721265744184168,
+                                                  CWD_K * pK_coeff,
                                                   timestep)) + 
                                     (Stem_6t9 * decay_fun(Stem_6t9_tonsAcre,
-                                                          CWD_K * 0.721265744184168,
+                                                          CWD_K * pK_coeff,
                                                           timestep)) +
                                     (Stem_4t6 * decay_fun(Stem_4t6_tonsAcre,
-                                                          CWD_K  * 0.721265744184168,
+                                                          CWD_K  * pK_coeff,
                                                           timestep)) +
                                     (Branch_tonsAcre * decay_fun(Branch, 
-                                                                 FWD_K * 0.721265744184168,
+                                                                 FWD_K * pK_coeff,
                                                                  timestep)) +
                                     (Foliage_tonsAcre * decay_foliage(Foliage,
-                                                                      Foliage_K * 0.721265744184168,
+                                                                      Foliage_K * pK_coeff,
                                                                       timestep,
                                                                       "foliage")))]
         
