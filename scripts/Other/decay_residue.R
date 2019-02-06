@@ -12,22 +12,28 @@ decay_fun <- function(residue, k_val, t) {
         
 }
 
-# decay function that calculates decayed foliage and additions to duff
-decay_foliage <- function(residue, k_val, t) {
+# function to determine the last year that the foliage was above the 50%
+# threshold
+fifty_fun <- function(residue, k_val) {
         
-        decayed <- decay_fun(residue, k_val, t)
+        y <- seq(0, 100, 1)
+                          
+        yd <- unlist(lapply(y, function(x) {
+                if(decay_fun(residue, k_val, x)/residue >= 0.5) {
+                        return(x)
+                }
+                        }))
         
-        still_litter <- decayed >= residue * 0.5
+        my <- max(yd)
         
-        decayed_adj <- ifelse(still_litter, decayed, 0)
+        return(my)
         
-        dfa <- ifelse(still_litter, to_duff(residue, k_val, t), 
-                      decay_fun(residue, 0.002, t))
-        
-        return(list("decay" = decayed_adj, "duff" = dfa))
 }
 
-# add woody fuels to duff at 2% of decayed mass per year
+fifty_fun_vect <- Vectorize(fifty_fun)
+
+# add woody fuels to duff at 2% of decayed mass per year and decay previously 
+# added mass
 to_duff <- function(residue, k_val, t) {
         
         # make a sequence of numbers from 0-t
@@ -46,4 +52,32 @@ to_duff <- function(residue, k_val, t) {
         
         return(net)
         
+}
+
+# vectorize to_duff
+to_duff_vect <- Vectorize(to_duff)
+
+# decay function that calculates decayed foliage and additions to duff
+decay_foliage <- function(residue, k_val, t, toggle) {
+        
+        decayed <- decay_fun(residue, k_val, t)
+        
+        still_litter <- decayed >= residue * 0.5
+        
+        decayed_adj <- ifelse(still_litter, decayed, 0)
+        
+        last_year <- fifty_fun_vect(residue, k_val)
+        
+        dfa <- ifelse(still_litter, to_duff_vect(residue, k_val, t), 
+                      decay_fun(decay_fun(residue, k_val, last_year), 0.002, t - last_year))
+        
+        if(toggle == "foliage") {
+                
+                return(decayed_adj)
+        }
+        
+        if(toggle == "duff") {
+                
+                return(dfa)
+        }
 }
