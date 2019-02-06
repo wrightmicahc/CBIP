@@ -43,10 +43,9 @@ pile_residue <- function(dt, timestep) {
                                       (Branch_tonsAcre * decay_fun(Branch, 
                                                                    FWD_K * pK_coeff,
                                                                    timestep)) +
-                                      (Foliage_tonsAcre * decay_foliage(Foliage,
+                                      (Foliage_tonsAcre * decay_fun(Foliage,
                                                                         Foliage_K * pK_coeff,
-                                                                        timestep,
-                                                                        "foliage")))]
+                                                                        timestep)))]
         
         # remove excess columns
         dt[, c("Type",
@@ -87,10 +86,9 @@ pile_residue <- function(dt, timestep) {
                                     (Branch_tonsAcre * decay_fun(Branch, 
                                                                  FWD_K * pK_coeff,
                                                                  timestep)) +
-                                    (Foliage_tonsAcre * decay_foliage(Foliage,
+                                    (Foliage_tonsAcre * decay_fun(Foliage,
                                                                       Foliage_K * pK_coeff,
-                                                                      timestep,
-                                                                      "foliage")))]
+                                                                      timestep)))]
         
         # remove excess columns
         dt[, c("Type",
