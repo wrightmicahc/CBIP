@@ -66,7 +66,7 @@ decay_foliage <- function(residue, k_val, t, toggle) {
         
         decayed_adj <- ifelse(still_litter, decayed, 0)
         
-        last_year <- fifty_fun_vect(residue, k_val)
+        last_year <- ifelse(residue == 0, 0, fifty_fun_vect(residue, k_val))
         
         dfa <- ifelse(still_litter, to_duff_vect(residue, k_val, t), 
                       decay_fun(decay_fun(residue, k_val, last_year), 0.002, t - last_year))
