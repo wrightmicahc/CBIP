@@ -12,30 +12,72 @@ decay_fun <- function(residue, k_val, t) {
         
 }
 
-# decay function that either calculates decayed foliage or additions to duff
-# depending on a toggle
+# function to determine the last year that the foliage was above the 50%
+# threshold
+fifty_fun <- function(residue, k_val) {
+        
+        y <- seq(0, 100, 1)
+                          
+        yd <- unlist(lapply(y, function(x) {
+                if(decay_fun(residue, k_val, x)/residue >= 0.5) {
+                        return(x)
+                }
+                        }))
+        
+        my <- max(yd)
+        
+        return(my)
+        
+}
+
+fifty_fun_vect <- Vectorize(fifty_fun)
+
+# add woody fuels to duff at 2% of decayed mass per year and decay previously 
+# added mass
+to_duff <- function(residue, k_val, t) {
+        
+        # make a sequence of numbers from 0-t
+        tn <- seq(0, t, 1)
+        
+        # create a list of residue to be added to duff for every year in the sequence
+        dfa_list <- lapply(tn, function(i) {
+                
+                added <- ifelse(i == 0, 0, (decay_fun(residue, k_val, i - 1) - decay_fun(residue, k_val, i)) * 0.02)
+                
+        })
+        
+        duff_added <- sum(unlist(dfa_list))
+        
+        net <- decay_fun(duff_added, 0.002, t)
+        
+        return(net)
+        
+}
+
+# vectorize to_duff
+to_duff_vect <- Vectorize(to_duff)
+
+# decay function that calculates decayed foliage and additions to duff
 decay_foliage <- function(residue, k_val, t, toggle) {
         
         decayed <- decay_fun(residue, k_val, t)
         
+        still_litter <- decayed >= residue * 0.5
+        
+        decayed_adj <- ifelse(still_litter, decayed, 0)
+        
+        last_year <- fifty_fun_vect(residue, k_val)
+        
+        dfa <- ifelse(still_litter, to_duff_vect(residue, k_val, t), 
+                      decay_fun(decay_fun(residue, k_val, last_year), 0.002, t - last_year))
+        
         if(toggle == "foliage") {
-                
-                decayed_adj <- ifelse(decayed >= residue * 0.5, decayed, 0)
                 
                 return(decayed_adj)
         }
         
         if(toggle == "duff") {
                 
-                decayed_adj <- ifelse(decayed < residue * 0.5, decayed, 0)
-                
-                return(decayed_adj)
+                return(dfa)
         }
-}
-
-# add woody fuels to duff at 2% of decayed mass per year
-to_duff <- function(residue, k_val, t) {
-        
-        ifelse(t == 0, 0, (decay_fun(residue, k_val, t - 1) - decay_fun(residue, k_val, t)) * 0.02)
-        
 }
