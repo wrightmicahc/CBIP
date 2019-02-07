@@ -1,6 +1,6 @@
 ################################################################################
-# This script masks the FCID raster to exclude wilderness areas as part of the
-# California Biopower Impact Project. 
+# This script masks the FCID raster to exclude wilderness areas and barren FCCS
+# as part of the California Biopower Impact Project. 
 #
 # Author: Micah Wright, Humboldt State University
 ################################################################################
@@ -10,8 +10,11 @@ library(sf)
 library(raster)
 library(fasterize)
 
-# load tiles
+# load UW FCID raster
 FCID2018 <- raster("data/UW/UW_FCID.tif")
+
+# load FCCS mask
+FCCS_mask <- raster("data/FCCS/spatial/FCCS_unforested.tif")
 
 # load CA shapefile
 CA <- st_read("data/Other/srtm_1_deg/srtm_1_deg_dissolve.shp",
@@ -51,13 +54,19 @@ FCID2018_no_wild <- mask(FCID2018_no_OR,
                          maskvalue = 1, 
                          datatype = dataType(FCID2018))
 
+# mask out FCCS barren areas
+FCID2018_masked <- mask(FCID2018_no_wild,
+                        FCCS_mask,
+                        maskvalue = 1, 
+                        datatype = dataType(FCID2018))
+
 # compare output to original
-stk <- stack(FCID2018, FCID2018_no_wild)
+stk <- stack(FCID2018, FCID2018_masked)
 
 samp <- sampleRandom(stk, 200, na.rm = FALSE, cells = TRUE)
 
 # save the output
-writeRaster(FCID2018_no_wild,
-            "data/UW/UW_FCID_no_wild.tif",
+writeRaster(FCID2018_masked,
+            "data/UW/FCID2018_masked.tif",
             format = "GTiff",
             datatype = dataType(FCID2018))
