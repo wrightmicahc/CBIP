@@ -9,6 +9,7 @@
 library(sf)
 library(raster)
 library(fasterize)
+library(data.table)
 
 # load UW FCID raster
 FCID2018 <- raster("data/UW/UW_FCID.tif")
@@ -60,13 +61,31 @@ FCID2018_masked <- mask(FCID2018_no_wild,
                         maskvalue = 1, 
                         datatype = dataType(FCID2018))
 
+# reclassify the FCID without biomass to NA
+# first load the clearcut data
+clearcut <- fread("data/UW/residue/Remove100Percent.csv")
+
+clearcut[, total_load := Stem_ge9_tonsAcre +
+                 Stem_6t9_tonsAcre + 
+                 Stem_4t6_tonsAcre +
+                 Branch_tonsAcre +
+                 Foliage_tonsAcre]
+
+clearcut[, becomes := ifelse(total_load == 0, NA, FCID2018)]
+
+recl <- as.matrix(clearcut[, .(FCID2018, becomes)])
+
+FCID2018_masked_no_load <- reclassify(FCID2018_masked, recl)
+
 # compare output to original
-stk <- stack(FCID2018, FCID2018_masked)
+stk <- stack(FCID2018, FCID2018_masked, FCID2018_masked_no_load)
 
 samp <- sampleRandom(stk, 200, na.rm = FALSE, cells = TRUE)
 
+samp
+
 # save the output
-writeRaster(FCID2018_masked,
+writeRaster(FCID2018_masked_no_load,
             "data/UW/FCID2018_masked.tif",
             format = "GTiff",
             datatype = dataType(FCID2018))
