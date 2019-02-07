@@ -13,7 +13,7 @@ get_raster_list <- function(scenario) {
         
         if(scenario == "None") 
         {
-                files <- list("FCID2018" = "data/UW/UW_FCID_no_wild.tif",
+                files <- list("FCID2018" = "data/UW/FCID2018_masked.tif",
                               "Slope" = "data/Other/DEM/Slope_NAD83.tif",
                               "fuelbed_number" = "data/FCCS/spatial/FCCS_NAD83.tif", 
                               "Fm10" = "data/GEE/resampled/fm10.tif",
@@ -24,7 +24,7 @@ get_raster_list <- function(scenario) {
         
         if(scenario %in% c("Pile", "Broadcast", "Jackpot")) 
         {
-                files <- list("FCID2018" = "data/UW/UW_FCID_no_wild.tif",
+                files <- list("FCID2018" = "data/UW/FCID2018_masked.tif",
                               "Slope" = "data/Other/DEM/Slope_NAD83.tif",
                               "fuelbed_number" = "data/FCCS/spatial/FCCS_NAD83.tif", 
                               "Fm10" = "data/GEE/resampled/fm10_rx.tif",
