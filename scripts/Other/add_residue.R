@@ -68,16 +68,16 @@ add_residue <- function(dt, timestep) {
                                                 Foliage_K, 
                                                 timestep,
                                                 "duff") + 
-                                  to_duff((Branch_tonsAcre * Branch),
+                                  to_duff_vect((Branch_tonsAcre * Branch),
                                           FWD_K,
                                           timestep) +
-                                  to_duff((Stem_4t6_tonsAcre * Stem_4t6),
+                                  to_duff_vect((Stem_4t6_tonsAcre * Stem_4t6),
                                           CWD_K,
                                           timestep) +
-                                  to_duff((Stem_6t9_tonsAcre * Stem_6t9),
+                                  to_duff_vect((Stem_6t9_tonsAcre * Stem_6t9),
                                           CWD_K,
                                           timestep) +
-                                  to_duff((Stem_ge9_tonsAcre * Stem_ge9),
+                                  to_duff_vect((Stem_ge9_tonsAcre * Stem_ge9),
                                           CWD_K,
                                           timestep),
                           duff_lower_loading = duff_lower_loading,
