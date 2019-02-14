@@ -11,6 +11,12 @@ addfuel <- function(load, add, scattered, prop) {
         return(fuel)
 }
 
+# function for determining proportion of original that was added
+propfuel <- function(load, add, scattered, prop) {
+        pr <- (((add * scattered) * prop) + load) / ((add * scattered) * prop)
+        return(pr)
+}
+
 # function to allow dividing by 0
 zero_div <- function(x, y) {
         return(ifelse(y == 0, 0, x / y))
@@ -127,18 +133,51 @@ add_residue <- function(dt, timestep) {
                           tnkp_hr_rotten = tnkp_hr_rotten,
                           pile_landing = pile_landing,
                           pile_field = pile_field,
-                          one_hr_sound_prop = one_hr_sound_prop,
-                          ten_hr_sound_prop = ten_hr_sound_prop,
-                          hun_hr_sound_prop = hun_hr_sound_prop,
-                          oneK_hr_sound_prop = oneK_hr_sound_prop,
-                          tenK_hr_sound_prop = tenK_hr_sound_prop,
-                          tnkp_hr_sound_prop = tnkp_hr_sound_prop)]
+                          one_hr_sound_pr = propfuel(one_hr_sound,
+                                                     decay_fun(Branch_tonsAcre,
+                                                               FWD_K,
+                                                               timestep),
+                                                     Branch,
+                                                     one_hr_sound_prop),
+                          ten_hr_sound_pr = propfuel(ten_hr_sound,
+                                                     decay_fun(Branch_tonsAcre,
+                                                               FWD_K,
+                                                               timestep), 
+                                                     Branch,
+                                                     ten_hr_sound_prop),
+                          hun_hr_sound_pr = propfuel(hun_hr_sound,
+                                                     decay_fun(Branch_tonsAcre,
+                                                               FWD_K,
+                                                               timestep),
+                                                     Branch, 
+                                                     hun_hr_sound_prop),
+                          oneK_hr_sound_pr = propfuel(oneK_hr_sound,
+                                                      ((decay_fun(Stem_4t6_tonsAcre,
+                                                                  CWD_K,
+                                                                  timestep) * Stem_4t6) + 
+                                                               (decay_fun(Stem_6t9_tonsAcre,
+                                                                          CWD_K,
+                                                                          timestep) * Stem_6t9)),
+                                                      1,
+                                                      oneK_hr_sound_prop),
+                          tenK_hr_sound_pr = propfuel(tenK_hr_sound,
+                                                      decay_fun(Stem_ge9_tonsAcre, 
+                                                                CWD_K,
+                                                                timestep),
+                                                      Stem_ge9, 
+                                                      tenK_hr_sound_prop),
+                          tnkp_hr_sound_pr = propfuel(tnkp_hr_sound,
+                                                      decay_fun(Stem_ge9_tonsAcre, 
+                                                                CWD_K,
+                                                                timestep),
+                                                      Stem_ge9, 
+                                                      tnkp_hr_sound_prop))]
         
         # update upper duff depth with additional loading from foliage, if any
         dt_plus[, ':=' (duff_upper_depth = zero_div(duff_upper_loading,
                                                     duff_upper_ratio),
                         litter_depth = zero_div(litter_loading,
                                                 litter_ratio))]
-       
+        
         return(dt_plus)
 }
