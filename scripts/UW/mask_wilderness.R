@@ -7,9 +7,9 @@
 
 # load the necessary packages
 library(sf)
+library(data.table)
 library(raster)
 library(fasterize)
-library(data.table)
 
 # load UW FCID raster
 FCID2018 <- raster("data/UW/UW_FCID.tif")
@@ -55,6 +55,10 @@ FCID2018_no_wild <- mask(FCID2018_no_OR,
                          maskvalue = 1, 
                          datatype = dataType(FCID2018))
 
+# remove wilderness
+rm(wilderness)
+rm(wild_raster)
+
 # mask out FCCS barren areas
 FCID2018_masked <- mask(FCID2018_no_wild,
                         FCCS_mask,
@@ -71,11 +75,22 @@ clearcut[, total_load := Stem_ge9_tonsAcre +
                  Branch_tonsAcre +
                  Foliage_tonsAcre]
 
-clearcut[, becomes := ifelse(total_load == 0, NA, FCID2018)]
+clearcut[, becomes := ifelse(total_load == 0, 1, NA)]
 
 recl <- as.matrix(clearcut[, .(FCID2018, becomes)])
 
-FCID2018_masked_no_load <- reclassify(FCID2018_masked, recl)
+beginCluster()
+
+Mask_no_load <- clusterR(FCID2018_masked, 
+                         reclassify,
+                         args = list(rcl = recl))
+
+endCluster()
+
+FCID2018_masked_no_load <- mask(FCID2018_masked, 
+                                Mask_no_load,
+                                maskvalue = 1, 
+                                datatype = dataType(FCID2018))
 
 # compare output to original
 stk <- stack(FCID2018, FCID2018_masked, FCID2018_masked_no_load)
