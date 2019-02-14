@@ -17,11 +17,13 @@ addfuel <- function(load, add, scattered, prop) {
 
 # function for determining proportion of original that was added
 propfuel <- function(load, add, scattered, prop) {
-        pr <- zero_div(((add * scattered) * prop) + load,
-                       (add * scattered) * prop)
+        pr <- zero_div((add * scattered) * prop, 
+                       ((add * scattered) * prop) + load)
+                       
         return(pr)
 }
 
+# function that adds residue to fuelbed
 add_residue <- function(dt, timestep) {
         
         # load the lookup table for scattered fuels
@@ -63,27 +65,18 @@ add_residue <- function(dt, timestep) {
                            to_duff_vect((Stem_ge9_tonsAcre * Stem_ge9),
                                         CWD_K,
                                         timestep),
-                   one_hr_toadd = decay_fun(Branch_tonsAcre,
+                   branch_toadd = decay_fun(Branch_tonsAcre,
                                             FWD_K,
                                             timestep),
-                   ten_hr_toadd = decay_fun(Branch_tonsAcre,
-                                            FWD_K,
-                                            timestep),
-                   hun_hr_toadd = decay_fun(Branch_tonsAcre,
-                                            FWD_K,
-                                            timestep),
-                   oneK_hr_toadd = (decay_fun(Stem_4t6_tonsAcre,
-                                              CWD_K,
-                                              timestep) * Stem_4t6) + 
+                   Stem_4t9_toadd = (decay_fun(Stem_4t6_tonsAcre,
+                                               CWD_K,
+                                               timestep) * Stem_4t6) + 
                            (decay_fun(Stem_6t9_tonsAcre,
                                       CWD_K,
                                       timestep) * Stem_6t9),
-                   tenK_hr_toadd = decay_fun(Stem_ge9_tonsAcre, 
-                                             CWD_K,
-                                             timestep),
-                   tnkp_hr_toadd = decay_fun(Stem_ge9_tonsAcre, 
-                                             CWD_K,
-                                             timestep))]
+                   Stem_ge9_toadd = decay_fun(Stem_ge9_tonsAcre, 
+                                              CWD_K,
+                                              timestep))]
         
         # update fuelbed
         dt_plus <- dt[, .(x = x,
@@ -114,27 +107,27 @@ add_residue <- function(dt, timestep) {
                           lichen_depth = lichen_depth,
                           moss_depth = moss_depth,
                           one_hr_sound = addfuel(one_hr_sound,
-                                                 one_hr_toadd,
+                                                 branch_toadd,
                                                  Branch,
                                                  one_hr_sound_prop),
                           ten_hr_sound = addfuel(ten_hr_sound,
-                                                 ten_hr_toadd, 
+                                                 branch_toadd, 
                                                  Branch,
                                                  ten_hr_sound_prop),
                           hun_hr_sound = addfuel(hun_hr_sound,
-                                                 hun_hr_toadd,
+                                                 branch_toadd,
                                                  Branch, 
                                                  hun_hr_sound_prop),
                           oneK_hr_sound = addfuel(oneK_hr_sound,
-                                                  oneK_hr_toadd,
+                                                  Stem_4t9_toadd,
                                                   1,
                                                   oneK_hr_sound_prop),
                           tenK_hr_sound = addfuel(tenK_hr_sound,
-                                                  tenK_hr_toadd,
+                                                  Stem_ge9_toadd,
                                                   Stem_ge9, 
                                                   tenK_hr_sound_prop),
                           tnkp_hr_sound = addfuel(tnkp_hr_sound,
-                                                  tnkp_hr_toadd,
+                                                  Stem_ge9_toadd,
                                                   Stem_ge9, 
                                                   tnkp_hr_sound_prop),
                           oneK_hr_rotten = oneK_hr_rotten,
@@ -142,32 +135,32 @@ add_residue <- function(dt, timestep) {
                           tnkp_hr_rotten = tnkp_hr_rotten,
                           pile_landing = pile_landing,
                           pile_field = pile_field,
-                          duff_upper_load_pr = zero_div((duff_upper_loading + duff_upper_toadd),
-                                                        duff_upper_toadd),
-                          litter_loading_pr = zero_div((litter_loading + litter_loading_toadd),
-                                                       litter_loading_toadd),
+                          duff_upper_load_pr = zero_div(duff_upper_toadd,
+                                                        (duff_upper_loading + duff_upper_toadd)),
+                          litter_loading_pr = zero_div(litter_loading_toadd,
+                                                       (litter_loading + litter_loading_toadd)),
                           one_hr_sound_pr = propfuel(one_hr_sound,
-                                                     one_hr_toadd,
+                                                     branch_toadd,
                                                      Branch,
                                                      one_hr_sound_prop),
                           ten_hr_sound_pr = propfuel(ten_hr_sound,
-                                                     ten_hr_toadd, 
+                                                     branch_toadd, 
                                                      Branch,
                                                      ten_hr_sound_prop),
                           hun_hr_sound_pr = propfuel(hun_hr_sound,
-                                                     hun_hr_toadd,
+                                                     branch_toadd,
                                                      Branch, 
                                                      hun_hr_sound_prop),
                           oneK_hr_sound_pr = propfuel(oneK_hr_sound,
-                                                      oneK_hr_toadd,
+                                                      Stem_4t9_toadd,
                                                       1,
                                                       oneK_hr_sound_prop),
                           tenK_hr_sound_pr = propfuel(tenK_hr_sound,
-                                                      tenK_hr_toadd,
+                                                      Stem_ge9_toadd,
                                                       Stem_ge9, 
                                                       tenK_hr_sound_prop),
                           tnkp_hr_sound_pr = propfuel(tnkp_hr_sound,
-                                                      tnkp_hr_toadd,
+                                                      Stem_ge9_toadd,
                                                       Stem_ge9, 
                                                       tnkp_hr_sound_prop))]
         
