@@ -42,7 +42,7 @@ add_residue <- function(dt, timestep) {
                      all.x = TRUE,
                      all.y = FALSE,
                      sort = FALSE,
-                     allow.cartesian = TRUE)
+                     allow.cartesian = FALSE)
         
         # calculate amount to add by size class, account for decay and proportion scattered
         dt[, ':=' (litter_toadd = decay_foliage(Foliage_tonsAcre * Foliage, 
@@ -134,12 +134,6 @@ add_residue <- function(dt, timestep) {
                                                         (duff_upper_loading + duff_toadd)),
                           litter_loading_pr = zero_div(litter_toadd,
                                                        (litter_loading + litter_toadd)),
-                          one_hr_sound_pr = propfuel(one_hr_sound,
-                                                     branch_toadd,
-                                                     one_hr_sound_prop),
-                          ten_hr_sound_pr = propfuel(ten_hr_sound,
-                                                     branch_toadd, 
-                                                     ten_hr_sound_prop),
                           hun_hr_sound_pr = propfuel(hun_hr_sound,
                                                      branch_toadd,
                                                      hun_hr_sound_prop),
