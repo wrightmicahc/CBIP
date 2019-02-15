@@ -1,0 +1,104 @@
+################################################################################
+# This script adds the residual fuel from RX burns back onto a recovered fuelbed
+# at each timestep. Includes decay. This is part of the CA Biopower Impact
+# Project.
+#
+# dt_rx: rx burn output data table
+# dt_fuel: fuelbed without additional residues added
+# timestep: numeric
+#
+# Author: Micah Wright, Humboldt State University
+################################################################################
+
+add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
+        
+        dt <- merge(dt_fuel,
+                    dt_rx[, .(x, 
+                              y,
+                              hun_hr_sound_b = hun_hr_sound,
+                              oneK_hr_sound_b = oneK_hr_sound,
+                              tenK_hr_sound_b = tenK_hr_sound,
+                              tnkp_hr_sound_b = tnkp_hr_sound,
+                              litter_loading_b = litter_loading)],
+                    by = c("x", "y"))
+        
+        dt[, ':=' (litter_toadd = decay_foliage(litter_loading_b, 
+                                                Foliage_K,
+                                                timestep,
+                                                "foliage"),
+                   duff_toadd = decay_foliage(litter_loading_b, 
+                                              Foliage_K, 
+                                              timestep,
+                                              "duff") + 
+                           to_duff_vect(hun_hr_sound_b,
+                                        FWD_K,
+                                        timestep) +
+                           to_duff_vect(oneK_hr_sound_b,
+                                        CWD_K,
+                                        timestep) +
+                           to_duff_vect(tenK_hr_sound_b,
+                                        CWD_K,
+                                        timestep) +
+                           to_duff_vect(tnkp_hr_sound_b,
+                                        CWD_K,
+                                        timestep),
+                   hun_hr_toadd = decay_fun(hun_hr_sound_b,
+                                            FWD_K,
+                                            timestep),
+                   oneK_hr_toadd = decay_fun(oneK_hr_sound_b,
+                                             CWD_K,
+                                             timestep),
+                   tenK_hr_toadd = decay_fun(tenK_hr_sound_b, 
+                                             CWD_K,
+                                             timestep),
+                   tnkp_hr_toadd = decay_fun(tnkp_hr_sound_b, 
+                                             CWD_K,
+                                             timestep))]
+        
+        dt[, ':=' (hun_hr_sound = hun_hr_sound + hun_hr_toadd,
+                   oneK_hr_sound = oneK_hr_sound + oneK_hr_toadd,
+                   tenK_hr_sound = tenK_hr_sound + tenK_hr_toadd,
+                   tnkp_hr_sound = tnkp_hr_sound + tnkp_hr_toadd,
+                   duff_upper_loading = duff_upper_loading + duff_toadd,
+                   litter_loading = litter_loading + litter_toadd,
+                   pile_field = 0,
+                   pile_landing = 0,
+                   duff_upper_load_pr = propfuel(duff_upper_loading,
+                                                 duff_toadd,
+                                                 1),
+                   litter_loading_pr = propfuel(litter_loading,
+                                                litter_toadd,
+                                                1),
+                   hun_hr_sound_pr = propfuel(hun_hr_sound,
+                                              hun_hr_toadd,
+                                              1),
+                   oneK_hr_sound_pr = propfuel(oneK_hr_sound,
+                                               oneK_hr_toadd,
+                                               1),
+                   tenK_hr_sound_pr = propfuel(tenK_hr_sound,
+                                               tenK_hr_toadd,
+                                               1),
+                   tnkp_hr_sound_pr = propfuel(tnkp_hr_sound,
+                                               tnkp_hr_toadd,
+                                               1),
+                   Year = timestep)]
+        
+        dt[, ':='  (duff_upper_depth = zero_div(duff_upper_loading,
+                                                duff_upper_ratio),
+                    litter_depth = zero_div(litter_loading,
+                                            litter_ratio))]
+        
+        dt[, c("hun_hr_toadd",
+               "oneK_hr_toadd", 
+               "tenK_hr_toadd", 
+               "tnkp_hr_toadd", 
+               "duff_toadd",
+               "litter_toadd",
+               "hun_hr_sound_b",
+               "oneK_hr_sound_b",
+               "tenK_hr_sound_b", 
+               "tnkp_hr_sound_b", 
+               "litter_loading_b") := NULL]
+        
+        return(dt)
+}
