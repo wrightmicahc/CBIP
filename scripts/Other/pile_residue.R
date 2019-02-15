@@ -31,21 +31,21 @@ pile_residue <- function(dt, timestep) {
                      allow.cartesian = TRUE)
         
         # calculate landing pile load
-        dt[, pile_landing := ((Stem_ge9 * decay_fun(Stem_ge9_tonsAcre,
-                                                    CWD_K * pK_coeff,
-                                                    timestep)) + 
-                                      (Stem_6t9 * decay_fun(Stem_6t9_tonsAcre,
-                                                            CWD_K * pK_coeff,
-                                                            timestep)) +
-                                      (Stem_4t6 * decay_fun(Stem_4t6_tonsAcre,
-                                                            CWD_K  * pK_coeff,
-                                                            timestep)) +
-                                      (Branch_tonsAcre * decay_fun(Branch, 
-                                                                   FWD_K * pK_coeff,
-                                                                   timestep)) +
-                                      (Foliage_tonsAcre * decay_fun(Foliage,
-                                                                        Foliage_K * pK_coeff,
-                                                                        timestep)))]
+        dt[, pile_landing := decay_fun(Stem_ge9_tonsAcre * Stem_ge9,
+                                       CWD_K * pK_coeff,
+                                       timestep) + 
+                   decay_fun(Stem_6t9_tonsAcre * Stem_6t9,
+                             CWD_K * pK_coeff,
+                             timestep) +
+                   decay_fun(Stem_4t6_tonsAcre * Stem_4t6,
+                             CWD_K  * pK_coeff,
+                             timestep) +
+                   decay_fun(Branch * Branch_tonsAcre, 
+                             FWD_K * pK_coeff,
+                             timestep) +
+                   decay_fun(Foliage * Foliage_tonsAcre,
+                             Foliage_K * pK_coeff,
+                             timestep)]
         
         # remove excess columns
         dt[, c("Type",
@@ -74,21 +74,21 @@ pile_residue <- function(dt, timestep) {
                      allow.cartesian = TRUE)
         
         # calculate field pile load
-        dt[, pile_field := ((Stem_ge9 * decay_fun(Stem_ge9_tonsAcre,
-                                                  CWD_K * pK_coeff,
-                                                  timestep)) + 
-                                    (Stem_6t9 * decay_fun(Stem_6t9_tonsAcre,
-                                                          CWD_K * pK_coeff,
-                                                          timestep)) +
-                                    (Stem_4t6 * decay_fun(Stem_4t6_tonsAcre,
-                                                          CWD_K  * pK_coeff,
-                                                          timestep)) +
-                                    (Branch_tonsAcre * decay_fun(Branch, 
-                                                                 FWD_K * pK_coeff,
-                                                                 timestep)) +
-                                    (Foliage_tonsAcre * decay_fun(Foliage,
-                                                                      Foliage_K * pK_coeff,
-                                                                      timestep)))]
+        dt[, pile_field := decay_fun(Stem_ge9_tonsAcre * Stem_ge9,
+                                        CWD_K * pK_coeff,
+                                        timestep) + 
+                   decay_fun(Stem_6t9_tonsAcre * Stem_6t9,
+                             CWD_K * pK_coeff,
+                             timestep) +
+                   decay_fun(Stem_4t6_tonsAcre * Stem_4t6,
+                             CWD_K  * pK_coeff,
+                             timestep) +
+                   decay_fun(Branch * Branch_tonsAcre, 
+                             FWD_K * pK_coeff,
+                             timestep) +
+                   decay_fun(Foliage * Foliage_tonsAcre,
+                             Foliage_K * pK_coeff,
+                             timestep)]
         
         # remove excess columns
         dt[, c("Type",
