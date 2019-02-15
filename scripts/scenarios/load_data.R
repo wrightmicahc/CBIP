@@ -41,19 +41,17 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         # FCID with no residue
         nores_path <- "data/UW/FCID_no_residue.csv"
         
-        if(burn_type == "None") {
-                
-                rdf <- readRDS(paste0("data/Tiles/wildfire/", 
-                                    tile_number, ".rds"))
-                
-        }
+        rdf <- readRDS(paste0("data/Tiles/input/", 
+                              tile_number, ".rds"))
         
-        if(burn_type %in% c("Pile", "Broadcast", "Jackpot")) {
-                
-                rdf <- readRDS(paste0("data/Tiles/rx/", 
-                                    tile_number, ".rds"))
-                
-        }
+        # make fake columns for rx conditions 
+        # TODO: Remove these later!!!
+        rdf[, ':=' (Fm10_wf = Fm10,
+                    Fm1000_wf = Fm1000,
+                    Wind_wf = Wind,
+                    Fm10_rx = Fm10 + 2,
+                    Fm1000_rx = Fm1000 + 2,
+                    Wind_rx = ifelse((Wind - 15) < 0, 0, (Wind - 15)))]
         
         # remove any barren areas 
         rdf <- rdf[fuelbed_number < 900]
