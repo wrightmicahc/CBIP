@@ -49,7 +49,8 @@ wind_correction <- function(dt, Wind, TPA, TPI) {
         dt[, waf := make_waf(lf_class, shelter_class)]
         
         # correct windspeed
-        dt[, Wind_corrected := Wind * waf]
+        dt[, ':=' (Wind_corrected_rx = Wind_rx * waf,
+                   Wind_corrected_wf = Wind_wf * waf)]
         
         # remove old columns
         dt[, c("lf_class", "shelter_class", "waf") := NULL ]
