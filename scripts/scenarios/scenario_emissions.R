@@ -26,6 +26,12 @@ source("scripts/Other/decay_residue.R")
 # source wrapper function for consumption and emissions function
 source("scripts/Other/burn_residue.R")
 
+# source function for adding rx residues back to recovered fuelbed
+source("scripts/Other/add_rx_residue.R")
+
+# source function for adding rx residues back to recovered fuelbed
+source("scripts/Other/save_output.R")
+
 library(parallel)
 
 scenario_emissions <- function(tile_number) {
@@ -44,9 +50,6 @@ scenario_emissions <- function(tile_number) {
         # load scenarios
         scenarios <- fread("data/SERC/scenarios.csv", 
                            verbose = FALSE)
-        
-        # filter out RX burn scenarios
-        scenarios <- scenarios[Burn_Type == "None"]
         
         setkey(scenarios, Silvicultural_Treatment)
         
@@ -86,135 +89,94 @@ scenario_emissions <- function(tile_number) {
                                          TPA,
                                          TPI)
                          
-                         # create a vector from 0-100 years
-                         timestep <- seq(0, 100, 25)
-                         
-                         # assign the vector names, otherwise position will be 
-                         # off by 1 from the value
-                         names(timestep) <- as.character(timestep)
-                         
-                         # calculate the remaining fuel for each timestep and
-                         # add to the fuelbed
-                         lapply(timestep, function(i) {
+                         if(Burn_Type != "None") {
                                  
                                  # need to copy dt or it is modified 
                                  cpy <- copy(fuel_df)
                                  
                                  # calculate piled load
-                                 cpy <- pile_residue(cpy, i)
+                                 cpy <- pile_residue(cpy, 0)
                                  
                                  # add the remaining residue to the fuelbed
-                                 cpy <-  add_residue(cpy, i)
+                                 cpy <-  add_residue(cpy, 0)
                                  
-                                 # burn it
-                                 output_df <- burn_residue(cpy, Burn_Type)
-                                     
-                                 emissions_df <- output_df[, list(x, 
-                                                                  y,
-                                                                  fuelbed_number,
-                                                                  FCID2018,
-                                                                  ID, 
-                                                                  Silvicultural_Treatment,
-                                                                  Harvest_Type,
-                                                                  Harvest_System,
-                                                                  Burn_Type,
-                                                                  Biomass_Collection, 
-                                                                  Year,
-                                                                  total_char, 
-                                                                  flaming_CH4,
-                                                                  flaming_CO, 
-                                                                  flaming_CO2,
-                                                                  flaming_NH3,
-                                                                  flaming_NOx, 
-                                                                  flaming_PM10,
-                                                                  flaming_PM2.5, 
-                                                                  flaming_SO2,
-                                                                  flaming_VOC, 
-                                                                  smoldering_CH4, 
-                                                                  smoldering_CO, 
-                                                                  smoldering_CO2,
-                                                                  smoldering_NH3,
-                                                                  smoldering_NOx, 
-                                                                  smoldering_PM10, 
-                                                                  smoldering_PM2.5,
-                                                                  smoldering_SO2, 
-                                                                  smoldering_VOC,
-                                                                  residual_CH4, 
-                                                                  residual_CO, 
-                                                                  residual_CO2,
-                                                                  residual_NH3, 
-                                                                  residual_NOx, 
-                                                                  residual_PM10, 
-                                                                  residual_PM2.5, 
-                                                                  residual_SO2,
-                                                                  residual_VOC, 
-                                                                  total_CH4,
-                                                                  total_CO, 
-                                                                  total_CO2, 
-                                                                  total_NH3,
-                                                                  total_NOx,
-                                                                  total_PM10,
-                                                                  total_PM2.5, 
-                                                                  total_SO2, 
-                                                                  total_VOC)]
+                                 # apply the rx burn
+                                 rx_out <- burn_residue(cpy, Burn_Type)
                                  
-                                 residual_df <- output_df[, list(x, 
-                                                                 y,
-                                                                 fuelbed_number,
-                                                                 FCID2018, 
-                                                                 ID, 
-                                                                 Silvicultural_Treatment,
-                                                                 Harvest_Type,
-                                                                 Harvest_System,
-                                                                 Burn_Type,
-                                                                 Biomass_Collection, 
-                                                                 Year,
-                                                                 Slope,
-                                                                 Fm10,
-                                                                 Fm1000,
-                                                                 Wind_corrected,
-                                                                 duff_upper_loading,
-                                                                 litter_loading, 
-                                                                 one_hr_sound, 
-                                                                 ten_hr_sound,
-                                                                 hun_hr_sound,
-                                                                 oneK_hr_sound,
-                                                                 oneK_hr_rotten,
-                                                                 tenK_hr_sound, 
-                                                                 tenK_hr_rotten,
-                                                                 tnkp_hr_sound,
-                                                                 tnkp_hr_rotten,
-                                                                 pile_field,
-                                                                 pile_landing)]
+                                 # save the output
+                                 save_output(rx_out,
+                                             Silvicultural_Treatment,
+                                             Harvest_System,
+                                             Harvest_Type,
+                                             Burn_Type,
+                                             tile_number,
+                                             0)
                                  
-                                 # save output
-                                 saveRDS(emissions_df,
-                                         file = paste0("data/Tiles/output/emissions/",
-                                                       tile_number,
-                                                       "/",
-                                                       paste(Silvicultural_Treatment,
-                                                             Harvest_System,
-                                                             Harvest_Type,
-                                                             Burn_Type,
-                                                             tile_number,
-                                                             i, 
-                                                             sep = "-"),
-                                                       ".rds"))
+                                 # create a vector from 25-100 years
+                                 timestep <- seq(25, 100, 25)
                                  
-                                 saveRDS(residual_df,
-                                         file = paste0("data/Tiles/output/residual_fuels/",
-                                                       tile_number,
-                                                       "/",
-                                                       paste(Silvicultural_Treatment,
-                                                             Harvest_System,
-                                                             Harvest_Type,
-                                                             Burn_Type,
-                                                             tile_number,
-                                                             i, 
-                                                             sep = "-"),
-                                                       ".rds"))
+                                 # assign the vector names, otherwise position will be 
+                                 # off by 1 from the value
+                                 names(timestep) <- as.character(timestep)
                                  
-                         })
+                                 # calculate the remaining fuel for each timestep and
+                                 # add to the fuelbed
+                                 lapply(timestep, function(i) {
+                                         
+                                         # need to copy dt or it is modified 
+                                         post_rx <- add_rx_residue(rx_out, fuel_df, i)
+                                         
+                                         # burn it with wildfire
+                                         output_df <- burn_residue(post_rx, "None")
+                                         
+                                         # save the output
+                                         save_output(output_df,
+                                                     Silvicultural_Treatment,
+                                                     Harvest_System,
+                                                     Harvest_Type,
+                                                     Burn_Type,
+                                                     tile_number,
+                                                     i)
+                                         
+                                 })
+                                 
+                         } else {
+                                 
+                                 # create a vector from 0-100 years
+                                 timestep <- seq(0, 100, 25)
+                                 
+                                 # assign the vector names, otherwise position will be 
+                                 # off by 1 from the value
+                                 names(timestep) <- as.character(timestep)
+                                 
+                                 # calculate the remaining fuel for each timestep and
+                                 # add to the fuelbed
+                                 lapply(timestep, function(i) {
+                                         
+                                         # need to copy dt or it is modified 
+                                         cpy <- copy(fuel_df)
+                                         
+                                         # calculate piled load
+                                         cpy <- pile_residue(cpy, i)
+                                         
+                                         # add the remaining residue to the fuelbed
+                                         cpy <-  add_residue(cpy, i)
+                                         
+                                         # burn it
+                                         output_df <- burn_residue(cpy, Burn_Type)
+                                         
+                                         # save the output
+                                         save_output(output_df,
+                                                     Silvicultural_Treatment,
+                                                     Harvest_System,
+                                                     Harvest_Type,
+                                                     Burn_Type,
+                                                     tile_number,
+                                                     i)
+                                         
+                                 })
+                                 
+                         }
                          
                  })
 }
