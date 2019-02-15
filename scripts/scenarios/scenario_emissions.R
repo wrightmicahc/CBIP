@@ -132,9 +132,9 @@ scenario_emissions <- function(tile_number) {
                                          post_rx <- add_rx_residue(rx_out, fuel_df, i)
                                          
                                          # change fire weather value names appropriately
-                                         cpy[, ':=' (Wind_corrected = Wind_corrected_wf,
-                                                     Fm10  = Fm10_wf,
-                                                     Fm1000 = Fm1000_wf)]
+                                         post_rx[, ':=' (Wind_corrected = Wind_corrected_wf,
+                                                         Fm10  = Fm10_wf,
+                                                         Fm1000 = Fm1000_wf)]
                                          
                                          # burn it with wildfire
                                          output_df <- burn_residue(post_rx, "None")
