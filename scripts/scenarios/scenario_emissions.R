@@ -100,6 +100,11 @@ scenario_emissions <- function(tile_number) {
                                  # add the remaining residue to the fuelbed
                                  cpy <-  add_residue(cpy, 0)
                                  
+                                 # change fire weather value names appropriately
+                                 cpy[, ':=' (Wind_corrected = Wind_corrected_rx,
+                                             Fm10  = Fm10_rx,
+                                             Fm1000 = Fm1000_rx)]
+                                 
                                  # apply the rx burn
                                  rx_out <- burn_residue(cpy, Burn_Type)
                                  
@@ -125,6 +130,11 @@ scenario_emissions <- function(tile_number) {
                                          
                                          # need to copy dt or it is modified 
                                          post_rx <- add_rx_residue(rx_out, fuel_df, i)
+                                         
+                                         # change fire weather value names appropriately
+                                         cpy[, ':=' (Wind_corrected = Wind_corrected_wf,
+                                                     Fm10  = Fm10_wf,
+                                                     Fm1000 = Fm1000_wf)]
                                          
                                          # burn it with wildfire
                                          output_df <- burn_residue(post_rx, "None")
@@ -161,6 +171,11 @@ scenario_emissions <- function(tile_number) {
                                          
                                          # add the remaining residue to the fuelbed
                                          cpy <-  add_residue(cpy, i)
+                                         
+                                         # change fire weather value names appropriately
+                                         cpy[, ':=' (Wind_corrected = Wind_corrected_wf,
+                                                     Fm10  = Fm10_wf,
+                                                     Fm1000 = Fm1000_wf)]
                                          
                                          # burn it
                                          output_df <- burn_residue(cpy, Burn_Type)
