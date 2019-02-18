@@ -18,9 +18,7 @@ fifty_fun <- function(k_val, t) {
         
         y <- seq(0, t, 1)
                           
-        yd <- unlist(lapply(y, function(x) {
-                ifelse(exp(-k_val * x) >= 0.5, x, NA)
-                        }))
+        yd <- ifelse(exp(-k_val * y) >= 0.5, y, NA)
         
         my <- max(yd, na.rm = TRUE)
         
