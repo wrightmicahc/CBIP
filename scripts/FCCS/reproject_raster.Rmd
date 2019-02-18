@@ -1,0 +1,60 @@
+---
+title: "Reprojecting Raster Data"
+author: "Micah Wright"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "../..")
+```
+
+# Purpose
+
+Reproject FCCS raster data to match UW data in extent and resolution.
+
+# Setup
+
+Load the necessary packages.
+
+```{r}
+library(raster)
+library(gdalUtils)
+library(parallel)
+```
+
+Load the raster with FCID from UW, extract the crs and extent to use for reprojecting FCCS. Specify resolution.
+
+```{r}
+UW_FCID <- raster("data/UW/UW_FCID.tif")
+
+UW_crs <- as.character(crs(UW_FCID))
+
+UW_ext <- bbox(extent(UW_FCID))
+
+tr <- c(30, 30)
+```
+
+Reproject the FCCS raster using nearest neighbor (should preserve values). 
+
+```{r}
+gdalwarp("data/FCCS/spatial/FCCS.tif",
+         "data/FCCS/spatial/FCCS_NAD83.tif",
+         tr = tr,
+         r = "near",
+         t_srs = UW_crs,
+         te = c(UW_ext),
+         overwrite=TRUE)
+```
+
+Load the raster and make sure the extent, crs, and resolution match.
+
+```{r}
+FCCS <- raster("data/FCCS/spatial/FCCS_NAD83.tif")
+
+all.equal(UW_FCID, FCCS)
+```
+
