@@ -16,11 +16,9 @@ decay_fun <- function(residue, k_val, t) {
 # threshold
 fifty_fun <- function(k_val, t) {
         
-        y <- seq(0, t, 1)
+        y <- 0:t
                           
-        yd <- unlist(lapply(y, function(x) {
-                ifelse(exp(-k_val * x) >= 0.5, x, NA)
-                        }))
+        yd <- ifelse(exp(-k_val * y) >= 0.5, y, NA)
         
         my <- max(yd, na.rm = TRUE)
         
@@ -35,16 +33,12 @@ fifty_fun_vect <- Vectorize(fifty_fun)
 to_duff <- function(residue, k_val, t) {
         
         # make a sequence of numbers from 0-t
-        tn <- seq(0, t, 1)
+        tn <- 0:t
         
         # create a list of residue to be added to duff for every year in the sequence
-        dfa_list <- lapply(tn, function(i) {
-                
-                added <- ifelse(i == 0, 0, (decay_fun(residue, k_val, i - 1) - decay_fun(residue, k_val, i)) * 0.02)
-                
-        })
+        added <- ifelse(tn == 0, 0, (decay_fun(residue, k_val, tn - 1) - decay_fun(residue, k_val, tn)) * 0.02)
         
-        duff_added <- sum(unlist(dfa_list))
+        duff_added <- sum(added)
         
         net <- decay_fun(duff_added, 0.002, t)
         

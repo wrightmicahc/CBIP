@@ -40,12 +40,17 @@ pile_residue <- function(dt, timestep) {
                    decay_fun(Stem_4t6_tonsAcre * Stem_4t6,
                              CWD_K  * pK_coeff,
                              timestep) +
-                   decay_fun(Branch * Branch_tonsAcre, 
+                   decay_fun(Branch_tonsAcre * Branch,
                              FWD_K * pK_coeff,
                              timestep) +
-                   decay_fun(Foliage * Foliage_tonsAcre,
-                             Foliage_K * pK_coeff,
-                             timestep)]
+                   decay_foliage(Foliage_tonsAcre * Foliage, 
+                                                Foliage_K * pK_coeff,
+                                                timestep,
+                                                "foliage") +
+                   decay_foliage(Foliage_tonsAcre * Foliage, 
+                                      Foliage_K * pK_coeff, 
+                                      timestep,
+                                      "duff")]
         
         # remove excess columns
         dt[, c("Type",
@@ -83,12 +88,17 @@ pile_residue <- function(dt, timestep) {
                    decay_fun(Stem_4t6_tonsAcre * Stem_4t6,
                              CWD_K  * pK_coeff,
                              timestep) +
-                   decay_fun(Branch * Branch_tonsAcre, 
+                   decay_fun(Branch_tonsAcre * Branch,
                              FWD_K * pK_coeff,
                              timestep) +
-                   decay_fun(Foliage * Foliage_tonsAcre,
-                             Foliage_K * pK_coeff,
-                             timestep)]
+                   decay_foliage(Foliage_tonsAcre * Foliage, 
+                                 Foliage_K * pK_coeff,
+                                 timestep,
+                                 "foliage") +
+                   decay_foliage(Foliage_tonsAcre * Foliage, 
+                                 Foliage_K * pK_coeff, 
+                                 timestep,
+                                 "duff")]
         
         # remove excess columns
         dt[, c("Type",
