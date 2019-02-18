@@ -38,13 +38,9 @@ to_duff <- function(residue, k_val, t) {
         tn <- seq(0, t, 1)
         
         # create a list of residue to be added to duff for every year in the sequence
-        dfa_list <- lapply(tn, function(i) {
-                
-                added <- ifelse(i == 0, 0, (decay_fun(residue, k_val, i - 1) - decay_fun(residue, k_val, i)) * 0.02)
-                
-        })
+        added <- ifelse(tn == 0, 0, (decay_fun(residue, k_val, tn - 1) - decay_fun(residue, k_val, tn)) * 0.02)
         
-        duff_added <- sum(unlist(dfa_list))
+        duff_added <- sum(added)
         
         net <- decay_fun(duff_added, 0.002, t)
         
