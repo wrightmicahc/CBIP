@@ -73,3 +73,26 @@ decay_foliage <- function(residue, k_val, t, toggle) {
                 return(dfa)
         }
 }
+
+# function for woody fuels with transition from sound to rotten at 64%
+decay_woody <- function(residue, k_val, t, toggle) {
+        
+        decayed <- decay_fun(residue, k_val, t)
+        
+        still_sound <- decayed >= residue * 0.64
+        
+        decayed_sound <- ifelse(still_sound, decayed, 0)
+        
+        decayed_rotten <- ifelse(!still_sound, decayed, 0)
+        
+        if(toggle == "sound") {
+                
+                return(decayed_sound)
+        }
+        
+        if(toggle == "rotten") {
+                
+                return(decayed_rotten)
+        }
+        
+}
