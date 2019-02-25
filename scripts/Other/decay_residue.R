@@ -79,11 +79,15 @@ decay_woody <- function(residue, k_val, t, toggle) {
         
         decayed <- decay_fun(residue, k_val, t)
         
+        k_soft <- log(1 - k_val) / log(0.64)
+        
+        to_soft <- residue - decay_fun(residue, k_soft, t)
+        
         still_sound <- decayed >= residue * 0.64
         
-        decayed_sound <- ifelse(still_sound, decayed, 0)
+        decayed_sound <- ifelse(still_sound, decayed - to_soft, 0)
         
-        decayed_rotten <- ifelse(!still_sound, decayed, 0)
+        decayed_rotten <- ifelse(!still_sound, decayed, to_soft)
         
         if(toggle == "sound") {
                 
