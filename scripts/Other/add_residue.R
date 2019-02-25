@@ -84,7 +84,6 @@ add_residue <- function(dt, timestep) {
                                        CWD_K,
                                        timestep, 
                                        "rotten"),
-                   
                    Stem_ge9_toadd_sound = decay_woody(Stem_ge9_tonsAcre * Stem_ge9, 
                                                       CWD_K,
                                                       timestep,
