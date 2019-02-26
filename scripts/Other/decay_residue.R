@@ -12,22 +12,6 @@ decay_fun <- function(residue, k_val, t) {
         
 }
 
-# function to determine the last year that the foliage was above the 50%
-# threshold
-fifty_fun <- function(k_val) {
-        
-        y <- 0:100
-                          
-        yd <- ifelse(exp(-k_val * y) >= 0.5, y, NA)
-        
-        my <- max(yd, na.rm = TRUE)
-        
-        return(my)
-        
-}
-
-fifty_fun_vect <- Vectorize(fifty_fun)
-
 # add woody fuels to duff at 2% of decayed mass per year and decay previously 
 # added mass
 to_duff <- function(residue, k_val, t) {
@@ -58,7 +42,7 @@ decay_foliage <- function(residue, k_val, t, toggle) {
         
         decayed_adj <- ifelse(still_litter, decayed, 0)
         
-        last_year <- fifty_fun_vect(k_val)
+        last_year <- floor(log(0.5) / -k_val)
         
         dfa <- ifelse(still_litter, to_duff_vect(residue, k_val, t), 
                       decay_fun(decay_fun(residue, k_val, last_year), 0.002, t - last_year))
