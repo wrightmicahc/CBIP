@@ -16,22 +16,14 @@ decay_fun <- function(residue, k_val, t) {
 # added mass
 to_duff <- function(residue, k_val, t) {
         
-        # make a sequence of numbers from 0-t
-        tn <- 0:t
-        
         # create a list of residue to be added to duff for every year in the sequence
-        added <- ifelse(tn == 0, 0, (decay_fun(residue, k_val, tn - 1) - decay_fun(residue, k_val, tn)) * 0.02)
-        
-        duff_added <- sum(added)
+        duff_added <- (decay_fun(residue, k_val, 0) - decay_fun(residue, k_val, t)) * 0.02
         
         net <- decay_fun(duff_added, 0.002, t)
         
         return(net)
         
 }
-
-# vectorize to_duff
-to_duff_vect <- Vectorize(to_duff)
 
 # decay function that calculates decayed foliage and additions to duff
 decay_foliage <- function(residue, k_val, t, toggle) {
@@ -44,7 +36,7 @@ decay_foliage <- function(residue, k_val, t, toggle) {
         
         last_year <- floor(log(0.5) / -k_val)
         
-        dfa <- ifelse(still_litter, to_duff_vect(residue, k_val, t), 
+        dfa <- ifelse(still_litter, to_duff(residue, k_val, t), 
                       decay_fun(decay_fun(residue, k_val, last_year), 0.002, t - last_year))
         
         if(toggle == "foliage") {
