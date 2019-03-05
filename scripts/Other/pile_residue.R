@@ -37,13 +37,13 @@ pile_residue <- function(dt, timestep) {
         dt[, pile_landing := decay_fun(CWD,
                                        CWD_K * pK_coeff,
                                        timestep) + 
-                   to_duff_vect(CWD,
+                   to_duff(CWD,
                                 CWD_K * pK_coeff,
                                 timestep) +
                    decay_fun(Branch_tonsAcre * Branch,
                              FWD_K * pK_coeff,
                              timestep) +
-                   to_duff_vect(Branch_tonsAcre * Branch,
+                   to_duff(Branch_tonsAcre * Branch,
                                 FWD_K * pK_coeff,
                                 timestep) +
                    decay_foliage(Foliage_tonsAcre * Foliage, 
@@ -89,13 +89,13 @@ pile_residue <- function(dt, timestep) {
         dt[, pile_field := decay_fun(CWD,
                                        CWD_K * pK_coeff,
                                        timestep) + 
-                   to_duff_vect(CWD,
+                   to_duff(CWD,
                                 CWD_K * pK_coeff,
                                 timestep) +
                    decay_fun(Branch_tonsAcre * Branch,
                              FWD_K * pK_coeff,
                              timestep) +
-                   to_duff_vect(Branch_tonsAcre * Branch,
+                   to_duff(Branch_tonsAcre * Branch,
                                 FWD_K * pK_coeff,
                                 timestep) +
                    decay_foliage(Foliage_tonsAcre * Foliage, 
