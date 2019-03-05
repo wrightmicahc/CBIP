@@ -322,7 +322,8 @@ residue <- snags[, .(FCID2018 = FCID2018,
                      Stem_6t9_tonsAcre = ifelse(SnagB != 0, (SnagB * p_6t9) / 2000, 0),
                      Stem_4t6_tonsAcre = ifelse(SnagB != 0, (SnagB * p_4t6) / 2000, 0),
                      Stem_ge9_tonsAcre = ifelse(SnagB != 0, (SnagB * p_ge9) / 2000, 0),
-                     Branch_tonsAcre = ifelse(SnagB != 0, (SnagB * p_branch) / 2000, 0))] %>%
+                     Branch_tonsAcre = ifelse(SnagB != 0, (SnagB * p_branch) / 2000, 0),
+                     Foliage_tonsAcre = 0)] %>%
                      .[, Total := Stem_6t9_tonsAcre + Stem_4t6_tonsAcre + Stem_ge9_tonsAcre + Branch_tonsAcre + StumpB]
 ```
 
