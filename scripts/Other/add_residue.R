@@ -88,7 +88,16 @@ add_residue <- function(dt, timestep) {
                    Stem_ge9_toadd_rotten = decay_woody(Stem_ge9_tonsAcre * Stem_ge9, 
                                                        CWD_K,
                                                        timestep,
-                                                       "rotten"))]
+                                                       "rotten"),
+                   residue_burned = (litter_toadd + 
+                                             duff_toadd + 
+                                             branch_toadd + 
+                                             Stem_4t9_toadd_sound + 
+                                             Stem_4t9_toadd_rotten + 
+                                             Stem_ge9_toadd_sound + 
+                                             Stem_ge9_toadd_rotten + 
+                                             pile_landing +
+                                             pile_field))]
         
         # update fuelbed
         dt_plus <- dt[, .(x = x,
@@ -109,6 +118,7 @@ add_residue <- function(dt, timestep) {
                           Fm1000_wf = Fm1000_wf,
                           Wind_corrected_rx = Wind_corrected_rx,
                           Wind_corrected_wf = Wind_corrected_wf,
+                          residue_burned = residue_burned,
                           litter_ratio = litter_ratio,
                           litter_loading = addfuel(litter_loading,
                                                    litter_toadd,
