@@ -17,8 +17,11 @@ add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
                               y,
                               hun_hr_sound_b = hun_hr_sound,
                               oneK_hr_sound_b = oneK_hr_sound,
+                              oneK_hr_rotten_b = oneK_hr_rotten,
                               tenK_hr_sound_b = tenK_hr_sound,
+                              tenK_hr_rotten_b = tenK_hr_rotten,
                               tnkp_hr_sound_b = tnkp_hr_sound,
+                              tnkp_hr_rotten_b = tnkp_hr_rotten,
                               litter_loading_b = litter_loading)],
                     by = c("x", "y"))
         
@@ -31,34 +34,79 @@ add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
                                               timestep,
                                               "duff") + 
                            to_duff(hun_hr_sound_b,
-                                        FWD_K,
-                                        timestep) +
+                                   FWD_K,
+                                   timestep) +
                            to_duff(oneK_hr_sound_b,
-                                        CWD_K,
-                                        timestep) +
+                                   CWD_K,
+                                   timestep) +
+                           to_duff(oneK_hr_rotten_b,
+                                   CWD_K,
+                                   timestep) +
                            to_duff(tenK_hr_sound_b,
-                                        CWD_K,
-                                        timestep) +
+                                   CWD_K,
+                                   timestep) +
+                           to_duff(tenK_hr_rotten_b,
+                                   CWD_K,
+                                   timestep) +
                            to_duff(tnkp_hr_sound_b,
-                                        CWD_K,
-                                        timestep),
+                                   CWD_K,
+                                   timestep) +
+                           to_duff(tnkp_hr_rotten_b,
+                                   CWD_K,
+                                   timestep),
                    hun_hr_toadd = decay_fun(hun_hr_sound_b,
                                             FWD_K,
                                             timestep),
-                   oneK_hr_toadd = decay_fun(oneK_hr_sound_b,
-                                             CWD_K,
-                                             timestep),
-                   tenK_hr_toadd = decay_fun(tenK_hr_sound_b, 
-                                             CWD_K,
-                                             timestep),
-                   tnkp_hr_toadd = decay_fun(tnkp_hr_sound_b, 
-                                             CWD_K,
-                                             timestep))]
+                   oneK_hr_sound_toadd = decay_woody(oneK_hr_sound_b,
+                                                     CWD_K,
+                                                     timestep,
+                                                     "sound"),
+                   oneK_hr_rotten_toadd = (decay_woody(oneK_hr_sound_b,
+                                                      CWD_K,
+                                                      timestep,
+                                                      "rotten") +
+                                                   decay_fun(oneK_hr_rotten_b,
+                                                             CWD_K,
+                                                             timestep)),
+                   tenK_hr_sound_toadd = decay_woody(tenK_hr_sound_b, 
+                                                     CWD_K,
+                                                     timestep,
+                                                     "sound"),
+                   tenK_hr_rotten_toadd = (decay_woody(tenK_hr_sound_b, 
+                                                      CWD_K,
+                                                      timestep,
+                                                      "rotten") + 
+                                                   decay_fun(tenK_hr_rotten_b,
+                                                             CWD_K,
+                                                             timestep)),
+                   tnkp_hr_sound_toadd = decay_woody(tnkp_hr_sound_b, 
+                                                     CWD_K,
+                                                     timestep,
+                                                     "sound"),
+                   tnkp_hr_rotten_toadd = (decay_woody(tnkp_hr_sound_b, 
+                                                       CWD_K,
+                                                       timestep,
+                                                       "rotten") +
+                                                   decay_fun(tnkp_hr_rotten_b,
+                                                             CWD_K,
+                                                             timestep)))]
+        dt[, residue_burned := (litter_toadd + 
+                                        duff_toadd + 
+                                        hun_hr_toadd + 
+                                        oneK_hr_sound_toadd + 
+                                        oneK_hr_rotten_toadd + 
+                                        tenK_hr_sound_toadd +
+                                        tenK_hr_rotten_toadd +
+                                        tnkp_hr_sound_toadd + 
+                                        tnkp_hr_rotten_toadd)]
         
         dt[, ':=' (hun_hr_sound = hun_hr_sound + hun_hr_toadd,
-                   oneK_hr_sound = oneK_hr_sound + oneK_hr_toadd,
-                   tenK_hr_sound = tenK_hr_sound + tenK_hr_toadd,
-                   tnkp_hr_sound = tnkp_hr_sound + tnkp_hr_toadd,
+                   oneK_hr_sound = oneK_hr_sound + oneK_hr_sound_toadd,
+                   oneK_hr_rotten = oneK_hr_rotten + oneK_hr_rotten_toadd,
+                   tenK_hr_sound = tenK_hr_sound + tenK_hr_sound_toadd,
+                   tenK_hr_rotten = tenK_hr_rotten + tenK_hr_rotten_toadd,
+                   tnkp_hr_sound = tnkp_hr_sound + tnkp_hr_sound_toadd,
+                   tnkp_hr_rotten = tnkp_hr_rotten + tnkp_hr_rotten_toadd,
                    duff_upper_loading = duff_upper_loading + duff_toadd,
                    litter_loading = litter_loading + litter_toadd,
                    pile_field = 0,
@@ -73,13 +121,22 @@ add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
                                               hun_hr_toadd,
                                               1),
                    oneK_hr_sound_pr = propfuel(oneK_hr_sound,
-                                               oneK_hr_toadd,
+                                               oneK_hr_sound_toadd,
+                                               1),
+                   oneK_hr_rotten_pr = propfuel(oneK_hr_rotten,
+                                               oneK_hr_rotten_toadd,
                                                1),
                    tenK_hr_sound_pr = propfuel(tenK_hr_sound,
                                                tenK_hr_toadd,
                                                1),
+                   tenK_hr_rotten_pr = propfuel(tenK_hr_rotten,
+                                               tenK_hr_rotten_toadd,
+                                               1),
                    tnkp_hr_sound_pr = propfuel(tnkp_hr_sound,
                                                tnkp_hr_toadd,
+                                               1),
+                   tnkp_hr_rotten_pr = propfuel(tnkp_hr_rotten,
+                                               tnkp_hr_rotten_toadd,
                                                1),
                    Year = timestep)]
         
@@ -96,8 +153,11 @@ add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
                "litter_toadd",
                "hun_hr_sound_b",
                "oneK_hr_sound_b",
+               "oneK_hr_rotten_b",
                "tenK_hr_sound_b", 
-               "tnkp_hr_sound_b", 
+               "tenK_hr_rotten_b", 
+               "tnkp_hr_sound_b",
+               "tnkp_hr_rotten_b",
                "litter_loading_b") := NULL]
         
         return(dt)
