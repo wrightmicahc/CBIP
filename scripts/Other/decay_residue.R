@@ -12,42 +12,18 @@ decay_fun <- function(residue, k_val, t) {
         
 }
 
-# function to determine the last year that the foliage was above the 50%
-# threshold
-fifty_fun <- function(k_val) {
-        
-        y <- 0:100
-                          
-        yd <- ifelse(exp(-k_val * y) >= 0.5, y, NA)
-        
-        my <- max(yd, na.rm = TRUE)
-        
-        return(my)
-        
-}
-
-fifty_fun_vect <- Vectorize(fifty_fun)
-
 # add woody fuels to duff at 2% of decayed mass per year and decay previously 
 # added mass
 to_duff <- function(residue, k_val, t) {
         
-        # make a sequence of numbers from 0-t
-        tn <- 0:t
-        
         # create a list of residue to be added to duff for every year in the sequence
-        added <- ifelse(tn == 0, 0, (decay_fun(residue, k_val, tn - 1) - decay_fun(residue, k_val, tn)) * 0.02)
-        
-        duff_added <- sum(added)
+        duff_added <- (decay_fun(residue, k_val, 0) - decay_fun(residue, k_val, t)) * 0.02
         
         net <- decay_fun(duff_added, 0.002, t)
         
         return(net)
         
 }
-
-# vectorize to_duff
-to_duff_vect <- Vectorize(to_duff)
 
 # decay function that calculates decayed foliage and additions to duff
 decay_foliage <- function(residue, k_val, t, toggle) {
@@ -58,9 +34,9 @@ decay_foliage <- function(residue, k_val, t, toggle) {
         
         decayed_adj <- ifelse(still_litter, decayed, 0)
         
-        last_year <- fifty_fun_vect(k_val)
+        last_year <- floor(log(0.5) / -k_val)
         
-        dfa <- ifelse(still_litter, to_duff_vect(residue, k_val, t), 
+        dfa <- ifelse(still_litter, to_duff(residue, k_val, t), 
                       decay_fun(decay_fun(residue, k_val, last_year), 0.002, t - last_year))
         
         if(toggle == "foliage") {
@@ -79,11 +55,15 @@ decay_woody <- function(residue, k_val, t, toggle) {
         
         decayed <- decay_fun(residue, k_val, t)
         
+        k_soft <- log(1 - k_val) / log(0.64)
+        
+        to_soft <- residue - decay_fun(residue, k_soft, t)
+        
         still_sound <- decayed >= residue * 0.64
         
-        decayed_sound <- ifelse(still_sound, decayed, 0)
+        decayed_sound <- ifelse(still_sound, decayed - to_soft, 0)
         
-        decayed_rotten <- ifelse(!still_sound, decayed, 0)
+        decayed_rotten <- ifelse(!still_sound, decayed, to_soft)
         
         if(toggle == "sound") {
                 

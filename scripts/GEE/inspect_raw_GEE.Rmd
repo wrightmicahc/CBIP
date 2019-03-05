@@ -1,0 +1,45 @@
+---
+title: "Google Earth Engine Data Inspection"
+author: "Micah Wright"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "../..")
+```
+
+Load the necessary packages.
+
+```{r message=FALSE}
+library(raster)
+library(gdalUtils)
+library(rgdal)
+library(data.table)
+```
+
+Load the raw GEE data. It is 4km resolution fire weather data from Gridmet, summarized for different seasons for the years 2000-2018. There are state-level rasters for 1,000, 100, and 10-hour fuel moisture and 10m windspeed for each of three scenarios: 97th, 50th, and 37.5th percentile. The 37.5th percentile are for RX conditions, which were summarized for the months of September-October over the specified time period, all other rasters were summarized over June-September.
+
+```{r}
+rstack <- stack(list.files("data/GEE/raw", 
+                           pattern = "*.tif", 
+                           full.names = TRUE))
+```
+
+Plot the output, check to make sure spatial patterns seem reasonable and value distrbutions look right.
+
+```{r}
+plot(rstack, col = colorspace::diverge_hcl(n = 12, c = 100, l = c(50, 90), power = 1))
+```
+
+```{r}
+hist(rstack)
+```
+
+Check a summary.
+
+```{r}
+knitr::kable(t(summary(rstack)))
+```

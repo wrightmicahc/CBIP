@@ -44,6 +44,9 @@ add_residue <- function(dt, timestep) {
                      sort = FALSE,
                      allow.cartesian = FALSE)
         
+        # calculate coarse load
+        dt[, CWD := (Stem_ge9_tonsAcre * Stem_ge9) + (Stem_6t9_tonsAcre * Stem_6t9) + (Stem_4t6_tonsAcre * Stem_4t6)]
+        
         # calculate amount to add by size class, account for decay and proportion scattered
         dt[, ':=' (litter_toadd = decay_foliage(Foliage_tonsAcre * Foliage, 
                                                         Foliage_K,
@@ -56,13 +59,7 @@ add_residue <- function(dt, timestep) {
                            to_duff_vect((Branch_tonsAcre * Branch),
                                         FWD_K,
                                         timestep) +
-                           to_duff_vect((Stem_4t6_tonsAcre * Stem_4t6),
-                                        CWD_K,
-                                        timestep) +
-                           to_duff_vect((Stem_6t9_tonsAcre * Stem_6t9),
-                                        CWD_K,
-                                        timestep) +
-                           to_duff_vect((Stem_ge9_tonsAcre * Stem_ge9),
+                           to_duff_vect(CWD,
                                         CWD_K,
                                         timestep),
                    branch_toadd = decay_fun(Branch_tonsAcre * Branch,

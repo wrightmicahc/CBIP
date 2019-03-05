@@ -18,14 +18,17 @@ This document tests the time necessary to run all scenarios on a tile.
 
 # Setup
 
-```{r}
-write.csv(Sys.time(),file='~/Desktop/start-time.csv')
-```
-
-Source the scenarios script. This is simply a wrapper function for loading the data, processing, and simulating emissions. It takes a numeric tile number as input, and saves a .csv of emissions estimates.
+Source the scenarios emissions script. This is simply a wrapper function for loading the data, processing, and simulating emissions. It takes a numeric tile number as input, and saves rds of emissions estimates for the tile over 5, 25 year increments. This chunk also sets the ggplot theme.
 
 ```{r}
-source("scripts/scenarios/scenarios.R")
+library(ggplot2)
+
+theme_set(theme_classic() + 
+                  theme(panel.grid.major = element_line(color = "grey90",
+                                                        size = 0.2),
+                        strip.background = element_blank()))
+
+source("scripts/scenarios/scenario_emissions.R")
 ```
 
 # Test
@@ -33,6 +36,39 @@ source("scripts/scenarios/scenarios.R")
 Run the function on a tile full of pixels.
 
 ```{r}
-residue_scenario(657)
-write.csv(Sys.time(),file='~/Desktop/end-time.csv')
+system.time(scenario_emissions(54))
+```
+
+Inspect some of the output.
+
+```{r}
+fpaths <- list.files("data/Tiles/output/residual_fuels/54",
+                     pattern = "Clearcut-Cable-Cut_to_Length-Broadcast", 
+                     recursive = TRUE,
+                     full.names = TRUE)
+
+test_list <- lapply(fpaths, readRDS)
+
+test <- rbindlist(test_list)
+        
+test <- test[, .(sp_ID = paste(x, y, sep = "-"),
+                 Year = Year,
+                 duff_upper_loading = duff_upper_loading,
+                 litter_loading = litter_loading,
+                 hun_hr_sound = hun_hr_sound,
+                 oneK_hr_sound = oneK_hr_sound, 
+                 tenK_hr_sound = tenK_hr_sound, 
+                 tnkp_hr_sound = tnkp_hr_sound,
+                 pile_field = pile_field,
+                 pile_landing = pile_landing)]
+
+
+test_melt <- melt(test,
+               id.vars = c("sp_ID", "Year"),
+               variable.factor = FALSE)
+
+ggplot(test_melt[sp_ID %in% unique(test$sp_ID)[1:100]], 
+       aes(Year, value, group = sp_ID)) +
+        geom_line() +
+        facet_wrap(~ variable)
 ```

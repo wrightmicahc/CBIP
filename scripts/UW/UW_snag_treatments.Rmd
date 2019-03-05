@@ -14,19 +14,227 @@ knitr::opts_knit$set(root.dir = "../..")
 
 # Purpose
 
-This document converts the snag treatment to size-class specific loading values based on the clearcut data set and saves a .csv file for later use.
+This document converts the snag treatment to size-class specific loading values based on the treatment data set and saves a .csv file for later use.
 
 # Setup
 
-Load the necessary packages and functions.
+Load the necessary packages, source functions, and set ggplot theme.
 
 ```{r message=FALSE, warning=FALSE}
 library(foreign)
 library(data.table)
+library(magrittr)
 library(ggplot2)
+library(sf)
+
+source("scripts/UW/volume_functions.R")
+
+theme_set(theme_bw() + 
+                  theme(strip.background = element_blank()))
+```
+
+Define the component ratio partitioning functions, based on Jenkins et al. (2003), "National-scale biomass estimators for United States tree species".
+
+```{r}
+
+biom_fun <- function(b0, b1, dbh) {
+        exp(b0 + (b1 * log(dbh)))
+}
+        
+crat_fun <- function(b0, b1, dbh) {
+        exp(b0 + (b1/dbh))
+}
 ```
 
 # Load Data
+
+Load the table with species names and biomass coefficients.
+
+```{r}
+sp_tab <- as.data.table(readxl::read_xlsx("data/UW/Species.xlsx"))
+```
+
+There are duplicated rows for the resolution we need. Remove these.
+
+```{r}
+sp_tab <- unique(sp_tab, by = "FVSCode")
+```
+
+Load the residual tree lists for snags. It contains all the snags for a given FCID.
+
+```{r warning=FALSE}
+snagTL <- st_read("data/UW/residual_tree_lists/Snags.gdb", "Snags")
+```
+
+Convert it to a data table.
+
+```{r}
+snagTL <- as.data.table(snagTL)
+```
+
+Inspect column names.
+
+```{r}
+names(snagTL) 
+```
+
+Inspect the number of snags that have either 0 volume or 0 trees/acre.
+
+```{r}
+obs_tab <- melt(snagTL[, .(FCID2018, CVTSHard, TPAHard)],
+     id.vars = "FCID2018",
+     value.factor = FALSE) %>%
+        .[, is_empty := ifelse(value == 0, "yes", "no")] %>%
+        .[, .(empty_count = .N), by = c("FCID2018", "variable", "is_empty")]
+        
+summary(obs_tab[is_empty == "yes", empty_count])
+
+ggplot(obs_tab, aes(is_empty, empty_count)) +
+        geom_boxplot()
+```
+
+Are there any FCID where the number of empty values is different between the volume and TPA? The FCID with two obs have different numbers of instances with 0 TPA or volume. 
+
+```{r}
+table(obs_tab[is_empty == "yes", .N, by = c("FCID2018", "empty_count")][, N])
+```
+
+Look at the proportion of trees in each FCID with DBH < 2.5cm.
+
+```{r}
+st_count <- snagTL[, .(small = sum(ifelse(DBH < 0.984252, 1, 0)),
+                       large = sum(ifelse(DBH >= 0.984252, 1, 0))), 
+                   by = FCID2018] %>%
+        .[, prop_small := small/(small + large)]
+        
+ggplot(st_count, aes(prop_small)) + 
+        geom_histogram(bins = 30)
+
+table(st_count$prop_small == 1)
+
+summary(st_count$prop_small)
+
+nrow(st_count[prop_small == 1]) / nrow(st_count)
+```
+
+It looks like a bulk of the FCID have proportions of small trees less than 25%, and only about 1% are totally composed of small trees. Based on this, assign trees with smaller DBH a DBH of 2.5cm, and use the ratio of 2.5cm/DBH to increase height.
+
+```{r}
+snagTL[DBH < 0.984252, HtHard := HtHard * 0.984252/DBH][DBH < 0.984252, DBH := 0.984252]
+```
+
+Calculate the proportion of the stem by size class.
+
+```{r}
+snagTL <- getstem_fun(snagTL)
+```
+
+Join the coefficient table to the snag table. This is an inner join, only matching rows in both tables are kept. This removes eight rows from the snag table with species codes not listed in the lookup table.
+
+```{r}
+snagTL <- merge(snagTL,
+                sp_tab, 
+                by.x = "Species", 
+                by.y = "FVSCode",
+                all = FALSE)
+```
+
+Calculate the total above ground biomass for each snag. DBH is given in inches and the equations are written for cm, so convert inches to cm.
+
+```{r}
+snagTL[, tagb := biom_fun(TAGBB0, TAGBB1, (DBH * 2.54))]
+```
+
+Calculate the proportion of biomass alocated to each catagory. Branches are calculated as the remaining biomass. 
+
+```{r}
+snagTL[, ':='(p_bark = crat_fun(BarkB0, BarkB1, (DBH * 2.54)),
+              p_wood = crat_fun(WoodB0, WoodB1, (DBH * 2.54)),
+              p_foliage = crat_fun(FoliageB0, FoliageB1, (DBH * 2.54)))]
+
+snagTL[, p_branch := 1 - (p_bark + p_wood + p_foliage)]
+```
+
+Check the outputs to make sure they make sense. 
+
+```{r}
+ggplot(melt(snagTL[, .(FCID2018,
+                       p_bark, 
+                       p_wood, 
+                       p_foliage,
+                       p_branch)],
+            id.vars = "FCID2018",
+            variable.factor = FALSE),
+       aes(value)) + 
+        geom_histogram(bins = 50) +
+        facet_wrap(~variable)
+```
+
+Calculate actual load for each class, and aggregate to the FCID level. Save a seperate data set that has the total load for each FCID, to compare against UW data later.
+
+```{r}
+snagTL[, ':=' (bark_lt4 = (p_bark * tagb) * vol_lt4_p,
+               bark_4t6 = (p_bark * tagb) * vol_4t6_p,
+               bark_6t9 = (p_bark * tagb) * vol_6t9_p,
+               bark_ge9 = (p_bark * tagb) * vol_ge9_p,
+               bark_stump = (p_bark * tagb) * vol_stump_p,
+               wood_lt4 = (p_wood * tagb) * vol_lt4_p,
+               wood_4t6 = (p_wood * tagb) * vol_4t6_p,
+               wood_6t9 = (p_wood * tagb) * vol_6t9_p,
+               wood_ge9 = (p_wood * tagb) * vol_ge9_p,
+               wood_stump = (p_wood * tagb) * vol_stump_p,
+               foliage = (p_foliage * tagb),
+               branch = (p_branch * tagb))]
+
+FCID_bio <- snagTL[, .(total_load = sum(tagb),
+                       load_stump = sum(bark_stump) + sum(wood_stump),
+                       load_foliage = sum(foliage)), 
+                   by = FCID2018]
+
+snagTL <- snagTL[, .(load_lt4 = sum(bark_lt4) + sum(wood_lt4),
+                     load_4t6 = sum(bark_4t6) + sum(wood_4t6),
+                     load_6t9 = sum(bark_6t9) + sum(wood_6t9),
+                     load_ge9 = sum(bark_ge9) + sum(wood_ge9),
+                     load_stump = sum(bark_stump) + sum(wood_stump),
+                     load_foliage = sum(foliage),
+                     load_branch = sum(branch),
+                     load_tagb = sum(tagb)), 
+                 by = FCID2018]
+
+snagTL[, ':=' (p_lt4 = load_lt4 / load_tagb,
+               p_4t6 = load_4t6 / load_tagb, 
+               p_6t9 = load_6t9 / load_tagb,
+               p_ge9 = load_ge9 / load_tagb,
+               p_stump = load_stump / load_tagb,
+               p_foliage = load_foliage / load_tagb,
+               p_branch = load_branch / load_tagb)]
+
+snagTL[, total := p_lt4 + p_4t6 + p_6t9 + p_ge9 + p_foliage + p_branch + p_stump]
+
+```
+
+Inspect the proportions.
+
+```{r}
+props <- melt(snagTL[, .(FCID2018, 
+                         p_lt4,
+                         p_4t6,
+                         p_6t9,
+                         p_ge9,
+                         p_stump,
+                         p_foliage,
+                         p_branch, 
+                         total)],
+              id.vars = "FCID2018",
+              variable.name = "size_class", 
+              value.name = "proportion",
+              variable.factor = FALSE)
+
+ggplot(props, aes(size_class, proportion)) +
+        geom_boxplot()
+```
+
+Load the snag biomass table (residue).
 
 ```{r}
 snags <- read.dbf("data/UW/batch_out/Treatment_Snags.dbf",
@@ -34,110 +242,128 @@ snags <- read.dbf("data/UW/batch_out/Treatment_Snags.dbf",
 
 snags <- as.data.table(snags)
 
-clearcut <- fread("data/UW/residue/Remove100Percent.csv")
+setnames(snags, "Value", "FCID2018")
 ```
 
-Calculate the total load for all fuel size classes in the clearcut data. NOTE: Foliage is excluded.
+Check the FCID with snag biomass > 0 that do not have a corresponding entry in the snag tree list.
 
 ```{r}
-clearcut[, total_load := Stem_6t9_tonsAcre + Stem_4t6_tonsAcre + Stem_ge9_tonsAcre + Branch_tonsAcre]
+snags[!(FCID2018 %in%  unique(snagTL$FCID2018)) & SnagB != 0]
 ```
 
-Calculate the proportion of total for each fuel size class.
+There are `r nrow(snags[!(FCID2018 %in%  unique(snagTL$FCID2018)) & SnagB != 0])` FCID with snag biomass that do not have a corresponding entry in the snag tree list. Assign the snag biomass in these FCID to 0, for now.
 
 ```{r}
-get_proportion <- function(x, y) {
-        prop <- ifelse(y == 0, 0, x / y)
-}
-
-clearcut[, ':=' (Stem_6t9_prop = get_proportion(Stem_6t9_tonsAcre, total_load),
-                 Stem_4t6_prop = get_proportion(Stem_4t6_tonsAcre, total_load),
-                 Stem_ge9_prop = get_proportion(Stem_ge9_tonsAcre, total_load),
-                 Branch_prop = get_proportion(Branch_tonsAcre, total_load))]
-
-props <- clearcut[, .(FCID2018, 
-                            Stem_6t9_prop, 
-                            Stem_4t6_prop,
-                            Stem_ge9_prop,
-                            Branch_prop)]
+snags[!(FCID2018 %in%  unique(snagTL$FCID2018)) & SnagB != 0, SnagB := 0]
 ```
 
-Merge the data.
+Merge the biomass and component tables.
 
 ```{r}
-snags[, FCID2018 := Value]
-snags <- merge(snags,
-               props,
-               by = "FCID2018")
+snags <- merge(snags, 
+               snagTL[, .(FCID2018,
+                          p_lt4,
+                          p_4t6,
+                          p_6t9,
+                          p_ge9,
+                          p_stump,
+                          p_foliage,
+                          p_branch)],
+               by = "FCID2018",
+               all.x = TRUE)
 ```
 
-Partition the snag load using the proportions calculated earlier. Include a foliage column, with 0 for all rows. This assumes foliage is lost.
+The join isn't perfect, which creates NAs in the proportion columns. However, the snag biomass is 0 for these cases, so it shouldn't matter.
 
 ```{r}
-snags[, ':=' (Stem_6t9_tonsAcre = (Stem_6t9_prop * SnagB) / 2000,
-              Stem_4t6_tonsAcre = (Stem_4t6_prop * SnagB) / 2000,
-              Stem_ge9_tonsAcre = (Stem_ge9_prop * SnagB) / 2000,
-              Branch_tonsAcre = (Branch_prop * SnagB) / 2000,
-              Foliage_tonsAcre = 0.0)]
+nrow(snags[is.na(p_4t6) & SnagB != 0])
 ```
 
-Trim and save the output.
+Plot the total biomass calculated above with the total biomass from the snag residue table. Trim this down to a sample of 10,000, otherwise the figure is way too big.
 
-```{r}
-output <- snags[, .(FCID2018 = FCID2018,
-                    TPA = SnagTPA,
-                    Stem_6t9_tonsAcre = Stem_6t9_tonsAcre,
-                    Stem_4t6_tonsAcre = Stem_4t6_tonsAcre,
-                    Stem_ge9_tonsAcre = Stem_ge9_tonsAcre,
-                    Branch_tonsAcre = Branch_tonsAcre,
-                    Foliage_tonsAcre = Foliage_tonsAcre)]
-
-fwrite(output, "data/UW/residue/Snags.csv")
+```{r fig.height=10, fig.width=8}
+merge(snags[FCID2018 %in% sample(FCID_bio$FCID2018, 
+                                 size = 10000, 
+                                 replace = FALSE), 
+            .(FCID2018, SnagB)],
+      FCID_bio,
+      by = "FCID2018",
+      all = FALSE) %>%
+        .[, ':=' (toal_load_wo_stump = total_load - load_stump,
+                  toal_load_wo_foliage = total_load - load_foliage,
+                  toal_load_wo_either = total_load - (load_stump + load_foliage))] %>%
+        melt(.,
+             id.vars = c("FCID2018",
+                         "SnagB",
+                         "load_stump",
+                         "load_foliage"),
+             variable.factor = FALSE) %>%
+        ggplot(aes(SnagB, value)) +
+        geom_point() +
+        geom_abline(intercept = 0, slope = 1, color  = "Red") +
+        facet_wrap(~ variable, ncol = 1)
 ```
 
-Inspect some plots.
+Partition the snag load to match the other residue using the proportions calculated earlier. This does not include foliage, so we need to rescale the proportions accordingly. This also assigns the stem less than 4" to the branch catagory to match UW outputs
 
 ```{r}
-output_melted <- melt(output[, .(FCID2018,
-                                 Stem_6t9_tonsAcre,
-                                 Stem_4t6_tonsAcre,
-                                 Stem_ge9_tonsAcre,
-                                 Branch_tonsAcre)], 
-                      id.vars = c("FCID2018"),
-                      measure.vars = c("Stem_6t9_tonsAcre",
-                                       "Stem_4t6_tonsAcre",
-                                       "Stem_ge9_tonsAcre",
-                                       "Branch_tonsAcre"),
-                      variable.name = "size_class", 
-                      value.name = "load",
-                      variable.factor = FALSE)
+snags[, p_nofol := p_lt4 + p_4t6 + p_6t9 + p_ge9 + p_stump + p_branch]
 
-output_melted[, data_set := "Snags"]
+snags[, ':=' (p_branch = p_lt4/p_nofol + p_branch/p_nofol,
+              p_4t6 = p_4t6/p_nofol,
+              p_6t9 = p_6t9/p_nofol,
+              p_ge9 = p_ge9/p_nofol,
+              p_stump = p_stump/p_nofol)]
 
-clearcut_melted <- melt(clearcut[, .(FCID2018,
-                                 Stem_6t9_tonsAcre,
-                                 Stem_4t6_tonsAcre,
-                                 Stem_ge9_tonsAcre,
-                                 Branch_tonsAcre)], 
-                      id.vars = c("FCID2018"),
-                      measure.vars = c("Stem_6t9_tonsAcre",
-                                       "Stem_4t6_tonsAcre",
-                                       "Stem_ge9_tonsAcre",
-                                       "Branch_tonsAcre"),
-                      variable.name = "size_class", 
-                      value.name = "load",
-                      variable.factor = FALSE)
+residue <- snags[, .(FCID2018 = FCID2018,
+                     TPA = SnagTPA,
+                     SnagB = SnagB / 2000,
+                     StumpB = ifelse(SnagB != 0, (SnagB * p_stump) / 2000, 0), 
+                     Stem_6t9_tonsAcre = ifelse(SnagB != 0, (SnagB * p_6t9) / 2000, 0),
+                     Stem_4t6_tonsAcre = ifelse(SnagB != 0, (SnagB * p_4t6) / 2000, 0),
+                     Stem_ge9_tonsAcre = ifelse(SnagB != 0, (SnagB * p_ge9) / 2000, 0),
+                     Branch_tonsAcre = ifelse(SnagB != 0, (SnagB * p_branch) / 2000, 0))] %>%
+                     .[, Total := Stem_6t9_tonsAcre + Stem_4t6_tonsAcre + Stem_ge9_tonsAcre + Branch_tonsAcre + StumpB]
+```
 
-clearcut_melted[, data_set := "Clearcut"]
+Perform some checks. Then remove unecessary columns.
 
-all_melted <- merge(clearcut_melted, 
-                    output_melted, 
-                    by = c("FCID2018", "size_class"),
-                    suffix = c("_clearcut", "_snags"))
+```{r}
+summary(residue$Total - residue$SnagB)
 
-ggplot(all_melted, aes(load_clearcut, load_snags)) +
-        geom_point(alpha = 0.5) +
-        geom_abline(slope = 1, intercept = 0, color = "red") +
-        facet_wrap(~ size_class, scales = "free")
+head(residue[, .(SnagB, Total, StumpB, Total)])
+residue[, c("Total", "StumpB", "SnagB") := NULL]
+```
+
+Save the output.
+
+```{r}
+
+fwrite(residue, "data/UW/residue/Snags.csv")
+```
+
+Inspect some plots of the snag data.
+
+```{r}
+r_melt <- melt(residue,
+               id.vars = c("FCID2018", "TPA"),
+               variable.name = "size_class", 
+               value.name = "load",
+               variable.factor = FALSE)
+
+
+ggplot(r_melt[size_class != "Foliage_tonsAcre"], aes(load)) +
+        geom_histogram(bins = 50) +
+        facet_wrap(~size_class, scales = "free")
+```
+
+Print the functions for reference.
+
+```{r}
+cone_v
+
+fust_v
+
+getstem_fun
 ```
 

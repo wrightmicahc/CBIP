@@ -30,19 +30,22 @@ pile_residue <- function(dt, timestep) {
                      sort = FALSE,
                      allow.cartesian = TRUE)
         
+        # calculate coarse load
+        dt[, CWD := (Stem_ge9_tonsAcre * Stem_ge9) + (Stem_6t9_tonsAcre * Stem_6t9) + (Stem_4t6_tonsAcre * Stem_4t6)]
+        
         # calculate landing pile load
-        dt[, pile_landing := decay_fun(Stem_ge9_tonsAcre * Stem_ge9,
+        dt[, pile_landing := decay_fun(CWD,
                                        CWD_K * pK_coeff,
                                        timestep) + 
-                   decay_fun(Stem_6t9_tonsAcre * Stem_6t9,
-                             CWD_K * pK_coeff,
-                             timestep) +
-                   decay_fun(Stem_4t6_tonsAcre * Stem_4t6,
-                             CWD_K  * pK_coeff,
-                             timestep) +
+                   to_duff_vect(CWD,
+                                CWD_K * pK_coeff,
+                                timestep) +
                    decay_fun(Branch_tonsAcre * Branch,
                              FWD_K * pK_coeff,
                              timestep) +
+                   to_duff_vect(Branch_tonsAcre * Branch,
+                                FWD_K * pK_coeff,
+                                timestep) +
                    decay_foliage(Foliage_tonsAcre * Foliage, 
                                                 Foliage_K * pK_coeff,
                                                 timestep,
@@ -58,7 +61,8 @@ pile_residue <- function(dt, timestep) {
                "Stem_6t9",
                "Stem_4t6",
                "Branch",
-               "Foliage") := NULL]
+               "Foliage",
+               "CWD") := NULL]
         
         # load the lookup table for landing piles
         lookup_field <- fread("data/SERC/lookup_tables/piled_in_field.csv", 
@@ -78,19 +82,22 @@ pile_residue <- function(dt, timestep) {
                      sort = FALSE,
                      allow.cartesian = TRUE)
         
+        # calculate coarse load
+        dt[, CWD := (Stem_ge9_tonsAcre * Stem_ge9) + (Stem_6t9_tonsAcre * Stem_6t9) + (Stem_4t6_tonsAcre * Stem_4t6)]
+        
         # calculate field pile load
-        dt[, pile_field := decay_fun(Stem_ge9_tonsAcre * Stem_ge9,
-                                        CWD_K * pK_coeff,
-                                        timestep) + 
-                   decay_fun(Stem_6t9_tonsAcre * Stem_6t9,
-                             CWD_K * pK_coeff,
-                             timestep) +
-                   decay_fun(Stem_4t6_tonsAcre * Stem_4t6,
-                             CWD_K  * pK_coeff,
-                             timestep) +
+        dt[, pile_field := decay_fun(CWD,
+                                       CWD_K * pK_coeff,
+                                       timestep) + 
+                   to_duff_vect(CWD,
+                                CWD_K * pK_coeff,
+                                timestep) +
                    decay_fun(Branch_tonsAcre * Branch,
                              FWD_K * pK_coeff,
                              timestep) +
+                   to_duff_vect(Branch_tonsAcre * Branch,
+                                FWD_K * pK_coeff,
+                                timestep) +
                    decay_foliage(Foliage_tonsAcre * Foliage, 
                                  Foliage_K * pK_coeff,
                                  timestep,
@@ -106,7 +113,8 @@ pile_residue <- function(dt, timestep) {
                "Stem_6t9",
                "Stem_4t6",
                "Branch",
-               "Foliage") := NULL]
+               "Foliage",
+               "CWD") := NULL]
         
         return(dt)
 }
