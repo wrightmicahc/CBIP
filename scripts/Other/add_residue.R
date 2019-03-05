@@ -88,16 +88,16 @@ add_residue <- function(dt, timestep) {
                    Stem_ge9_toadd_rotten = decay_woody(Stem_ge9_tonsAcre * Stem_ge9, 
                                                        CWD_K,
                                                        timestep,
-                                                       "rotten"),
-                   residue_burned = (litter_toadd + 
-                                             duff_toadd + 
-                                             branch_toadd + 
-                                             Stem_4t9_toadd_sound + 
-                                             Stem_4t9_toadd_rotten + 
-                                             Stem_ge9_toadd_sound + 
-                                             Stem_ge9_toadd_rotten + 
-                                             pile_landing +
-                                             pile_field))]
+                                                       "rotten"))]
+        dt[, residue_burned := (litter_toadd + 
+                                        duff_toadd + 
+                                        branch_toadd + 
+                                        Stem_4t9_toadd_sound + 
+                                        Stem_4t9_toadd_rotten + 
+                                        Stem_ge9_toadd_sound + 
+                                        Stem_ge9_toadd_rotten + 
+                                        pile_landing +
+                                        pile_field)]
         
         # update fuelbed
         dt_plus <- dt[, .(x = x,
