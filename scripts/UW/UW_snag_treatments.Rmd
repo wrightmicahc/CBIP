@@ -304,17 +304,35 @@ merge(snags[FCID2018 %in% sample(FCID_bio$FCID2018,
         facet_wrap(~ variable, ncol = 1)
 ```
 
-Partition the snag load to match the other residue using the proportions calculated earlier. Note that this does not include foliage, it assumes that foliage is gone.
+Partition the snag load to match the other residue using the proportions calculated earlier. This does not include foliage, so we need to rescale the proportions accordingly. This also assigns the stem less than 4" to the branch catagory to match UW outputs
 
 ```{r}
+snags[, p_nofol := p_lt4 + p_4t6 + p_6t9 + p_ge9 + p_stump + p_branch]
+
+snags[, ':=' (p_branch = p_lt4/p_nofol + p_branch/p_nofol,
+              p_4t6 = p_4t6/p_nofol,
+              p_6t9 = p_6t9/p_nofol,
+              p_ge9 = p_ge9/p_nofol,
+              p_stump = p_stump/p_nofol)]
+
 residue <- snags[, .(FCID2018 = FCID2018,
                      TPA = SnagTPA,
+                     SnagB = SnagB / 2000,
+                     StumpB = ifelse(SnagB != 0, (SnagB * p_stump) / 2000, 0), 
                      Stem_6t9_tonsAcre = ifelse(SnagB != 0, (SnagB * p_6t9) / 2000, 0),
                      Stem_4t6_tonsAcre = ifelse(SnagB != 0, (SnagB * p_4t6) / 2000, 0),
                      Stem_ge9_tonsAcre = ifelse(SnagB != 0, (SnagB * p_ge9) / 2000, 0),
-                     Branch_tonsAcre = ifelse(SnagB != 0, (SnagB * p_branch) / 2000, 0),
-                     Foliage_tonsAcre = 0)]
+                     Branch_tonsAcre = ifelse(SnagB != 0, (SnagB * p_branch) / 2000, 0))] %>%
+                     .[, Total := Stem_6t9_tonsAcre + Stem_4t6_tonsAcre + Stem_ge9_tonsAcre + Branch_tonsAcre + StumpB]
+```
 
+Perform some checks. Then remove unecessary columns.
+
+```{r}
+summary(residue$Total - residue$SnagB)
+
+head(residue[, .(SnagB, Total, StumpB, Total)])
+residue[, c("Total", "StumpB", "SnagB") := NULL]
 ```
 
 Save the output.
