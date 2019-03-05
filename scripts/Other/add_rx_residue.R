@@ -30,16 +30,16 @@ add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
                                               Foliage_K, 
                                               timestep,
                                               "duff") + 
-                           to_duff_vect(hun_hr_sound_b,
+                           to_duff(hun_hr_sound_b,
                                         FWD_K,
                                         timestep) +
-                           to_duff_vect(oneK_hr_sound_b,
+                           to_duff(oneK_hr_sound_b,
                                         CWD_K,
                                         timestep) +
-                           to_duff_vect(tenK_hr_sound_b,
+                           to_duff(tenK_hr_sound_b,
                                         CWD_K,
                                         timestep) +
-                           to_duff_vect(tnkp_hr_sound_b,
+                           to_duff(tnkp_hr_sound_b,
                                         CWD_K,
                                         timestep),
                    hun_hr_toadd = decay_fun(hun_hr_sound_b,
