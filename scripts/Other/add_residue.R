@@ -56,10 +56,10 @@ add_residue <- function(dt, timestep) {
                                                     Foliage_K, 
                                                     timestep,
                                                     "duff") + 
-                           to_duff_vect((Branch_tonsAcre * Branch),
+                           to_duff((Branch_tonsAcre * Branch),
                                         FWD_K,
                                         timestep) +
-                           to_duff_vect(CWD,
+                           to_duff(CWD,
                                         CWD_K,
                                         timestep),
                    branch_toadd = decay_fun(Branch_tonsAcre * Branch,
