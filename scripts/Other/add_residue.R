@@ -171,7 +171,7 @@ add_residue <- function(dt, timestep) {
                           one_hr_sound_pr = propfuel(one_hr_sound,
                                                      branch_toadd,
                                                      one_hr_sound_prop),
-                          ten_hr_sound_pr = propfuel(ten_hr_sound_pr,
+                          ten_hr_sound_pr = propfuel(ten_hr_sound,
                                                      branch_toadd,
                                                      ten_hr_sound_prop),
                           hun_hr_sound_pr = propfuel(hun_hr_sound,
