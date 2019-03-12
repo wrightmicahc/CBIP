@@ -31,70 +31,6 @@ cdic <- list("spring" = list("MEAS_Th" = c(-0.097, 4.747),
                           "ADJ_Th" = 1,
                           "NFDRS_Th" = 1.4))
 
-# general emissions factors data, taken directly from fepsef.py in the bluesky
-# emissions framework
-ef_db <- list("flaming" = c("CH4" =  0.003819999999999997,
-                            "CO" = 0.07179999999999997,
-                            "CO2" = 1.6497,
-                            "NH3" = 0.0012063999999999998,
-                            "NOx" = 0.002420000000000001,
-                            "PM10" = 0.008590399999999998,
-                            "PM2.5" = 0.007280000000000002,
-                            "SO2" = 0.00098,
-                            "VOC" = 0.017341999999999996),
-              
-              "smoldering"= c("CH4" = 0.009868000000000002,
-                              "CO" = 0.21011999999999997,
-                              "CO2" = 1.39308,
-                              "NH3" = 0.00341056,
-                              "NOx" = 0.000908,
-                              "PM10" = 0.01962576,
-                              "PM2.5" = 0.016632,
-                              "SO2" = 0.00098,
-                              "VOC" = 0.04902680000000001),
-              
-              "residual"= c("CH4" = 0.009868000000000002,
-                            "CO" = 0.21011999999999997,
-                            "CO2" = 1.39308,
-                            "NH3" = 0.00341056,
-                            "NOx" = 0.000908,
-                            "PM10" = 0.01962576,
-                            "PM2.5" = 0.016632,
-                            "SO2" = 0.00098,
-                            "VOC" = 0.04902680000000001))
-
-# emissions factors data for piles, same as above but with piles ef from Consume
-# source where available
-ef_db_pile <- list("pm" = list("clean" = c("PM10" = 15.5 / 2000,
-                                           "PM2.5" = 13.5 / 2000),
-                               
-                               "vdirty" = c("PM10" = 28 / 2000,
-                                            "PM2.5" = 23.6 / 2000)),
-                   
-                   "flaming" = c("CH4" =  3.28 / 2000,
-                                 "CO" = 52.66 / 2000,
-                                 "CO2" = 3429.24 / 2000,
-                                 "NH3" = 0.0012063999999999998,
-                                 "NOx" = 0.002420000000000001,
-                                 "SO2" = 0.00098,
-                                 "VOC" = 0.017341999999999996),
-                   
-                   "smoldering"= c("CH4" = 11.03 / 2000,
-                                   "CO" = 130.37 / 2000,
-                                   "CO2" = 3089.88 / 2000,
-                                   "NH3" = 0.00341056,
-                                   "NOx" = 0.000908,
-                                   "SO2" = 0.00098,
-                                   "VOC" = 0.04902680000000001),
-                   
-                   "residual"= c("CH4" = 11.03 / 2000,
-                                 "CO" = 130.37 / 2000,
-                                 "CO2" = 3089.88 / 2000,
-                                 "NH3" = 0.00341056,
-                                 "NOx" = 0.000908,
-                                 "SO2" = 0.00098,
-                                 "VOC" = 0.04902680000000001))
-
 ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         # combine all functions together to get consumption in tons/acre for each load
@@ -373,79 +309,11 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                  smoldg_pile_landing = (pile_landing * 0.9) * 0.15,
                  resid_pile_landing = (pile_landing * 0.9) * 0.15)]
         
-        ###################################################
-        # Calculate emissions
-        # #FORMERLY emiss_calc()
-        # we need to export a new data table with just the export data
-        # TODO: possibly write a function for this?
-        ###################################################
-        dt[,':='(flaming = (flamg_1 + 
-                                    flamg_10 + 
-                                    flamg_100 + 
-                                    flamg_OneK_snd +
-                                    flamg_OneK_rot + 
-                                    flamg_tenK_snd + 
-                                    flamg_tenK_rot + 
-                                    flamg_tnkp_snd + 
-                                    flamg_tnkp_rot + 
-                                    flamg_litter + 
-                                    flamg_duff),
-                 flaming_piled = (flamg_pile_field + 
-                                          flamg_pile_landing),
-                 smoldering = (smoldg_1 + 
-                                       smoldg_10 + 
-                                       smoldg_100 + 
-                                       smoldg_OneK_snd +
-                                       smoldg_OneK_rot + 
-                                       smoldg_tenK_snd + 
-                                       smoldg_tenK_rot +
-                                       smoldg_tnkp_snd + 
-                                       smoldg_tnkp_rot + 
-                                       smoldg_litter + 
-                                       smoldg_duff),
-                 smoldering_piled = (smoldg_pile_field +
-                                             smoldg_pile_landing),
-                 residual = (resid_1 + 
-                                     resid_10 + 
-                                     resid_100 + 
-                                     resid_OneK_snd +
-                                     resid_OneK_rot + 
-                                     resid_tenK_snd + 
-                                     resid_tenK_rot + 
-                                     resid_tnkp_snd +
-                                     resid_tnkp_rot +
-                                     resid_litter + 
-                                     resid_duff),
-                 residual_piled = (resid_pile_field + 
-                                          resid_pile_landing))]
-        # Calculate total consumption
-        dt[, ':='(total_unpiled_consumption = (flamg_1 + 
-                                                   flamg_10 + 
-                                                   flamg_100 + 
-                                                   flamg_OneK_snd +
-                                                   flamg_OneK_rot + 
-                                                   flamg_tenK_snd + 
-                                                   flamg_tenK_rot + 
-                                                   flamg_tnkp_snd + 
-                                                   flamg_tnkp_rot + 
-                                                   smoldg_1 + 
-                                                   smoldg_10 + 
-                                                   smoldg_100 + 
-                                                   smoldg_OneK_snd +
-                                                   smoldg_OneK_rot + 
-                                                   smoldg_tenK_snd + 
-                                                   smoldg_tenK_rot +
-                                                   smoldg_tnkp_snd + 
-                                                   smoldg_tnkp_rot + 
-                                                   resid_1 + 
-                                                   resid_10 + 
-                                                   resid_100 + 
-                                                   resid_OneK_snd +
-                                                   resid_OneK_rot + 
-                                                   resid_tenK_snd + 
-                                                   resid_tenK_rot + 
-                                                   resid_tnkp_snd +
-                                                   resid_tnkp_rot),
+        # Calculate total consumption for piled and unpiled fuels
+        dt[, ':='(total_unpiled_consumption = (total_1 + total_10 + total_100 + total_OneK_snd +
+                                                       total_OneK_rot + total_tenK_snd +
+                                                       total_tenK_rot + total_tnkp_snd +
+                                                       total_tnkp_rot + total_litter + total_duff),
                   total_piled_consumption = (flamg_pile_field + 
                                                      flamg_pile_landing +
                                                      smoldg_pile_field +
@@ -462,384 +330,41 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         # calculate total char
         dt[, total_char := unpiled_char + piled_char]
-        
-        dt[,':='(flaming_CH4 = flaming * ef_db$flaming[['CH4']],
-                 flaming_CH4_piled = flaming_piled * ef_db_pile$flaming[['CH4']],
-                 flaming_CO = flaming * ef_db$flaming[['CO']],
-                 flaming_CO_piled = flaming_piled * ef_db_pile$flaming[['CO']],
-                 flaming_CO2 = flaming * ef_db$flaming[['CO2']],
-                 flaming_CO2_piled = flaming_piled * ef_db_pile$flaming[['CO2']],
-                 flaming_NH3 = flaming * ef_db$flaming[['NH3']], 
-                 flaming_NH3_piled = flaming_piled * ef_db_pile$flaming[['NH3']], 
-                 flaming_NOx = flaming * ef_db$flaming[['NOx']],
-                 flaming_NOx_piled = flaming_piled * ef_db_pile$flaming[['NOx']],
-                 flaming_PM10 = flaming * ef_db$flaming[['PM10']],
-                 flaming_PM10_piled_clean = flaming_piled * ef_db_pile$pm$clean[['PM10']], 
-                 flaming_PM10_piled_vdirty = flaming_piled * ef_db_pile$pm$vdirty[['PM10']], 
-                 flaming_PM2.5 = flaming * ef_db$flaming[['PM2.5']], 
-                 flaming_PM2.5_piled_clean = flaming_piled * ef_db_pile$pm$clean[['PM2.5']], 
-                 flaming_PM2.5_piled_vdirty = flaming_piled * ef_db_pile$pm$vdirty[['PM2.5']], 
-                 flaming_SO2 = flaming * ef_db$flaming[['SO2']],
-                 flaming_SO2_piled = flaming_piled * ef_db_pile$flaming[['SO2']],
-                 flaming_VOC = flaming * ef_db$flaming[['VOC']],
-                 flaming_VOC_piled = flaming_piled * ef_db_pile$flaming[['VOC']],
-                 smoldering_CH4 = smoldering * ef_db$smoldering[['CH4']],
-                 smoldering_CH4_piled = smoldering_piled * ef_db_pile$smoldering[['CH4']],
-                 smoldering_CO = smoldering * ef_db$smoldering[['CO']],
-                 smoldering_CO_piled = smoldering_piled * ef_db_pile$smoldering[['CO']],
-                 smoldering_CO2 = smoldering * ef_db$smoldering[['CO2']],
-                 smoldering_CO2_piled = smoldering_piled * ef_db_pile$smoldering[['CO2']],
-                 smoldering_NH3 = smoldering * ef_db$smoldering[['NH3']], 
-                 smoldering_NH3_piled = smoldering_piled * ef_db_pile$smoldering[['NH3']], 
-                 smoldering_NOx = smoldering * ef_db$smoldering[['NOx']],
-                 smoldering_NOx_piled = smoldering_piled * ef_db_pile$smoldering[['NOx']],
-                 smoldering_PM10 = smoldering * ef_db$smoldering[['PM10']],
-                 smoldering_PM10_piled_clean = smoldering_piled * ef_db_pile$pm$clean[['PM10']], 
-                 smoldering_PM10_piled_vdirty = smoldering_piled * ef_db_pile$pm$vdirty[['PM10']], 
-                 smoldering_PM2.5 = smoldering * ef_db$smoldering[['PM2.5']], 
-                 smoldering_PM2.5_piled_clean = smoldering_piled * ef_db_pile$pm$clean[['PM2.5']], 
-                 smoldering_PM2.5_piled_vdirty = smoldering_piled * ef_db_pile$pm$vdirty[['PM2.5']], 
-                 smoldering_SO2 = smoldering * ef_db$smoldering[['SO2']],
-                 smoldering_SO2_piled = smoldering_piled * ef_db_pile$smoldering[['SO2']],
-                 smoldering_VOC = smoldering * ef_db$smoldering[['VOC']],
-                 smoldering_VOC_piled = smoldering_piled * ef_db_pile$smoldering[['VOC']],
-                 residual_CH4 = residual * ef_db$residual[['CH4']],
-                 residual_CH4_piled = residual_piled * ef_db_pile$residual[['CH4']],
-                 residual_CO = residual * ef_db$residual[['CO']],
-                 residual_CO_piled = residual_piled * ef_db_pile$residual[['CO']],
-                 residual_CO2 = residual * ef_db$residual[['CO2']],
-                 residual_CO2_piled = residual_piled * ef_db_pile$residual[['CO2']],
-                 residual_NH3 = residual * ef_db$residual[['NH3']], 
-                 residual_NH3_piled = residual_piled * ef_db_pile$residual[['NH3']], 
-                 residual_NOx = residual * ef_db$residual[['NOx']],
-                 residual_NOx_piled = residual_piled * ef_db_pile$residual[['NOx']],
-                 residual_PM10 = residual * ef_db$residual[['PM10']],
-                 residual_PM10_piled_clean = residual_piled * ef_db_pile$pm$clean[['PM10']], 
-                 residual_PM10_piled_vdirty = residual_piled * ef_db_pile$pm$vdirty[['PM10']], 
-                 residual_PM2.5 = residual * ef_db$residual[['PM2.5']], 
-                 residual_PM2.5_piled_clean = residual_piled * ef_db_pile$pm$clean[['PM2.5']], 
-                 residual_PM2.5_piled_vdirty = residual_piled * ef_db_pile$pm$vdirty[['PM2.5']], 
-                 residual_SO2 = residual * ef_db$residual[['SO2']],
-                 residual_SO2_piled = residual_piled * ef_db_pile$residual[['SO2']],
-                 residual_VOC = residual * ef_db$residual[['VOC']],
-                 residual_VOC_piled = residual_piled * ef_db_pile$residual[['VOC']])]
-        
-        dt[, ':=' (total_CH4 = (flaming_CH4 + flaming_CH4_piled + smoldering_CH4 + smoldering_CH4_piled + residual_CH4 + residual_CH4_piled), 
-                   total_CO = (flaming_CO + flaming_CO_piled + smoldering_CO + smoldering_CO_piled + residual_CO + residual_CO_piled),
-                   total_CO2 = (flaming_CO2 + flaming_CO2_piled + smoldering_CO2 + smoldering_CO2_piled + residual_CO2 + residual_CO2_piled),
-                   total_NH3 = (flaming_NH3 + flaming_NH3_piled + smoldering_NH3 + smoldering_NH3_piled + residual_NH3 + residual_NH3_piled),
-                   total_NOx = (flaming_NOx + flaming_NOx_piled + smoldering_NOx + smoldering_NOx_piled + residual_NOx + residual_NOx_piled),
-                   total_PM10 = (flaming_PM10 + flaming_PM10_piled_clean + smoldering_PM10 + smoldering_PM10_piled_clean + residual_PM10 + residual_PM10_piled_clean),
-                   total_PM2.5 = (flaming_PM2.5 + flaming_PM2.5_piled_clean + smoldering_PM2.5 + smoldering_PM2.5_piled_clean + residual_PM2.5 + residual_PM2.5_piled_clean),
-                   total_SO2 = (flaming_SO2 + flaming_SO2_piled + smoldering_SO2 + smoldering_SO2_piled + residual_SO2 + residual_SO2_piled),
-                   total_VOC = (flaming_VOC + flaming_VOC_piled + smoldering_VOC + smoldering_VOC_piled + residual_VOC + residual_VOC_piled))]
-        
-        # define output data 
-        # TODO: possibly remove phase-specific output?
-        out_dt <- dt[,list(x, 
-                           y,
-                           fuelbed_number, 
-                           FCID2018, 
-                           ID,
-                           Silvicultural_Treatment, 
-                           Harvest_Type,
-                           Harvest_System,
-                           Burn_Type,
-                           Biomass_Collection,
-                           Year,
-                           Slope,
-                           Fm10,
-                           Fm1000,
-                           Wind_corrected,
-                           residue_burned,
-                           duff_upper_loading = (duff_upper_loading - (flamg_duff + smoldg_duff + resid_duff)) * duff_upper_load_pr,
-                           litter_loading = (litter_loading - (flamg_litter + smoldg_litter + resid_litter)) * litter_loading_pr, 
-                           one_hr_sound = 0, 
-                           ten_hr_sound = 0,
-                           hun_hr_sound = (hun_hr_sound - (flamg_100 + smoldg_100 + resid_100)) * hun_hr_sound_pr,
-                           oneK_hr_sound = ((oneK_hr_sound - (flamg_OneK_snd + smoldg_OneK_snd + resid_OneK_snd)) * oneK_hr_sound_pr) + (pile_field - (flamg_pile_field + smoldg_pile_field + resid_pile_field)) + (pile_landing - (flamg_pile_landing + smoldg_pile_landing + resid_pile_landing)),
-                           oneK_hr_rotten = oneK_hr_rotten - (flamg_OneK_rot + smoldg_OneK_rot + resid_OneK_rot),
-                           tenK_hr_sound = (tenK_hr_sound - (flamg_tenK_snd + smoldg_tenK_snd + resid_tenK_snd)) * tenK_hr_sound_pr, 
-                           tenK_hr_rotten = tenK_hr_rotten - (flamg_tenK_rot + smoldg_tenK_rot + resid_tenK_rot),
-                           tnkp_hr_sound = (tnkp_hr_sound - (flamg_tnkp_snd + smoldg_tnkp_snd + resid_tnkp_snd)) * tnkp_hr_sound_pr,
-                           tnkp_hr_rotten = tnkp_hr_rotten - (flamg_tnkp_rot + smoldg_tnkp_rot + resid_tnkp_rot),
-                           pile_field = 0,
-                           pile_landing = 0,
-                           total_char, 
-                           flaming_CH4,
-                           flaming_CH4_piled,
-                           flaming_CO,
-                           flaming_CO_piled,
-                           flaming_CO2,
-                           flaming_CO2_piled, 
-                           flaming_NH3,
-                           flaming_NH3_piled,
-                           flaming_NOx,
-                           flaming_NOx_piled,
-                           flaming_PM10,
-                           flaming_PM10_piled_clean,
-                           flaming_PM10_piled_vdirty,
-                           flaming_PM2.5,
-                           flaming_PM2.5_piled_clean,
-                           flaming_PM2.5_piled_vdirty,
-                           flaming_SO2,
-                           flaming_SO2_piled,
-                           flaming_VOC,
-                           flaming_VOC_piled,
-                           smoldering_CH4,
-                           smoldering_CH4_piled,
-                           smoldering_CO,
-                           smoldering_CO_piled,
-                           smoldering_CO2,
-                           smoldering_CO2_piled, 
-                           smoldering_NH3,
-                           smoldering_NH3_piled,
-                           smoldering_NOx,
-                           smoldering_NOx_piled,
-                           smoldering_PM10,
-                           smoldering_PM10_piled_clean,
-                           smoldering_PM10_piled_vdirty,
-                           smoldering_PM2.5,
-                           smoldering_PM2.5_piled_clean,
-                           smoldering_PM2.5_piled_vdirty,
-                           smoldering_SO2,
-                           smoldering_SO2_piled,
-                           smoldering_VOC,
-                           smoldering_VOC_piled,
-                           residual_CH4,
-                           residual_CH4_piled,
-                           residual_CO,
-                           residual_CO_piled,
-                           residual_CO2,
-                           residual_CO2_piled, 
-                           residual_NH3,
-                           residual_NH3_piled,
-                           residual_NOx,
-                           residual_NOx_piled,
-                           residual_PM10,
-                           residual_PM10_piled_clean,
-                           residual_PM10_piled_vdirty,
-                           residual_PM2.5,
-                           residual_PM2.5_piled_clean,
-                           residual_PM2.5_piled_vdirty,
-                           residual_SO2,
-                           residual_SO2_piled,
-                           residual_VOC,
-                           residual_VOC_piled,
-                           total_CH4, 
-                           total_CO, 
-                           total_CO2,
-                           total_NH3,
-                           total_NOx, 
-                           total_PM10, 
-                           total_PM2.5,
-                           total_SO2, 
-                           total_VOC)]
-        
-        return(out_dt)
 
 }
 
-ccon_activity_piled_only_fast <- function(dt){
-        ###################################################
-        # pile consumption
-        # #FORMERLY ccon_piled()
-        # First in field
-        ###################################################
-        dt[, ':=' (flamg_pile_field = (pile_field * 0.9) * 0.7,
-                   smoldg_pile_field = (pile_field * 0.9) * 0.15,
-                   resid_pile_field = (pile_field * 0.9) * 0.15)]
+ccon_activity_piled_only_fast <- function(dt, burn_type) {
         
-        ###################################################
-        # pile consumption
-        # #FORMERLY ccon_piled()
-        # Next for landing piles
-        ###################################################
-        dt[, ':=' (flamg_pile_landing = (pile_landing * 0.9) * 0.7,
-                   smoldg_pile_landing = (pile_landing * 0.9) * 0.15,
-                   resid_pile_landing = (pile_landing * 0.9) * 0.15)]
+        if(burn_type == "Pile") {
+                
+                dt[, ':=' (flamg_pile_landing = (pile_landing * 0.9) * 0.7,
+                           smoldg_pile_landing = (pile_landing * 0.9) * 0.15,
+                           resid_pile_landing = (pile_landing * 0.9) * 0.15,
+                           flamg_pile_field = 0.0,
+                           smoldg_pile_field = 0.0,
+                           resid_pile_field = 0.0)]
+                
+        } 
         
+        if(burn_type == "Jackpot") { 
+                
+                dt[, ':=' (flamg_pile_landing = (pile_landing * 0.9) * 0.7,
+                           smoldg_pile_landing = (pile_landing * 0.9) * 0.15,
+                           resid_pile_landing = (pile_landing * 0.9) * 0.15,
+                           flamg_pile_field = (pile_field * 0.9) * 0.7,
+                           smoldg_pile_field = (pile_field * 0.9) * 0.15,
+                           resid_pile_field = (pile_field * 0.9) * 0.15)]
+        }
         
-        dt[, ':=' (flaming = (flamg_pile_field + flamg_pile_landing),
-                   smoldering = (smoldg_pile_field + smoldg_pile_landing),
-                   residual = (resid_pile_field + resid_pile_landing))]
-        
-        dt[, ':='(total_piled_consumption = (flaming +
-                                                 smoldering +
-                                                 residual))]
+        dt[, ':='(total_unpiled_consumption = 0.0,
+                  total_piled_consumption = (flamg_pile_landing +
+                                                     smoldg_pile_landing +
+                                                     resid_pile_landing +
+                                                     flamg_pile_field +
+                                                     smoldg_pile_field +
+                                                     resid_pile_field))]
         
         dt[, total_char := total_piled_consumption * 0.01]
         
-        dt[, ':=' (flaming_CH4 = 0,
-                   flaming_CH4_piled = flaming * ef_db_pile$flaming[['CH4']], 
-                   flaming_CO = 0,
-                   flaming_CO_piled = flaming * ef_db_pile$flaming[['CO']], 
-                   flaming_CO2 = 0,
-                   flaming_CO2_piled = flaming * ef_db_pile$flaming[['CO2']], 
-                   flaming_NH3 = 0,
-                   flaming_NH3_piled = flaming * ef_db_pile$flaming[['NH3']],
-                   flaming_NOx = 0,
-                   flaming_NOx_piled = flaming * ef_db_pile$flaming[['NOx']], 
-                   flaming_PM10 = 0,
-                   flaming_PM10_piled_clean = flaming * ef_db_pile$pm$clean[['PM10']],
-                   flaming_PM10_piled_vdirty = flaming * ef_db_pile$pm$vdirty[['PM10']],
-                   flaming_PM2.5 = 0,
-                   flaming_PM2.5_piled_clean = flaming * ef_db_pile$pm$clean[['PM2.5']], 
-                   flaming_PM2.5_piled_vdirty = flaming * ef_db_pile$pm$vdirty[['PM2.5']], 
-                   flaming_SO2 = 0,
-                   flaming_SO2_piled = flaming * ef_db_pile$flaming[['SO2']], 
-                   flaming_VOC = 0,
-                   flaming_VOC_piled = flaming * ef_db_pile$flaming[['VOC']],
-                   smoldering_CH4 = 0,
-                   smoldering_CH4_piled = smoldering * ef_db_pile$smoldering[['CH4']], 
-                   smoldering_CO = 0,
-                   smoldering_CO_piled = smoldering * ef_db_pile$smoldering[['CO']], 
-                   smoldering_CO2 = 0,
-                   smoldering_CO2_piled = smoldering * ef_db_pile$smoldering[['CO2']],
-                   smoldering_NH3 = 0,
-                   smoldering_NH3_piled = smoldering * ef_db_pile$smoldering[['NH3']], 
-                   smoldering_NOx = 0,
-                   smoldering_NOx_piled = smoldering * ef_db_pile$smoldering[['NOx']], 
-                   smoldering_PM10 = 0,
-                   smoldering_PM10_piled_clean = smoldering * ef_db_pile$pm$clean[['PM10']], 
-                   smoldering_PM10_piled_vdirty = smoldering * ef_db_pile$pm$vdirty[['PM10']], 
-                   smoldering_PM2.5 = 0,
-                   smoldering_PM2.5_piled_clean = smoldering * ef_db_pile$pm$clean[['PM2.5']], 
-                   smoldering_PM2.5_piled_vdirty = smoldering * ef_db_pile$pm$vdirty[['PM2.5']], 
-                   smoldering_SO2 = 0,
-                   smoldering_SO2_piled = smoldering * ef_db_pile$smoldering[['SO2']], 
-                   smoldering_VOC = 0,
-                   smoldering_VOC_piled = smoldering * ef_db_pile$smoldering[['VOC']],
-                   residual_CH4 = 0,
-                   residual_CH4_piled = residual * ef_db_pile$residual[['CH4']], 
-                   residual_CO = 0,
-                   residual_CO_piled = residual * ef_db_pile$residual[['CO']], 
-                   residual_CO2 = 0,
-                   residual_CO2_piled = residual * ef_db_pile$residual[['CO2']],
-                   residual_NH3 = 0,
-                   residual_NH3_piled = residual * ef_db_pile$residual[['NH3']], 
-                   residual_NOx = 0,
-                   residual_NOx_piled = residual * ef_db_pile$residual[['NOx']], 
-                   residual_PM10 = 0,
-                   residual_PM10_piled_clean = residual * ef_db_pile$pm$clean[['PM10']], 
-                   residual_PM10_piled_vdirty = residual * ef_db_pile$pm$vdirty[['PM10']], 
-                   residual_PM2.5 = 0,
-                   residual_PM2.5_piled_clean = residual * ef_db_pile$pm$clean[['PM2.5']], 
-                   residual_PM2.5_piled_vdirty = residual * ef_db_pile$pm$vdirty[['PM2.5']], 
-                   residual_SO2 = 0,
-                   residual_SO2_piled = residual * ef_db_pile$residual[['SO2']], 
-                   residual_VOC = 0,
-                   residual_VOC_piled = residual * ef_db_pile$residual[['VOC']])]
-        
-        dt[, ':=' (total_CH4 = (flaming_CH4_piled + smoldering_CH4_piled + residual_CH4_piled), 
-                   total_CO = (flaming_CO_piled + smoldering_CO_piled + residual_CO_piled),
-                   total_CO2 = (flaming_CO2_piled + smoldering_CO2_piled + residual_CO2_piled),
-                   total_NH3 = (flaming_NH3_piled + smoldering_NH3_piled + residual_NH3_piled),
-                   total_NOx = (flaming_NOx_piled + smoldering_NOx_piled + residual_NOx_piled),
-                   total_PM10 = (flaming_PM10_piled_clean + smoldering_PM10_piled_clean + residual_PM10_piled_clean),
-                   total_PM2.5 = (flaming_PM2.5_piled_clean + smoldering_PM2.5_piled_clean + residual_PM2.5_piled_clean),
-                   total_SO2 = (flaming_SO2_piled + smoldering_SO2_piled + residual_SO2_piled),
-                   total_VOC = (flaming_VOC_piled + smoldering_VOC_piled + residual_VOC_piled))]
-        
-        out_dt <- dt[,list(x, 
-                           y,
-                           fuelbed_number,
-                           FCID2018, ID, 
-                           Silvicultural_Treatment,
-                           Harvest_Type,
-                           Harvest_System,
-                           Burn_Type,
-                           Biomass_Collection, 
-                           Year,
-                           Slope,
-                           Fm10,
-                           Fm1000,
-                           Wind_corrected,
-                           residue_burned = pile_field + pile_landing,
-                           duff_upper_loading = duff_upper_loading,
-                           litter_loading = litter_loading, 
-                           one_hr_sound = one_hr_sound, 
-                           ten_hr_sound = ten_hr_sound,
-                           hun_hr_sound = hun_hr_sound,
-                           oneK_hr_sound = oneK_hr_sound + (pile_field - (flamg_pile_field + smoldg_pile_field + resid_pile_field)) + (pile_landing - (flamg_pile_landing + smoldg_pile_landing + resid_pile_landing)),
-                           oneK_hr_rotten = oneK_hr_rotten,
-                           tenK_hr_sound = tenK_hr_sound, 
-                           tenK_hr_rotten = tenK_hr_rotten,
-                           tnkp_hr_sound = tnkp_hr_sound,
-                           tnkp_hr_rotten = tnkp_hr_rotten,
-                           pile_field = 0,
-                           pile_landing = 0,
-                           total_char, 
-                           flaming_CH4,
-                           flaming_CH4_piled,
-                           flaming_CO,
-                           flaming_CO_piled,
-                           flaming_CO2,
-                           flaming_CO2_piled, 
-                           flaming_NH3,
-                           flaming_NH3_piled,
-                           flaming_NOx,
-                           flaming_NOx_piled,
-                           flaming_PM10,
-                           flaming_PM10_piled_clean,
-                           flaming_PM10_piled_vdirty,
-                           flaming_PM2.5,
-                           flaming_PM2.5_piled_clean,
-                           flaming_PM2.5_piled_vdirty,
-                           flaming_SO2,
-                           flaming_SO2_piled,
-                           flaming_VOC,
-                           flaming_VOC_piled,
-                           smoldering_CH4,
-                           smoldering_CH4_piled,
-                           smoldering_CO,
-                           smoldering_CO_piled,
-                           smoldering_CO2,
-                           smoldering_CO2_piled, 
-                           smoldering_NH3,
-                           smoldering_NH3_piled,
-                           smoldering_NOx,
-                           smoldering_NOx_piled,
-                           smoldering_PM10,
-                           smoldering_PM10_piled_clean,
-                           smoldering_PM10_piled_vdirty,
-                           smoldering_PM2.5,
-                           smoldering_PM2.5_piled_clean,
-                           smoldering_PM2.5_piled_vdirty,
-                           smoldering_SO2,
-                           smoldering_SO2_piled,
-                           smoldering_VOC,
-                           smoldering_VOC_piled,
-                           residual_CH4,
-                           residual_CH4_piled,
-                           residual_CO,
-                           residual_CO_piled,
-                           residual_CO2,
-                           residual_CO2_piled, 
-                           residual_NH3,
-                           residual_NH3_piled,
-                           residual_NOx,
-                           residual_NOx_piled,
-                           residual_PM10,
-                           residual_PM10_piled_clean,
-                           residual_PM10_piled_vdirty,
-                           residual_PM2.5,
-                           residual_PM2.5_piled_clean,
-                           residual_PM2.5_piled_vdirty,
-                           residual_SO2,
-                           residual_SO2_piled,
-                           residual_VOC,
-                           residual_VOC_piled,
-                           total_CH4, 
-                           total_CO, 
-                           total_CO2,
-                           total_NH3,
-                           total_NOx, 
-                           total_PM10, 
-                           total_PM2.5,
-                           total_SO2, 
-                           total_VOC)]
-        
-        return(out_dt)
 }
         
