@@ -31,6 +31,16 @@ cdic <- list("spring" = list("MEAS_Th" = c(-0.097, 4.747),
                           "ADJ_Th" = 1,
                           "NFDRS_Th" = 1.4))
 
+# function to calculate char in unpiled fuels
+char_scat <- function(m_cons) {
+        ifelse((m_cons * ((11.30534 + -0.63064 * m_cons) / 100)) < 0, 0, (m_cons * ((11.30534 + -0.63064 * m_cons) / 100)))
+}
+
+# char for piles
+char_pile <- function(m_cons) {
+        m_cons * 0.01
+}
+
 ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         # combine all functions together to get consumption in tons/acre for each load
@@ -309,27 +319,92 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                  smoldg_pile_landing = (pile_landing * 0.9) * 0.15,
                  resid_pile_landing = (pile_landing * 0.9) * 0.15)]
         
-        # Calculate total consumption for piled and unpiled fuels
-        dt[, ':='(total_unpiled_consumption = (total_1 + total_10 + total_100 + total_OneK_snd +
-                                                       total_OneK_rot + total_tenK_snd +
-                                                       total_tenK_rot + total_tnkp_snd +
-                                                       total_tnkp_rot + total_litter + total_duff),
-                  total_piled_consumption = (flamg_pile_field + 
-                                                     flamg_pile_landing +
-                                                     smoldg_pile_field +
-                                                     smoldg_pile_landing +
-                                                     resid_pile_field + 
-                                                     resid_pile_landing))]
+        # aggregate the data as much as possible to get residue only and total by combustion phase
+        # first aggregate the total consumed by combustion phase
+        c_phase <- c("flamg", "smoldg", "resid")
+        size <- c("duff", "litter", "1", "10", "100", paste(rep(c("OneK", "tenK", "tnkp"), each = 2), c("snd", "rot"), sep = "_"), "pile_field", "pile_landing")
+
+        # loop though each combo and get the total consumption by emissions phase
+        # flaming
+        for (col in c_phase) {
+                dt[ , paste("total", (col), sep = "_") := rowSums(.SD), .SDcols = paste((col), size, sep = "_")]
+        }
         
-        # calculate char
-        dt[, ':='(unpiled_char =  total_unpiled_consumption * ((11.30534 + -0.63064 * total_unpiled_consumption) / 100),
-                  piled_char = total_piled_consumption * 0.01)]
+        # now aggregate consumed data, but only consider actual residues
+        # this assumes that the proportion of the fuel that is residue is 
+        # the same as the proportion of the consumed fuel that is residue
+        dt[, ':=' (flamg_duff_residue = flamg_duff * duff_upper_load_pr,
+                   smoldg_duff_residue = smoldg_duff * duff_upper_load_pr,
+                   resid_duff_residue = resid_duff * duff_upper_load_pr,
+                   flamg_foliage_residue = flamg_litter * litter_loading_pr,
+                   smoldg_foliage_residue = smoldg_litter * litter_loading_pr,
+                   resid_foliage_residue = resid_litter * litter_loading_pr,
+                   flamg_fwd_residue = ((flamg_1 * one_hr_sound_pr) +
+                                                (flamg_10 * ten_hr_sound_pr) +
+                                                (flamg_100 * hun_hr_sound_pr)),
+                   flamg_cwd_residue = ((flamg_OneK_snd * oneK_hr_sound_pr) +
+                                                (flamg_OneK_rot * oneK_hr_rotten_pr) +
+                                                (flamg_tenK_snd * tenK_hr_sound_pr) +
+                                                (flamg_tenK_rot * tenK_hr_rotten_pr) +
+                                                (flamg_tnkp_snd * tnkp_hr_sound_pr) +
+                                                (flamg_tnkp_rot * tnkp_hr_rotten_pr)),
+                   smoldg_fwd_residue = ((smoldg_1 * one_hr_sound_pr) +
+                                                (smoldg_10 * ten_hr_sound_pr) +
+                                                (smoldg_100 * hun_hr_sound_pr)),
+                   smoldg_cwd_residue = ((smoldg_OneK_snd * oneK_hr_sound_pr) +
+                                                (smoldg_OneK_rot * oneK_hr_rotten_pr) +
+                                                (smoldg_tenK_snd * tenK_hr_sound_pr) +
+                                                (smoldg_tenK_rot * tenK_hr_rotten_pr) +
+                                                (smoldg_tnkp_snd * tnkp_hr_sound_pr) +
+                                                (smoldg_tnkp_rot * tnkp_hr_rotten_pr)),
+                   resid_fwd_residue = ((resid_1 * one_hr_sound_pr) +
+                                                 (resid_10 * ten_hr_sound_pr) +
+                                                 (resid_100 * hun_hr_sound_pr)),
+                   resid_cwd_residue = ((resid_OneK_snd * oneK_hr_sound_pr) +
+                                                 (resid_OneK_rot * oneK_hr_rotten_pr) +
+                                                 (resid_tenK_snd * tenK_hr_sound_pr) +
+                                                 (resid_tenK_rot * tenK_hr_rotten_pr) +
+                                                 (resid_tnkp_snd * tnkp_hr_sound_pr) +
+                                                 (resid_tnkp_rot * tnkp_hr_rotten_pr)))]
         
-        # trim to positive
-        dt[unpiled_char < 0, unpiled_char := 0]
-        
-        # calculate total char
-        dt[, total_char := unpiled_char + piled_char]
+        # remove all the unnecessary columns
+        dt[, c("hfc",
+               "fm_10hrc",
+               "fm_10hradj",
+               "pct_hun_hr",
+               "adjfm_1000hr",
+               "mask_spring",
+               "mask_trans",
+               "mask_summer",
+               "spring_ff",
+               "m",
+               "b" ,
+               "diam_reduction_seas",
+               "diam_reduction",
+               "flamg_portion",
+               "flam_DRED",
+               "YADJ", 
+               "duff_depth",
+               "days_to_moist",
+               "days_to_dry",
+               "pct_redux",
+               "oneK_redux",
+               "tenK_redux",
+               "wet_df_redux",
+               "moist_df_redux",
+               "moist_days_quotient",
+               "adj_wet_duff_redux",
+               "dry_df_redux",
+               "duff_reduction",
+               "duff_reduction2",
+               "ffr_total_depth",
+               "duff_quotient",
+               "calculated_reduction",
+               "ffr",
+               "litter_reduction",
+               "ffr_errorflag",
+               "litter_proportional_reduction",
+               "duff_proportional_reduction") := NULL]
 
 }
 
@@ -355,16 +430,6 @@ ccon_activity_piled_only_fast <- function(dt, burn_type) {
                            smoldg_pile_field = (pile_field * 0.9) * 0.15,
                            resid_pile_field = (pile_field * 0.9) * 0.15)]
         }
-        
-        dt[, ':='(total_unpiled_consumption = 0.0,
-                  total_piled_consumption = (flamg_pile_landing +
-                                                     smoldg_pile_landing +
-                                                     resid_pile_landing +
-                                                     flamg_pile_field +
-                                                     smoldg_pile_field +
-                                                     resid_pile_field))]
-        
-        dt[, total_char := total_piled_consumption * 0.01]
         
 }
         
