@@ -304,25 +304,16 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         ###################################################
         # pile consumption
         # #FORMERLY ccon_piled()
-        # First in field
+        # this is combined for wildfire scenarios
         ###################################################
-        dt[,':='(flamg_pile_field = (pile_field * 0.9) * 0.7,
-                 smoldg_pile_field = (pile_field * 0.9) * 0.15,
-                 resid_pile_field = (pile_field * 0.9) * 0.15)]
-        
-        ###################################################
-        # pile consumption
-        # #FORMERLY ccon_piled()
-        # Next for landing piles
-        ###################################################
-        dt[,':='(flamg_pile_landing = (pile_landing * 0.9) * 0.7,
-                 smoldg_pile_landing = (pile_landing * 0.9) * 0.15,
-                 resid_pile_landing = (pile_landing * 0.9) * 0.15)]
+        dt[,':='(flamg_pile = ((pile_field * 0.9) * 0.7) + ((pile_landing * 0.9) * 0.7),
+                 smoldg_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15),
+                 resid_pile_field = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15))]
         
         # aggregate the data as much as possible to get residue only and total by combustion phase
         # first aggregate the total consumed by combustion phase
         c_phase <- c("flamg", "smoldg", "resid")
-        size <- c("duff", "litter", "1", "10", "100", paste(rep(c("OneK", "tenK", "tnkp"), each = 2), c("snd", "rot"), sep = "_"), "pile_field", "pile_landing")
+        size <- c("duff", "litter", "1", "10", "100", paste(rep(c("OneK", "tenK", "tnkp"), each = 2), c("snd", "rot"), sep = "_"))
 
         # loop though each combo and get the total consumption by emissions phase
         # flaming
@@ -412,23 +403,17 @@ ccon_activity_piled_only_fast <- function(dt, burn_type) {
         
         if(burn_type == "Pile") {
                 
-                dt[, ':=' (flamg_pile_landing = (pile_landing * 0.9) * 0.7,
-                           smoldg_pile_landing = (pile_landing * 0.9) * 0.15,
-                           resid_pile_landing = (pile_landing * 0.9) * 0.15,
-                           flamg_pile_field = 0.0,
-                           smoldg_pile_field = 0.0,
-                           resid_pile_field = 0.0)]
+                dt[, ':=' (flamg_pile = (pile_landing * 0.9) * 0.7,
+                           smoldg_pile = (pile_landing * 0.9) * 0.15,
+                           resid_pile = (pile_landing * 0.9) * 0.15)]
                 
         } 
         
         if(burn_type == "Jackpot") { 
                 
-                dt[, ':=' (flamg_pile_landing = (pile_landing * 0.9) * 0.7,
-                           smoldg_pile_landing = (pile_landing * 0.9) * 0.15,
-                           resid_pile_landing = (pile_landing * 0.9) * 0.15,
-                           flamg_pile_field = (pile_field * 0.9) * 0.7,
-                           smoldg_pile_field = (pile_field * 0.9) * 0.15,
-                           resid_pile_field = (pile_field * 0.9) * 0.15)]
+                dt[,':='(flamg_pile = ((pile_field * 0.9) * 0.7) + ((pile_landing * 0.9) * 0.7),
+                         smoldg_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15),
+                         resid_pile_field = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15))]
         }
         
 }
