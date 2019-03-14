@@ -22,7 +22,8 @@ add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
                               tenK_hr_rotten_b = tenK_hr_rotten,
                               tnkp_hr_sound_b = tnkp_hr_sound,
                               tnkp_hr_rotten_b = tnkp_hr_rotten,
-                              litter_loading_b = litter_loading)],
+                              litter_loading_b = litter_loading,
+                              duff_upper_loading_b = duff_upper_loading)],
                     by = c("x", "y"))
         
         dt[, ':=' (litter_toadd = decay_foliage(litter_loading_b, 
@@ -53,7 +54,8 @@ add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
                                    timestep) +
                            to_duff(tnkp_hr_rotten_b,
                                    CWD_K,
-                                   timestep),
+                                   timestep) +
+                           duff_upper_loading_b,
                    hun_hr_toadd = decay_fun(hun_hr_sound_b,
                                             FWD_K,
                                             timestep),
@@ -90,27 +92,15 @@ add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
                                                    decay_fun(tnkp_hr_rotten_b,
                                                              CWD_K,
                                                              timestep)))]
-        dt[, residue_burned := (litter_toadd + 
-                                        duff_toadd + 
-                                        hun_hr_toadd + 
-                                        oneK_hr_sound_toadd + 
-                                        oneK_hr_rotten_toadd + 
-                                        tenK_hr_sound_toadd +
-                                        tenK_hr_rotten_toadd +
-                                        tnkp_hr_sound_toadd + 
-                                        tnkp_hr_rotten_toadd)]
-        
-        dt[, ':=' (hun_hr_sound = hun_hr_sound + hun_hr_toadd,
-                   oneK_hr_sound = oneK_hr_sound + oneK_hr_sound_toadd,
-                   oneK_hr_rotten = oneK_hr_rotten + oneK_hr_rotten_toadd,
-                   tenK_hr_sound = tenK_hr_sound + tenK_hr_sound_toadd,
-                   tenK_hr_rotten = tenK_hr_rotten + tenK_hr_rotten_toadd,
-                   tnkp_hr_sound = tnkp_hr_sound + tnkp_hr_sound_toadd,
-                   tnkp_hr_rotten = tnkp_hr_rotten + tnkp_hr_rotten_toadd,
-                   duff_upper_loading = duff_upper_loading + duff_toadd,
-                   litter_loading = litter_loading + litter_toadd,
-                   pile_field = 0,
-                   pile_landing = 0)]
+        dt[, ':=' (residue_burned = (litter_toadd + 
+                                             duff_toadd + 
+                                             hun_hr_toadd + 
+                                             oneK_hr_sound_toadd + 
+                                             oneK_hr_rotten_toadd + 
+                                             tenK_hr_sound_toadd +
+                                             tenK_hr_rotten_toadd +
+                                             tnkp_hr_sound_toadd + 
+                                             tnkp_hr_rotten_toadd))]
         
         dt[, ':=' (duff_upper_load_pr = propfuel(duff_upper_loading,
                                                  duff_toadd,
@@ -125,21 +115,35 @@ add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
                                                oneK_hr_sound_toadd,
                                                1),
                    oneK_hr_rotten_pr = propfuel(oneK_hr_rotten,
-                                               oneK_hr_rotten_toadd,
-                                               1),
+                                                oneK_hr_rotten_toadd,
+                                                1),
                    tenK_hr_sound_pr = propfuel(tenK_hr_sound,
                                                tenK_hr_sound_toadd,
                                                1),
                    tenK_hr_rotten_pr = propfuel(tenK_hr_rotten,
-                                               tenK_hr_rotten_toadd,
-                                               1),
+                                                tenK_hr_rotten_toadd,
+                                                1),
                    tnkp_hr_sound_pr = propfuel(tnkp_hr_sound,
                                                tnkp_hr_sound_toadd,
                                                1),
                    tnkp_hr_rotten_pr = propfuel(tnkp_hr_rotten,
-                                               tnkp_hr_rotten_toadd,
-                                               1),
+                                                tnkp_hr_rotten_toadd,
+                                                1),
                    Year = timestep)]
+        
+        dt[, ':=' (hun_hr_sound = hun_hr_sound + hun_hr_toadd,
+                   oneK_hr_sound = oneK_hr_sound + oneK_hr_sound_toadd,
+                   oneK_hr_rotten = oneK_hr_rotten + oneK_hr_rotten_toadd,
+                   tenK_hr_sound = tenK_hr_sound + tenK_hr_sound_toadd,
+                   tenK_hr_rotten = tenK_hr_rotten + tenK_hr_rotten_toadd,
+                   tnkp_hr_sound = tnkp_hr_sound + tnkp_hr_sound_toadd,
+                   tnkp_hr_rotten = tnkp_hr_rotten + tnkp_hr_rotten_toadd,
+                   duff_upper_loading = duff_upper_loading + duff_toadd,
+                   litter_loading = litter_loading + litter_toadd,
+                   pile_field = 0,
+                   pile_landing = 0)]
+        
+        
         
         dt[, ':='  (duff_upper_depth = zero_div(duff_upper_loading,
                                                 duff_upper_ratio),
