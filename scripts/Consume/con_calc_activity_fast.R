@@ -308,7 +308,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         ###################################################
         dt[,':='(flamg_pile = ((pile_field * 0.9) * 0.7) + ((pile_landing * 0.9) * 0.7),
                  smoldg_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15),
-                 resid_pile_field = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15))]
+                 resid_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15))]
         
         # aggregate the data as much as possible to get residue only and total by combustion phase
         # first aggregate the total consumed by combustion phase
@@ -413,7 +413,7 @@ ccon_activity_piled_only_fast <- function(dt, burn_type) {
                 
                 dt[,':='(flamg_pile = ((pile_field * 0.9) * 0.7) + ((pile_landing * 0.9) * 0.7),
                          smoldg_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15),
-                         resid_pile_field = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15))]
+                         resid_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15))]
         }
         
 }
