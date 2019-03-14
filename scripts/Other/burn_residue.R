@@ -5,8 +5,9 @@
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
-# source function that calculates consumption and emissions
+# source functions that calculate consumption and emissions
 source("scripts/Consume/con_calc_activity_fast.R")
+source("scripts/Consume/calc_emissions.R")
 
 burn_residue <- function(dt, burn_type) {
         
