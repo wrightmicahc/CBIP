@@ -20,6 +20,8 @@ burn_residue <- function(dt, burn_type) {
                                                      days_since_rain = 50,
                                                      DRR = DRR)
                 
+                emissions_df <- calc_emissions(consumption_df)
+                
         }
         
         if(burn_type  == "Broadcast") {
@@ -31,6 +33,8 @@ burn_residue <- function(dt, burn_type) {
                                                      days_since_rain = 50,
                                                      DRR = DRR)
                 
+                emissions_df <- calc_emissions(consumption_df)
+                
         }
         
         if(burn_type %in% c("Pile",
@@ -38,7 +42,9 @@ burn_residue <- function(dt, burn_type) {
                 
                 consumption_df <- ccon_activity_piled_only_fast(dt, burn_type)
                 
+                emissions_df <- calc_emissions(consumption_df)
+                
         }
         
-        return(consumption_df)
+        return(emissions_df)
 }
