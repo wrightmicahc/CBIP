@@ -188,6 +188,19 @@ calc_emissions <- function(dt, burn_type) {
                    total_fwd_consumed = (flamg_fwd_residue + smoldg_fwd_residue + resid_fwd_residue),
                    total_cwd_consumed = (flamg_cwd_residue + smoldg_cwd_residue + resid_cwd_residue))]
         
+        # calculate total exposed biomass for residue only'
+        dt[, ':=' (total_duff_exposed = (duff_upper_loading * duff_upper_load_pr),
+                   total_foliage_exposed = (litter_loading * litter_loading_pr),
+                   total_fwd_exposed = ((one_hr_sound * one_hr_sound_pr) +
+                                                (ten_hr_sound * ten_hr_sound_pr) +
+                                                (hun_hr_sound * hun_hr_sound_pr)),
+                   total_cwd_exposed = ((oneK_hr_sound * oneK_hr_sound_pr) +
+                                                (oneK_hr_rotten * oneK_hr_rotten_pr) +
+                                                (tenK_hr_sound * tenK_hr_sound_pr) +
+                                                (tenK_hr_rotten * tenK_hr_rotten_pr) +
+                                                (tnkp_hr_sound * tnkp_hr_sound_pr) +
+                                                (tnkp_hr_rotten * tnkp_hr_rotten_pr)))]
+        
         # define output data 
         out_dt <- dt[,list(x, 
                            y,
@@ -251,6 +264,10 @@ calc_emissions <- function(dt, burn_type) {
                            total_pile_SO2,
                            total_pile_VOC,
                            pile_char,
+                           total_duff_exposed,
+                           total_foliage_exposed,
+                           total_fwd_exposed,
+                           total_cwd_exposed,
                            total_fuel_consumed, 
                            total_duff_consumed,
                            total_foliage_consumed,
