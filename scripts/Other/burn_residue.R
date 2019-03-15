@@ -21,7 +21,7 @@ burn_residue <- function(dt, burn_type) {
                                                      days_since_rain = 50,
                                                      DRR = DRR)
                 
-                emissions_df <- calc_emissions(consumption_df)
+                emissions_df <- calc_emissions(consumption_df, burn_type)
                 
         }
         
@@ -34,7 +34,7 @@ burn_residue <- function(dt, burn_type) {
                                                      days_since_rain = 50,
                                                      DRR = DRR)
                 
-                emissions_df <- calc_emissions(consumption_df)
+                emissions_df <- calc_emissions(consumption_df, burn_type)
                 
         }
         
@@ -43,7 +43,7 @@ burn_residue <- function(dt, burn_type) {
                 
                 consumption_df <- ccon_activity_piled_only_fast(dt, burn_type)
                 
-                emissions_df <- calc_emissions(consumption_df)
+                emissions_df <- calc_emissions(consumption_df, burn_type)
                 
         }
         
