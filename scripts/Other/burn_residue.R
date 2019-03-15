@@ -14,8 +14,7 @@ burn_residue <- function(dt, burn_type) {
         if(burn_type  == "None") {
                 
                 # specify diameter reduction factor
-                # DRR  <- 2.0 / 3.0
-                DRR <- 0.78
+                DRR  <- 2.0 / 3.0
                 consumption_df <- ccon_activity_fast(dt, 
                                                      fm_type = "NFDRS_Th",
                                                      days_since_rain = 50,
