@@ -32,6 +32,7 @@ cdic <- list("spring" = list("MEAS_Th" = c(-0.097, 4.747),
                           "NFDRS_Th" = 1.4))
 
 # function to calculate char in unpiled fuels
+# m_cons: material consumed
 char_scat <- function(m_cons) {
         ifelse((m_cons * ((11.30534 + -0.63064 * m_cons) / 100)) < 0, 0, (m_cons * ((11.30534 + -0.63064 * m_cons) / 100)))
 }
@@ -43,11 +44,9 @@ char_pile <- function(m_cons) {
 
 ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
-        # combine all functions together to get consumption in tons/acre for each load
-        # catagory
         ###################################################
-        # run consumption functions for all size classes
-        # #FORMERLY pct_hun_hr()
+        # calculate % of 100-hr fuels consumed
+        # pct_hun_hr()
         ###################################################
         # Eq. B: Heat flux correction
         dt[, hfc := (hun_hr_sound / 4.8) * (1 + ((Slope - 20) / 60) + (Wind_corrected / 4))]
@@ -66,12 +65,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         dt[pct_hun_hr > 1, pct_hun_hr := 1]
         dt[pct_hun_hr < 0, pct_hun_hr := 0]
         
-        ######
-        # We can possibly delete hfc, fm_10hrc, fm_10hradj if memory is an issue
-        ######
-        ###################################################
+         ###################################################
         # calculate diameter reduction for woody fuels
-        # #FORMERLY diam_redux_calc()
+        # diam_redux_calc()
         ###################################################
         # calculate diameter reduction for woody fuels
         dt[, adjfm_1000hr := Fm1000 * cdic$adj[[fm_type]]]
@@ -90,12 +86,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         # Eq. K: High fuel moisture diameter reduction is not included here
         # because fuel moistures in CBIP are much lower
         dt[, diam_reduction := diam_reduction_seas * DRR]
-        ######
-        # We need adjfm_1000hr and diam_reduction; we can probably delete mask_spring, mask_summer, mask_trans, diam_reduction_seas
-        ######
         ###################################################
         # 100 hr consumption
-        # #FORMERLY ccon_hun_act()
+        # ccon_hun_act()
         ###################################################
         # Eq. F: Total 100-hr (1" - 3") fuel consumption 
         resFrac <- 0
@@ -115,7 +108,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         dt[, resid_100 := (total_100 - flamg_100) * resFrac]
         ###################################################
         # 1 hr consumption
-        # #FORMERLY ccon_one_act()
+        # ccon_one_act()
         ###################################################
         csd <- c(1.0, 0.0, 0.0)
         dt[,':=' (flamg_1 = (one_hr_sound * csd[1]), 
@@ -125,7 +118,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         ###################################################
         # 10 hr consumption
-        # #FORMERLY ccon_ten_act()
+        # ccon_ten_act()
         ###################################################
         # csd hasn't changed
         dt[, ':=' (flamg_10 = (ten_hr_sound * csd[1]), 
@@ -135,7 +128,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         ###################################################
         # 1,000 hr consumption
-        # #FORMERLY ccon_oneK_act()
+        # ccon_oneK_act()
         # First is sound
         ###################################################
         HS <- "H"
@@ -149,7 +142,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         ###################################################
         # 1,000 hr consumption, continued
-        # #FORMERLY ccon_oneK_act()
+        # ccon_oneK_act()
         # next is rotten
         ###################################################
         HS <- "S"
@@ -163,7 +156,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         ###################################################
         # 10,000 hr consumption
-        # #FORMERLY ccon_tenK_act()
+        # ccon_tenK_act()
         # First is sound
         ###################################################
         HS <- "H"
@@ -177,7 +170,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         ###################################################
         # 10,000 hr consumption
-        # #FORMERLY ccon_tenK_act()
+        # ccon_tenK_act()
         # next is rotten
         ###################################################
         HS <- "S"
@@ -191,7 +184,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         ###################################################
         # 10,000+ hr consumption
-        # #FORMERLY ccon_tnkp_act()
+        # ccon_tnkp_act()
         # first is sound
         ###################################################
         HS <- "H"
@@ -209,7 +202,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         ###################################################
         # 10,000+ hr consumption
-        # #FORMERLY ccon_tnkp_act()
+        # ccon_tnkp_act()
         # second is rotten
         ###################################################
         HS <- "S"
@@ -227,7 +220,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         ###################################################
         # forest floor reduction
-        # #FORMERLY ccon_ffr_activity()
+        # ccon_ffr_activity()
         ###################################################
         # Eq. R: Y-intercept adjustment 
         dt[, YADJ := pmin((diam_reduction / 1.68), 1.0)]
@@ -264,7 +257,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         ###################################################
         # forest floor reduction
-        # #FORMERLY ccon_forest_floor()
+        # ccon_forest_floor()
         # First with litter
         ###################################################
         # if the depth of the layer is less than the available reduction
@@ -284,7 +277,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         ###################################################
         # forest floor reduction
-        # #FORMERLY ccon_forest_floor()
+        # ccon_forest_floor()
         # Next with upper duff
         ###################################################
         csd = c(0.10, 0.70, 0.20)
@@ -303,27 +296,32 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         ###################################################
         # pile consumption
-        # #FORMERLY ccon_piled()
+        # ccon_piled()
         # this is combined for wildfire scenarios
         ###################################################
         dt[,':='(flamg_pile = ((pile_field * 0.9) * 0.7) + ((pile_landing * 0.9) * 0.7),
                  smoldg_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15),
                  resid_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15))]
         
+        # calculate pile char and update consumed mass
+        dt[, ':=' (pile_char := char_pile((flamg_pile + smoldg_pile + resid_pile)),
+                   flamg_pile = flamg_pile - char_pile(flamg_pile), 
+                   smoldg_pile = smoldg_pile -  char_pile(smoldg_pile),
+                   resid_pile = resid_pile - char_pile(resid_pile))]
+        
         # aggregate the data as much as possible to get residue only and total by combustion phase
         # first aggregate the total consumed by combustion phase
         c_phase <- c("flamg", "smoldg", "resid")
         size <- c("duff", "litter", "1", "10", "100", paste(rep(c("OneK", "tenK", "tnkp"), each = 2), c("snd", "rot"), sep = "_"))
 
-        # loop though each combo and get the total consumption by emissions phase
-        # flaming
+        # loop though each combustion phase and get the total consumption
         for (col in c_phase) {
                 dt[ , paste("total", (col), sep = "_") := rowSums(.SD), .SDcols = paste((col), size, sep = "_")]
         }
         
         # now aggregate consumed data, but only consider actual residues
-        # this assumes that the proportion of the fuel that is residue is 
-        # the same as the proportion of the consumed fuel that is residue
+        # this assumes that the proportion of the fuel that was residue is 
+        # the same as the proportion of the consumed fuel that was residue
         dt[, ':=' (flamg_duff_residue = flamg_duff * duff_upper_load_pr,
                    smoldg_duff_residue = smoldg_duff * duff_upper_load_pr,
                    resid_duff_residue = resid_duff * duff_upper_load_pr,
@@ -415,6 +413,12 @@ ccon_activity_piled_only_fast <- function(dt, burn_type) {
                          smoldg_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15),
                          resid_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15))]
         }
+        
+        # calculate char and update consumed mass
+        dt[, ':=' (pile_char := char_pile((flamg_pile + smoldg_pile + resid_pile)),
+                   flamg_pile = flamg_pile - char_pile(flamg_pile), 
+                   smoldg_pile = smoldg_pile -  char_pile(smoldg_pile),
+                   resid_pile = resid_pile - char_pile(resid_pile))]
         
         # assign 0 values to other burn cols for eval in  calc_emissions
         c_phase <- c("flamg", "smoldg", "resid")
