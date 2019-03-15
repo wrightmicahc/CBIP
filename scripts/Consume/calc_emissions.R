@@ -181,6 +181,13 @@ calc_emissions <- function(dt, burn_type) {
                 dt[ ,paste0("total_", (col)) := rowSums(.SD), .SDcols = paste(c("flamg", "smoldg", "resid"), (col), sep = "_")]
         }
         
+        # calculate total consumed biomass for both total fuelbed and residue only'
+        dt[, ':=' (total_fuel_consumed = (total_flamg + total_smoldg + total_resid), 
+                   total_duff_consumed = (flamg_duff_residue + smoldg_duff_residue + resid_duff_residue),
+                   total_foliage_consumed = (flamg_foliage_residue + smoldg_foliage_residue + resid_foliage_residue),
+                   total_fwd_consumed = (flamg_fwd_residue + smoldg_fwd_residue + resid_fwd_residue),
+                   total_cwd_consumed = (flamg_cwd_residue + smoldg_cwd_residue + resid_cwd_residue))]
+        
         # define output data 
         out_dt <- dt[,list(x, 
                            y,
@@ -244,6 +251,11 @@ calc_emissions <- function(dt, burn_type) {
                            total_pile_SO2,
                            total_pile_VOC,
                            pile_char,
+                           total_fuel_consumed, 
+                           total_duff_consumed,
+                           total_foliage_consumed,
+                           total_fwd_consumed,
+                           total_cwd_consumed,
                            char_fwd_residue,
                            char_cwd_residue,
                            total_duff_residue_CH4,      
