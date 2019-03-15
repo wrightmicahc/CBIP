@@ -150,7 +150,16 @@ calc_emissions <- function(dt, burn_type) {
         for (col in e_spp) {
                 dt[ , paste0("total_", col) := rowSums(.SD), .SDcols = paste("total", c("flamg", "smoldg", "resid"), col, sep = "_")]
         }
-        
+        ########################################################################
+        # calculate total char
+        ########################################################################
+        dt[, total_char := rowSums(.SD), .SDcols = c("char_100",
+                                                     "char_OneK_snd",
+                                                     "char_OneK_rot",
+                                                     "char_tenK_snd",
+                                                     "char_tenK_rot",
+                                                     "char_tnkp_snd",
+                                                     "char_tnkp_rot")]
         ########################################################################
         # calculate total emissions by emissions species and size for residue 
         # only. Does not include any emissions from the orginal fuelbed.
@@ -219,7 +228,7 @@ calc_emissions <- function(dt, burn_type) {
                            oneK_hr_rotten_pr,
                            tenK_hr_rotten_pr,
                            tnkp_hr_rotten_pr,
-                           #TODO total_char, it will come back
+                           total_char,
                            total_CH4, 
                            total_CO, 
                            total_CO2,
@@ -240,6 +249,8 @@ calc_emissions <- function(dt, burn_type) {
                            total_pile_NOx,
                            total_pile_SO2,
                            total_pile_VOC,
+                           char_fwd_residue,
+                           char_cwd_residue,
                            total_duff_residue_CH4,      
                            total_foliage_residue_CH4,
                            total_fwd_residue_CH4,
