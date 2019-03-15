@@ -94,6 +94,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         resFrac <- 0
         QMD_100hr <- 1.68
         dt[, total_100 := hun_hr_sound * pct_hun_hr]
+        # char
+        dt[, char_100 := char_scat(total_100)]
+        dt[, total_100 := total_100 - char_100]
         # from consume: flaming diameter reduction (inches, %) this is a fixed value,
         # from Ottmar 1983
         dt[, flamg_portion := 1.0 - exp(1)^(-(abs((((20.0 - total_100) / 20.0) - 1.0) / 0.2313)^2.260))]
@@ -134,7 +137,10 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         HS <- "H"
         resFrac <- ifelse(HS == "H",  0.25, 0.63) 
         dt[, oneK_redux := (1.0 - ((QMDs[2] - diam_reduction) / QMDs[2])^2.0)]
-        dt[, total_OneK_snd := oneK_redux * oneK_hr_sound] #MICAH TODO: Double check that this is the correct metric, might be daim redux
+        dt[, total_OneK_snd := oneK_redux * oneK_hr_sound] 
+        # char
+        dt[, char_OneK_snd := char_scat(total_OneK_snd)]
+        dt[, total_OneK_snd := total_OneK_snd - char_OneK_snd]
         dt[, flamg_OneK_snd := oneK_hr_sound * (1.0 - (((QMDs[2] - flam_DRED)^2) / (QMDs[2]^2)))]
         dt[flamg_OneK_snd > total_OneK_snd,flamg_OneK_snd := total_OneK_snd]
         dt[, ':=' (smoldg_OneK_snd = (total_OneK_snd - flamg_OneK_snd) * (1.0 - resFrac),
@@ -149,6 +155,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         resFrac <- ifelse(HS == "H",  0.25, 0.63) 
         dt[, oneK_redux := (1.0 - ((QMDs[2] - diam_reduction) / QMDs[2])^2.0)]
         dt[, total_OneK_rot := oneK_redux * oneK_hr_rotten]
+        # char
+        dt[, char_OneK_rot := char_scat(total_OneK_rot)]
+        dt[, total_OneK_rot := total_OneK_rot - char_OneK_rot]
         dt[, flamg_OneK_rot := oneK_hr_rotten * (1.0 - (((QMDs[2] - flam_DRED)^2) / (QMDs[2]^2)))]
         dt[flamg_OneK_rot > total_OneK_rot, flamg_OneK_rot := total_OneK_rot]
         dt[, ':=' (smoldg_OneK_rot = (total_OneK_rot - flamg_OneK_rot) * (1.0 - resFrac),
@@ -163,6 +172,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         resFrac <- ifelse(HS == "H", 0.33, 0.67)
         dt[, tenK_redux := (1.0 - ((QMDs[3] - diam_reduction) / QMDs[3])^2.0)]
         dt[, total_tenK_snd := tenK_redux * tenK_hr_sound]
+        # char
+        dt[, char_tenK_snd := char_scat(total_tenK_snd)]
+        dt[, total_tenK_snd := total_tenK_snd - char_tenK_snd]
         dt[, flamg_tenK_snd := tenK_hr_sound * (1.0 - (((QMDs[3] - flam_DRED)^2) / (QMDs[3]^2)))]
         dt[flamg_tenK_snd > total_tenK_snd, flamg_tenK_snd := total_tenK_snd]
         dt[, ':=' (smoldg_tenK_snd = (total_tenK_snd - flamg_tenK_snd) * (1.0 - resFrac),
@@ -177,6 +189,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         resFrac <- ifelse(HS == "H", 0.33, 0.67)
         dt[, tenK_redux := (1.0 - ((QMDs[3] - diam_reduction) / QMDs[3])^2.0)]
         dt[, total_tenK_rot := tenK_redux * tenK_hr_rotten]
+        # char
+        dt[, char_tenK_rot := char_scat(total_tenK_rot)]
+        dt[, total_tenK_rot := total_tenK_rot - char_tenK_rot]
         dt[, flamg_tenK_rot := tenK_hr_rotten * (1.0 - (((QMDs[3] - flam_DRED)^2) / (QMDs[3]^2)))]
         dt[flamg_tenK_rot > total_tenK_rot, flamg_tenK_rot := total_tenK_rot]
         dt[, ':=' (smoldg_tenK_rot = (total_tenK_rot - flamg_tenK_rot) * (1.0 - resFrac),
@@ -193,6 +208,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         dt[adjfm_1000hr < 31, pct_redux := 0.05]
         dt[adjfm_1000hr >= 35, pct_redux := 0]
         dt[, total_tnkp_snd := pct_redux * tnkp_hr_sound]
+        # char
+        dt[, char_tnkp_snd := char_scat(total_tnkp_snd)]
+        dt[, total_tnkp_snd := total_tnkp_snd - char_tnkp_snd]
         # From consume source: DISCREPANCY b/t SOURCE and DOCUMENTATION here
         # corresponds to source code right now for testing-sake
         dt[, flamg_tnkp_snd := tnkp_hr_sound * flamg_portion]
@@ -211,6 +229,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         dt[adjfm_1000hr < 31, pct_redux := 0.05]
         dt[adjfm_1000hr >=35, pct_redux := 0]
         dt[, total_tnkp_rot := pct_redux * tnkp_hr_rotten]
+        # char
+        dt[, char_tnkp_rot := char_scat(total_tnkp_rot)]
+        dt[, total_tnkp_rot := total_tnkp_rot - char_tnkp_rot]
         # From consume source: DISCREPANCY b/t SOURCE and DOCUMENTATION here
         # corresponds to source code right now for testing-sake
         dt[, flamg_tnkp_rot := tnkp_hr_rotten * flamg_portion]
@@ -319,6 +340,11 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                 dt[ , paste("total", (col), sep = "_") := rowSums(.SD), .SDcols = paste((col), size, sep = "_")]
         }
         
+        # calculate total char
+        # update size to only include sizes with char
+        size <- c("100", paste(rep(c("OneK", "tenK", "tnkp"), each = 2), c("snd", "rot"), sep = "_"))
+        dt[ ,total_char := rowSums(.SD), .SDcols = paste("char", size, sep = "_")]
+        
         # now aggregate consumed data, but only consider actual residues
         # this assumes that the proportion of the fuel that was residue is 
         # the same as the proportion of the consumed fuel that was residue
@@ -354,7 +380,14 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                                                  (resid_tenK_snd * tenK_hr_sound_pr) +
                                                  (resid_tenK_rot * tenK_hr_rotten_pr) +
                                                  (resid_tnkp_snd * tnkp_hr_sound_pr) +
-                                                 (resid_tnkp_rot * tnkp_hr_rotten_pr)))]
+                                                 (resid_tnkp_rot * tnkp_hr_rotten_pr)),
+                   char_fwd_residue = char_100 * hun_hr_sound_pr,
+                   char_cwd_residue = ((char_OneK_snd * oneK_hr_sound_pr) +
+                                                (char_OneK_rot * oneK_hr_rotten_pr) +
+                                                (char_tenK_snd * tenK_hr_sound_pr) +
+                                                (char_tenK_rot * tenK_hr_rotten_pr) +
+                                                (char_tnkp_snd * tnkp_hr_sound_pr) +
+                                                (char_tnkp_rot * tnkp_hr_rotten_pr)))]
         
         # remove all the unnecessary columns
         dt[, c("hfc",
