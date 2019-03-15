@@ -68,12 +68,6 @@ ef_db_pile <- list("pm" = list("clean" = c("PM10" = 15.5 / 2000,
                               "SO2" = 0.00098,
                               "VOC" = 0.04902680000000001))
 
-# library(data.table)
-# dt <- readRDS("data/Other/test_consume_input.rds")
-# source("scripts/Consume/con_calc_activity_fast.R")
-# 
-# dt <- ccon_activity_fast(dt, fm_type = "NFDRS_Th", days_since_rain = 50, DRR = 0.78)
-
 calc_emissions <- function(dt, burn_type) {
         
         ########################################################################
@@ -249,6 +243,7 @@ calc_emissions <- function(dt, burn_type) {
                            total_pile_NOx,
                            total_pile_SO2,
                            total_pile_VOC,
+                           pile_char,
                            char_fwd_residue,
                            char_cwd_residue,
                            total_duff_residue_CH4,      
