@@ -76,7 +76,6 @@ ef_db_pile <- list("pm" = list("clean" = c("PM10" = 15.5 / 2000,
 
 calc_emissions <- function(dt, burn_type) {
         
-        
         ########################################################################
         # calculate total emissions for each emissions species by combustion
         # phase. This includes the orginal fuelbed.
@@ -198,8 +197,8 @@ calc_emissions <- function(dt, burn_type) {
                            residue_burned,
                            duff_upper_loading = (duff_upper_loading - total_duff) * duff_upper_load_pr,
                            litter_loading = (litter_loading - total_litter) * litter_loading_pr, 
-                           one_hr_sound = 0, 
-                           ten_hr_sound = 0,
+                           one_hr_sound = (one_hr_sound - total_1) * one_hr_sound_pr, 
+                           ten_hr_sound = (ten_hr_sound - total_10) * ten_hr_sound_pr, 
                            hun_hr_sound = (hun_hr_sound - total_100) * hun_hr_sound_pr,
                            oneK_hr_sound = ((oneK_hr_sound - total_OneK_snd) * oneK_hr_sound_pr) + ((pile_field + pile_landing) - (flamg_pile + smoldg_pile + resid_pile)),
                            oneK_hr_rotten = (oneK_hr_rotten - total_OneK_rot) * oneK_hr_rotten_pr,
@@ -207,7 +206,7 @@ calc_emissions <- function(dt, burn_type) {
                            tenK_hr_rotten = (tenK_hr_rotten - total_tenK_rot) * tenK_hr_rotten_pr,
                            tnkp_hr_sound = (tnkp_hr_sound - total_tnkp_snd) * tnkp_hr_sound_pr,
                            tnkp_hr_rotten = (tnkp_hr_rotten - total_tnkp_rot) * tnkp_hr_rotten_pr,
-                           pile_field = 0,
+                           pile_field = ifelse(burn_type == "Pile", pile_field, 0),
                            pile_landing = 0,
                            duff_upper_load_pr,
                            litter_loading_pr,
