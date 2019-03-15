@@ -416,5 +416,23 @@ ccon_activity_piled_only_fast <- function(dt, burn_type) {
                          resid_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15))]
         }
         
+        # assign 0 values to other burn cols for eval in  calc_emissions
+        c_phase <- c("flamg", "smoldg", "resid")
+        size <- c("duff_residue", "foliage_residue", "fwd_residue", "cwd_residue", "duff", "litter", "1", "10", "100", paste(rep(c("OneK", "tenK", "tnkp"), each = 2), c("snd", "rot"), sep = "_"))
+
+        dt[, c(paste("total", c_phase, sep = "_"), paste(rep(c_phase, each = length(size)), size, sep = "_")) := 0]
+        
+        dt[, c("total_duff", 
+               "total_litter",
+               "total_1",
+               "total_10",
+               "total_100",
+               "total_OneK_snd",
+               "total_OneK_rot",
+               "total_tenK_snd", 
+               "total_tenK_rot",
+               "total_tnkp_snd", 
+               "total_tnkp_rot") := 0]
+        
 }
         
