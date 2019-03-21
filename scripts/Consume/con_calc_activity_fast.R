@@ -325,7 +325,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                  resid_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15))]
         
         # calculate pile char and update consumed mass
-        dt[, ':=' (pile_char := char_pile((flamg_pile + smoldg_pile + resid_pile)),
+        dt[, ':=' (pile_char = char_pile((flamg_pile + smoldg_pile + resid_pile)),
                    flamg_pile = flamg_pile - char_pile(flamg_pile), 
                    smoldg_pile = smoldg_pile -  char_pile(smoldg_pile),
                    resid_pile = resid_pile - char_pile(resid_pile))]
@@ -448,7 +448,7 @@ ccon_activity_piled_only_fast <- function(dt, burn_type) {
         }
         
         # calculate char and update consumed mass
-        dt[, ':=' (pile_char := char_pile((flamg_pile + smoldg_pile + resid_pile)),
+        dt[, ':=' (pile_char = char_pile((flamg_pile + smoldg_pile + resid_pile)),
                    flamg_pile = flamg_pile - char_pile(flamg_pile), 
                    smoldg_pile = smoldg_pile -  char_pile(smoldg_pile),
                    resid_pile = resid_pile - char_pile(resid_pile))]
