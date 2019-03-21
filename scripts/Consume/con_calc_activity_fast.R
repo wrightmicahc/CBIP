@@ -469,7 +469,16 @@ ccon_activity_piled_only_fast <- function(dt, burn_type) {
                "total_tenK_snd", 
                "total_tenK_rot",
                "total_tnkp_snd", 
-               "total_tnkp_rot") := 0]
+               "total_tnkp_rot",
+               "char_100",
+               "char_OneK_snd",
+               "char_OneK_rot",
+               "char_tenK_snd",
+               "char_tenK_rot",
+               "char_tnkp_snd",
+               "char_tnkp_rot",
+               "char_fwd_residue",
+               "char_cwd_residue") := 0]
         
 }
         
