@@ -313,8 +313,8 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                    char_OneK_rot = char_scat(oneK_hr_rotten - total_OneK_rot),
                    char_tenK_snd = char_scat(tenK_hr_sound - total_tenK_snd),
                    char_tenK_rot = char_scat(tenK_hr_rotten - total_tenK_rot),
-                   char_tnkp_snd = char_scat(tnkp_hr_sound - total_tnKp_snd),
-                   char_tnkp_rot = char_scat(tnkp_hr_rotten - total_tnKp_rot))]
+                   char_tnkp_snd = char_scat(tnkp_hr_sound - total_tnkp_snd),
+                   char_tnkp_rot = char_scat(tnkp_hr_rotten - total_tnkp_rot))]
         
         # update unburned so char is omitted
         dt[, ':=' (hun_hr_sound = hun_hr_sound - char_100,
