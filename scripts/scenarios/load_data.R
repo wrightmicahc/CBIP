@@ -41,26 +41,12 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         # FCID with no residue
         nores_path <- "data/UW/FCID_no_residue.csv"
         
+        # load tabulated spatial data for the tile
         rdf <- readRDS(paste0("data/Tiles/input/", 
                               tile_number, ".rds"))
         
-        # make fake columns for rx conditions 
-        # TODO: Remove these later!!!
-        rdf[, ':=' (Fm10_wf = Fm10,
-                    Fm1000_wf = Fm1000,
-                    Wind_wf = Wind,
-                    Fm10_rx = Fm10 + 2,
-                    Fm1000_rx = Fm1000 + 2,
-                    Wind_rx = ifelse((Wind - 15) < 0, 0, (Wind - 15)))]
-        
         # remove any barren areas 
         rdf <- rdf[fuelbed_number < 900]
-        
-        # simulate K values
-        # TODO: Remove these once real K values are available
-        rdf[, ':=' (CWD_K = runif(.N, 0.001, 0.19),
-                    FWD_K = runif(.N, 0.001, 0.19),
-                    Foliage_K = runif(.N, 0.01, 0.19))]
         
         # load lookup of FCID without residue
         nores <- fread(nores_path, 
@@ -73,37 +59,37 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         fuel_prop <- fread(fuel_prop_path, 
                            verbose = FALSE) 
         
-        # filter fuel proportions 
+        # filter fuel proportions to include only those in the current tile
         fuel_prop <- fuel_prop[fuelbed_number %in% rdf$fuelbed_number]
         
         # load residue data
         residue <- fread(residue_path[[treatment]], verbose = FALSE)
         
-        # filter residue data
+        # filter residue data to include only those in the current tile
         residue <- residue[FCID2018 %in% rdf$FCID2018]
         
         # specify treatment etc.
         residue[, ':=' (ID = id,
-                       Silvicultural_Treatment = treatment, 
-                       Harvest_System = harvest_system,
-                       Harvest_Type = harvest_type, 
-                       Burn_Type = burn_type,
-                       Biomass_Collection = biomass_collection,
-                       Tile_Number = tile_number)]
+                        Silvicultural_Treatment = treatment, 
+                        Harvest_System = harvest_system,
+                        Harvest_Type = harvest_type, 
+                        Burn_Type = burn_type,
+                        Biomass_Collection = biomass_collection,
+                        Tile_Number = tile_number)]
         
-        # merge data 
+        # merge tabulated raster data to fuel proportion and residue data 
         rdf <- merge(rdf, fuel_prop, by = "fuelbed_number")
         
         fuel_df <- merge(rdf, residue, by = "FCID2018", allow.cartesian = TRUE)
         
-        # remove unnecessary data
+        # remove data frames no longer needed
         rm(fuel_prop)
         
         rm(residue)
         
         rm(rdf)
         
-        # load FCCS fuelbed data and join
+        # load FCCS fuelbed data and join to main data set
         FCCS <- fread(fuelbed_path, verbose = FALSE)
         
         fuel_df <-  merge(fuel_df, FCCS, by = "fuelbed_number")
