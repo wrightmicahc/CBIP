@@ -10,7 +10,7 @@
 pile_residue <- function(dt, timestep) {
         
         # specify the coefficient for pile K
-        pK_coeff <- 0.721265744184168
+        pK_coeff <- 0.7516606
 
         # load the lookup table for landing piles
         lookup_landing <- fread("data/SERC/lookup_tables/piled_at_landing.csv", 
