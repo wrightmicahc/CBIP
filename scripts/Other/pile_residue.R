@@ -28,7 +28,7 @@ pile_residue <- function(dt, timestep) {
                      all.x = TRUE,
                      all.y = FALSE,
                      sort = FALSE,
-                     allow.cartesian = TRUE)
+                     allow.cartesian = FALSE)
         
         # calculate coarse load
         dt[, CWD := (Stem_ge9_tonsAcre * Stem_ge9) + (Stem_6t9_tonsAcre * Stem_6t9) + (Stem_4t6_tonsAcre * Stem_4t6)]
@@ -80,7 +80,7 @@ pile_residue <- function(dt, timestep) {
                      all.x = TRUE,
                      all.y = FALSE,
                      sort = FALSE,
-                     allow.cartesian = TRUE)
+                     allow.cartesian = FALSE)
         
         # calculate coarse load
         dt[, CWD := (Stem_ge9_tonsAcre * Stem_ge9) + (Stem_6t9_tonsAcre * Stem_6t9) + (Stem_4t6_tonsAcre * Stem_4t6)]
