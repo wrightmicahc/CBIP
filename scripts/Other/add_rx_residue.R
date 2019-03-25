@@ -100,15 +100,6 @@ add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
                                                    decay_fun(tnkp_hr_rotten_b,
                                                              CWD_K,
                                                              timestep)))]
-        dt[, ':=' (residue_burned = (litter_toadd + 
-                                             duff_toadd + 
-                                             hun_hr_toadd + 
-                                             oneK_hr_sound_toadd + 
-                                             oneK_hr_rotten_toadd + 
-                                             tenK_hr_sound_toadd +
-                                             tenK_hr_rotten_toadd +
-                                             tnkp_hr_sound_toadd + 
-                                             tnkp_hr_rotten_toadd))]
         
         dt[, ':=' (duff_upper_load_pr = propfuel(duff_upper_loading,
                                                  duff_toadd,
