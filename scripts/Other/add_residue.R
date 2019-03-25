@@ -112,7 +112,6 @@ add_residue <- function(dt, timestep) {
                           Wind_corrected_rx = Wind_corrected_rx,
                           Wind_corrected_50 = Wind_corrected_50,
                           Wind_corrected_97 = Wind_corrected_97,
-                          residue_burned = residue_burned,
                           litter_ratio = litter_ratio,
                           litter_loading = addfuel(litter_loading,
                                                    litter_toadd,
