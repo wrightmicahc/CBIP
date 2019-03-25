@@ -217,7 +217,6 @@ calc_emissions <- function(dt, burn_type) {
                            Fm10,
                            Fm1000,
                            Wind_corrected,
-                           residue_burned,
                            duff_upper_loading = (duff_upper_loading - total_duff) * duff_upper_load_pr,
                            litter_loading = (litter_loading - total_litter) * litter_loading_pr, 
                            one_hr_sound = (one_hr_sound - total_1) * one_hr_sound_pr, 
