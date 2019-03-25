@@ -27,7 +27,7 @@ pile_residue <- function(dt, timestep) {
                             "Biomass_Collection"), 
                      all.x = TRUE,
                      all.y = FALSE,
-                     sort = FALSE,
+                     sort = TRUE,
                      allow.cartesian = FALSE)
         
         # calculate coarse load
@@ -79,7 +79,7 @@ pile_residue <- function(dt, timestep) {
                             "Biomass_Collection"), 
                      all.x = TRUE,
                      all.y = FALSE,
-                     sort = FALSE,
+                     sort = TRUE,
                      allow.cartesian = FALSE)
         
         # calculate coarse load
