@@ -38,22 +38,9 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         # file path to FCCS fuelbed table
         fuelbed_path <- "data/FCCS/tabular/FCCS_fuelbed.csv"
         
-        # FCID with no residue
-        nores_path <- "data/UW/FCID_no_residue.csv"
-        
         # load tabulated spatial data for the tile
         rdf <- readRDS(paste0("data/Tiles/input/", 
                               tile_number, ".rds"))
-        
-        # remove any barren areas 
-        rdf <- rdf[fuelbed_number < 900]
-        
-        # load lookup of FCID without residue
-        nores <- fread(nores_path, 
-                       verbose = FALSE)
-        
-        # remove any FCID with no residue
-        rdf <- rdf[!(FCID2018 %in% nores$FCID2018)]
         
         # load fuel proportions
         fuel_prop <- fread(fuel_prop_path, 
