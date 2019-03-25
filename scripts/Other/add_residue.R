@@ -41,7 +41,7 @@ add_residue <- function(dt, timestep) {
                             "Biomass_Collection"), 
                      all.x = TRUE,
                      all.y = FALSE,
-                     sort = FALSE,
+                     sort = TRUE,
                      allow.cartesian = FALSE)
         
         # calculate coarse load
@@ -89,15 +89,6 @@ add_residue <- function(dt, timestep) {
                                                        CWD_K,
                                                        timestep,
                                                        "rotten"))]
-        dt[, residue_burned := (litter_toadd + 
-                                        duff_toadd + 
-                                        branch_toadd + 
-                                        Stem_4t9_toadd_sound + 
-                                        Stem_4t9_toadd_rotten + 
-                                        Stem_ge9_toadd_sound + 
-                                        Stem_ge9_toadd_rotten + 
-                                        pile_landing +
-                                        pile_field)]
         
         # update fuelbed
         dt_plus <- dt[, .(x = x,
