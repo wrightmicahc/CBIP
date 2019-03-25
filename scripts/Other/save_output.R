@@ -1,5 +1,5 @@
 ################################################################################
-# This script saves the ouput from wildfire modeling. This is part of the CA 
+# This script saves the ouput from wildfire/RX modeling. This is part of the CA 
 # Biopower Impact Project.
 #
 # tile_number: numeric tile number.
