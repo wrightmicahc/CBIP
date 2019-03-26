@@ -1,6 +1,6 @@
 ################################################################################
-# This script updates FCCS fuelbeds with treatment residues as part of the 
-# California Biopower Impact Project. 
+# This script updates scattered fuels in FCCS fuelbeds with treatment residues
+# as part of the California Biopower Impact Project. 
 #
 # Author: Micah Wright, Humboldt State University
 ################################################################################
@@ -24,13 +24,15 @@ propfuel <- function(load, add, prop) {
 }
 
 # function that adds residue to fuelbed
+# dt: input data.table
+# timestep: years since treatment
 add_residue <- function(dt, timestep) {
         
         # load the lookup table for scattered fuels
         lookup_scattered <- fread("data/SERC/lookup_tables/scattered_in_field.csv", 
                                   verbose = FALSE)
         
-        # add year
+        # add year column
         dt[, Year := timestep]
         
         # merge lookup and dt
