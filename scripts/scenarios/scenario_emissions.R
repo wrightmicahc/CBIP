@@ -82,6 +82,7 @@ scenario_emissions <- function(tile_number) {
                               Harvest_Type <- x[1, Harvest_Type]
                               Burn_Type <- x[1, Burn_Type]
                               Biomass_Collection <- x[1, Biomass_Collection]
+                              Pulp_Market <- x[1, Pulp_Market]
                               Tile_Number <- x[1, Tile_Number]
                               
                               # load data
@@ -129,6 +130,7 @@ scenario_emissions <- function(tile_number) {
                                                   Burn_Type,
                                                   tile_number,
                                                   Biomass_Collection,
+                                                  Pulp_Market,
                                                   0)
                                       
                                       # create a vector from 25-100 years in 25 year bins
@@ -161,6 +163,7 @@ scenario_emissions <- function(tile_number) {
                                                           Burn_Type,
                                                           tile_number,
                                                           Biomass_Collection,
+                                                          Pulp_Market,
                                                           i)
                                               
                                       })
@@ -203,6 +206,7 @@ scenario_emissions <- function(tile_number) {
                                                           Burn_Type,
                                                           tile_number,
                                                           Biomass_Collection,
+                                                          Pulp_Market,
                                                           i)
                                               
                                       })
