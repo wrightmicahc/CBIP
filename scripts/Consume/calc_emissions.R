@@ -1,5 +1,5 @@
 ################################################################################
-# This script calculates the emissoms for each catagory consumed.
+# This script calculates the emissions for each catagory consumed.
 #
 # Author: Micah Wright 
 ################################################################################
