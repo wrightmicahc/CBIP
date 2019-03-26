@@ -69,9 +69,13 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
                         Tile_Number = tile_number)]
         
         # merge tabulated raster data to fuel proportion and residue data 
-        rdf <- merge(rdf, fuel_prop, by = "fuelbed_number")
+        setkey(rdf, FCID2018)
+        setkey(residue, FCID2018)
+        fuel_df <- merge(rdf, residue, by = "FCID2018")
         
-        fuel_df <- merge(rdf, residue, by = "FCID2018", allow.cartesian = FALSE)
+        setkey(rdf, fuelbed_number)
+        setkey(fuel_prop, fuelbed_number)
+        rdf <- merge(rdf, fuel_prop, by = "fuelbed_number")
         
         # remove data frames no longer needed
         rm(fuel_prop)
@@ -82,6 +86,8 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         
         # load FCCS fuelbed data and join to main data set
         FCCS <- fread(fuelbed_path, verbose = FALSE)
+        
+        setkey(FCCS, fuelbed_number)
         
         fuel_df <-  merge(fuel_df, FCCS, by = "fuelbed_number")
         
