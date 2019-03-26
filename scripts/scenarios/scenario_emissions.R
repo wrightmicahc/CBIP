@@ -3,7 +3,7 @@
 # at 25 year timesteps over a 100 year period. This is part of the CA Biopower 
 # Impact Project.
 #
-# tile_number: numeric tile number.
+# tile_number: numeric tile number. Must be one of the actual tile numbers
 #
 # Author: Micah Wright, Humboldt State University
 ################################################################################
@@ -33,8 +33,10 @@ source("scripts/Other/add_rx_residue.R")
 # source function for saving model output
 source("scripts/Other/save_output.R")
 
+# load parallel processing package, wrapper for os agnostic future package
 library(future.apply)
 
+# assign local multicore processing if available
 plan(multiprocess)
 
 scenario_emissions <- function(tile_number) {
@@ -63,10 +65,17 @@ scenario_emissions <- function(tile_number) {
         # split the scenario dt into a list
         scenario_list <- split(scenarios, by = "ID")
         
-        # decay the fuels over 100 years and save the output
+        # run fuel processing and decay/fire models on each scenario in the list
+        # in parallel
         future_lapply(scenario_list, 
                       function(x) {
                               
+                              # make sure each element of the list is a single-row
+                              # data table
+                              stopifnot(nrow(x) == 1)
+                              
+                              # assign scenario ids. x is a single-row data table,
+                              # so assigning the first row gets the correct value
                               ID <- x[1, ID]
                               Silvicultural_Treatment <- x[1, Silvicultural_Treatment]
                               Harvest_System <- x[1, Harvest_System]
@@ -76,7 +85,8 @@ scenario_emissions <- function(tile_number) {
                               Tile_Number <- x[1, Tile_Number]
                               
                               # load data
-                              # this combines residue, raster, and FCCS data
+                              # this combines residue, fuelbed, and spatial
+                              # attribute data
                               fuel_df <- load_data(ID,
                                                    Silvicultural_Treatment,
                                                    Harvest_System,
@@ -85,21 +95,22 @@ scenario_emissions <- function(tile_number) {
                                                    Biomass_Collection,
                                                    Tile_Number)
                               
-                              # correct windspeed
+                              # correct windspeed from 10m to mid-flame
                               wind_correction(fuel_df,
                                               Wind,
                                               TPA,
                                               TPI)
                               
+                              # RX burn scenarios
                               if(Burn_Type != "None") {
                                       
-                                      # need to copy dt or it is modified 
+                                      # need to copy fuel_df or it is modified in place
                                       cpy <- copy(fuel_df)
                                       
                                       # calculate piled load
                                       cpy <- pile_residue(cpy, 0)
                                       
-                                      # add the remaining residue to the fuelbed
+                                      # add the scattered residue to the fuelbed
                                       cpy <-  add_residue(cpy, 0)
                                       
                                       # change fire weather value names appropriately
@@ -120,7 +131,7 @@ scenario_emissions <- function(tile_number) {
                                                   Biomass_Collection,
                                                   0)
                                       
-                                      # create a vector from 25-100 years
+                                      # create a vector from 25-100 years in 25 year bins
                                       timestep <- seq(25, 100, 25)
                                       
                                       # assign the vector names, otherwise position will be 
@@ -139,7 +150,7 @@ scenario_emissions <- function(tile_number) {
                                                               Fm10  = Fm10_97,
                                                               Fm1000 = Fm1000_97)]
                                               
-                                              # burn it with wildfire
+                                              # burn the recovered fuelbed with wildfire
                                               output_df <- burn_residue(post_rx, "None")
                                               
                                               # save the output
@@ -153,7 +164,7 @@ scenario_emissions <- function(tile_number) {
                                                           i)
                                               
                                       })
-                                      
+                                      # wildfire scenarios
                               } else {
                                       
                                       # create a vector from 0-100 years
@@ -163,8 +174,8 @@ scenario_emissions <- function(tile_number) {
                                       # off by 1 from the value
                                       names(timestep) <- as.character(timestep)
                                       
-                                      # calculate the remaining fuel for each timestep and
-                                      # add to the fuelbed
+                                      # calculate the remaining fuel for each timestep,
+                                      # add to the fuelbed, and burn it
                                       lapply(timestep, function(i) {
                                               
                                               # need to copy dt or it is modified 
