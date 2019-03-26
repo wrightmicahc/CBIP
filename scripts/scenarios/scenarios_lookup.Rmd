@@ -29,10 +29,10 @@ library(tidyverse)
 
 Load the scenario matrix, and extract the different scenarios. Note that this excludes pulp market scenarios.
 
-```{r}
+```{r message=FALSE}
 scenarios <- read_xlsx("data/SERC/Scenario_Matrix_v6.xlsx",
                        col_names = FALSE, 
-                       range = "A1:F250")
+                       range = "A1:G478")
 
 scenarios_names <- as.character(scenarios[2,])
 
@@ -50,12 +50,13 @@ scenarios<- scenarios %>%
                Burn_Type = gsub(" Burn", "", Burn_Type)) %>%
         mutate(Silvicultural_Treatment = gsub("[%]", "", Silvicultural_Treatment))
 
-noaction <- data.frame(ID = c(249L, 250L),
-                       Silvicultural_Treatment = c("No_Action", "No_Action"),
-                       Harvest_System = c("None", "None"),
-                       Harvest_Type = c("None", "None"),
+noaction <- data.frame(ID = (max(scenarios$ID) + 1):(max(scenarios$ID) + 2),
+                       Silvicultural_Treatment = rep("No_Action", 2),
+                       Harvest_System = rep("None", 2),
+                       Harvest_Type = rep("None", 2),
                        Burn_Type = c("None", "Broadcast"),
-                       Biomass_Collection = c("None", "None"),
+                       Biomass_Collection = rep("None", 2),
+                       Pulp_Market = rep("No", 2),
                        stringsAsFactors = FALSE)
 
 scenarios <- bind_rows(scenarios, noaction)
@@ -88,11 +89,11 @@ get_sections <- function(fraction_type, range) {
                           Branch = Branch,
                           Foliage = Foliage) %>%
                 add_row(Type = fraction_type,
-                        Stem_ge9 = c(0.0, 0.0),
-                        Stem_6t9 = c(0.0, 0.0),
-                        Stem_4t6 = c(0.0, 0.0),
-                        Branch = c(0.0, 0.0),
-                        Foliage = c(0.0, 0.0))
+                        Stem_ge9 = rep(0.0, 2),
+                        Stem_6t9 = rep(0.0, 2),
+                        Stem_4t6 = rep(0.0, 2),
+                        Branch = rep(0.0, 2),
+                        Foliage = rep(0.0, 2))
         
         section <- bind_cols(scenarios, section)
 
@@ -110,16 +111,16 @@ type_list = list("recovered_by_size",
                  "piled_in_field",
                  "scattered_in_field")
 
-range_list = list("L1:V250",
-                  "W1:AG250",
-                  "AH1:AR250",
-                  "AS1:BC250",
-                  "BD1:BN250")
+range_list = list("L1:V478",
+                  "W1:AG478",
+                  "AH1:AR478",
+                  "AS1:BC478",
+                  "BD1:BN478")
 ```
 
 Iterate the function over the two lists.
 
-```{r results=FALSE}
+```{r results=FALSE, message=FALSE}
 map2(type_list, range_list, function(x, y) get_sections(x, y)) 
 ```
 
