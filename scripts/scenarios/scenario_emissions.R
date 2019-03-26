@@ -8,28 +8,29 @@
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
-# source function that loads and merges FCCS, residue, and spatial data 
+# source function that loads and merges FCCS fuelbed, biomass residue, and 
+# location attribute data 
 source("scripts/scenarios/load_data.R")
 
 # source function that corrects midflame windspeed
 source("scripts/Other/wind_correction.R")
 
-# source function that partitions residue into piled/unpiled
+# source function that assigns appropriate residue into piled mass
 source("scripts/Other/pile_residue.R")
 
-# source function that adds residue to FCCS fuelbeds
+# source function that adds scattered residue to FCCS fuelbeds
 source("scripts/Other/add_residue.R")
 
-# source decay function
+# source decay functions
 source("scripts/Other/decay_residue.R")
 
-# source wrapper function for consumption and emissions function
+# source wrapper function for consumption and emissions functions
 source("scripts/Other/burn_residue.R")
 
 # source function for adding rx residues back to recovered fuelbed
 source("scripts/Other/add_rx_residue.R")
 
-# source function for adding rx residues back to recovered fuelbed
+# source function for saving model output
 source("scripts/Other/save_output.R")
 
 library(future.apply)
