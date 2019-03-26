@@ -116,6 +116,7 @@ scenario_emissions <- function(tile_number) {
                                                   Harvest_Type,
                                                   Burn_Type,
                                                   tile_number,
+                                                  Biomass_Collection,
                                                   0)
                                       
                                       # create a vector from 25-100 years
@@ -147,6 +148,7 @@ scenario_emissions <- function(tile_number) {
                                                           Harvest_Type,
                                                           Burn_Type,
                                                           tile_number,
+                                                          Biomass_Collection,
                                                           i)
                                               
                                       })
@@ -188,6 +190,7 @@ scenario_emissions <- function(tile_number) {
                                                           Harvest_Type,
                                                           Burn_Type,
                                                           tile_number,
+                                                          Biomass_Collection,
                                                           i)
                                               
                                       })
