@@ -42,6 +42,11 @@ char_pile <- function(m_cons) {
         m_cons * 0.01
 }
 
+# define function
+# dt: input data.table
+# fm_type: fuel moisture type, one of MEAS_Th, ADJ_Th, NFDRS_Th
+# days_since_rain: the number of days since 0.25" rain
+# DRR: diameter reduction modifier
 ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         
         ###################################################
@@ -430,6 +435,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
 
 }
 
+# consumption for piled fuel only scenarios
+# dt: input data.table
+# burn_type: Pile or Jackpot
 ccon_activity_piled_only_fast <- function(dt, burn_type) {
         
         if(burn_type == "Pile") {
