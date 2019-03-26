@@ -10,7 +10,7 @@
 
 # source function that loads and merges FCCS fuelbed, biomass residue, and 
 # location attribute data 
-source("scripts/scenarios/load_data.R")
+source("scripts/emissions_model/load_data.R")
 
 # source function that corrects midflame windspeed
 source("scripts/emissions_model/wind_correction.R")
