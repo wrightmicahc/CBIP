@@ -5,18 +5,17 @@
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
-# decay function for everything but foliage
+# basic decay function 
 decay_fun <- function(residue, k_val, t) {
         
         return(residue * exp(-k_val * t))
         
 }
 
-# add woody fuels to duff at 2% of decayed mass per year and decay previously 
-# added mass
+# function to add woody fuels to duff at 2% of decayed mass per year and decay  
+# previously added mass
 to_duff <- function(residue, k_val, t) {
         
-        # create a list of residue to be added to duff for every year in the sequence
         duff_added <- (decay_fun(residue, k_val, 0) - decay_fun(residue, k_val, t)) * 0.02
         
         net <- decay_fun(duff_added, 0.002, t)
@@ -25,7 +24,7 @@ to_duff <- function(residue, k_val, t) {
         
 }
 
-# decay function that calculates decayed foliage and additions to duff
+# foliage-specific function that calculates decayed foliage and additions to duff
 decay_foliage <- function(residue, k_val, t, toggle) {
         
         decayed <- decay_fun(residue, k_val, t)
