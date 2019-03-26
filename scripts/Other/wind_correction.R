@@ -1,6 +1,11 @@
 ################################################################################
 # This script corrects windspeed for FCCS fuelbeds based on terrain and trees 
 # per acre as part of the  California Biopower Impact Project. 
+# 
+# dt: input data.table
+# Wind: Windspeed column
+# TPA: trees per acre column
+# TPI: terrain prominance index column
 #
 # Author: Micah Wright, Humboldt State University
 ################################################################################
