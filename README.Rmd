@@ -164,7 +164,7 @@ total_duff_exposed: duff exposed to fire that began as residue in tons/acre.
 total_foliage_exposed: residue foliage exposed to fire in tons/acre.
 total_fwd_exposed: residue fine woody debris (1-3") exposed to fire in tons/acre.
 total_cwd_exposed: residue coarse woody debris (>3") exposed to fire in tons/acre.
-total_fuel_consumed: 
+total_fuel_consumed: total biomass consumed in tons/acre, including piled fuels.
 total_duff_consumed: residue duff consumed in tons/acre.
 total_foliage_consumed: residue foliage consumed in tons/acre.
 total_fwd_consumed: residue fine woody debris (1-3") consumed in tons/acre.
