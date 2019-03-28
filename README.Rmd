@@ -137,16 +137,16 @@ Burn_Type: RX burn type for the scenario, if applicable.
 Biomass_Collection: Was the biomass collected for energy generation?
 Pulp_Market: Was there a pulp market?
 Year: year in 100-year sequence.
-total_char: char produced by scattered fuels in tons/acre including original fuelbed.
-total_CH4: CH4 produced by scattered fuels in tons/acre including original fuelbed. 
-total_CO: CO produced by scattered fuels in tons/acre including original fuelbed.
-total_CO2: CO2 produced by scattered fuels in tons/acre including original fuelbed.
-total_NH3: NH3 produced by scattered fuels in tons/acre including original fuelbed.
-total_NOx: NOx produced by scattered fuels in tons/acre including original fuelbed.
-total_PM10: PM10 produced by scattered fuels in tons/acre including original fuelbed.
-total_PM2.5: PM2.5 produced by scattered fuels in tons/acre including original fuelbed.
-total_SO2: SO2 produced by scattered fuels in tons/acre including original fuelbed.
-total_VOC: VOC produced by scattered fuels in tons/acre including original fuelbed.
+total_except_pile_char: char produced by scattered fuels in tons/acre including original fuelbed.
+total_except_pile_CH4: CH4 produced by scattered fuels in tons/acre including original fuelbed. 
+total_except_pile_CO: CO produced by scattered fuels in tons/acre including original fuelbed.
+total_except_pile_CO2: CO2 produced by scattered fuels in tons/acre including original fuelbed.
+total_except_pile_NH3: NH3 produced by scattered fuels in tons/acre including original fuelbed.
+total_except_pile_NOx: NOx produced by scattered fuels in tons/acre including original fuelbed.
+total_except_pile_PM10: PM10 produced by scattered fuels in tons/acre including original fuelbed.
+total_except_pile_PM2.5: PM2.5 produced by scattered fuels in tons/acre including original fuelbed.
+total_except_pile_SO2: SO2 produced by scattered fuels in tons/acre including original fuelbed.
+total_except_pile_VOC: VOC produced by scattered fuels in tons/acre including original fuelbed.
 total_pile_clean_PM10: PM10 from piled fuels in tons/acre assuming clean piles.
 total_pile_vdirty_PM10: PM10 from piled fuels in tons/acre assuming very dirty piles.
 total_pile_clean_PM2.5: PM2.5 from piled fuels in tons/acre assuming clean piles.
