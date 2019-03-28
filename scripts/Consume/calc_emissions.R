@@ -9,7 +9,6 @@
 ef_db <- list("flamg" = c("CH4" =  0.003819999999999997,
                           "CO" = 0.07179999999999997,
                           "CO2" = 1.6497,
-                          "NH3" = 0.0012063999999999998,
                           "NOx" = 0.002420000000000001,
                           "PM10" = 0.008590399999999998,
                           "PM2.5" = 0.007280000000000002,
@@ -19,7 +18,6 @@ ef_db <- list("flamg" = c("CH4" =  0.003819999999999997,
               "smoldg"= c("CH4" = 0.009868000000000002,
                           "CO" = 0.21011999999999997,
                           "CO2" = 1.39308,
-                          "NH3" = 0.00341056,
                           "NOx" = 0.000908,
                           "PM10" = 0.01962576,
                           "PM2.5" = 0.016632,
@@ -29,7 +27,6 @@ ef_db <- list("flamg" = c("CH4" =  0.003819999999999997,
               "resid"= c("CH4" = 0.009868000000000002,
                          "CO" = 0.21011999999999997,
                          "CO2" = 1.39308,
-                         "NH3" = 0.00341056,
                          "NOx" = 0.000908,
                          "PM10" = 0.01962576,
                          "PM2.5" = 0.016632,
@@ -47,7 +44,6 @@ ef_db_pile <- list("pm" = list("clean" = c("PM10" = 15.5 / 2000,
                    "flamg" = c("CH4" =  3.28 / 2000,
                                "CO" = 52.66 / 2000,
                                "CO2" = 3429.24 / 2000,
-                               "NH3" = 0.0012063999999999998,
                                "NOx" = 0.002420000000000001,
                                "SO2" = 0.00098,
                                "VOC" = 0.017341999999999996),
@@ -55,7 +51,6 @@ ef_db_pile <- list("pm" = list("clean" = c("PM10" = 15.5 / 2000,
                    "smoldg"= c("CH4" = 11.03 / 2000,
                                "CO" = 130.37 / 2000,
                                "CO2" = 3089.88 / 2000,
-                               "NH3" = 0.00341056,
                                "NOx" = 0.000908,
                                "SO2" = 0.00098,
                                "VOC" = 0.04902680000000001),
@@ -63,7 +58,6 @@ ef_db_pile <- list("pm" = list("clean" = c("PM10" = 15.5 / 2000,
                    "resid"= c("CH4" = 11.03 / 2000,
                               "CO" = 130.37 / 2000,
                               "CO2" = 3089.88 / 2000,
-                              "NH3" = 0.00341056,
                               "NOx" = 0.000908,
                               "SO2" = 0.00098,
                               "VOC" = 0.04902680000000001))
@@ -76,7 +70,7 @@ calc_emissions <- function(dt, burn_type) {
         ########################################################################
         
         # Start with emissions species
-        e_spp <- c("CH4", "CO", "CO2", "NH3", "NOx", "PM10", "PM2.5", "SO2", "VOC")
+        e_spp <- c("CH4", "CO", "CO2", "NOx", "PM10", "PM2.5", "SO2", "VOC")
         # now all combos of combustion phase
         cnames <- c("total_flamg", "total_smoldg", "total_resid")
         
@@ -93,7 +87,7 @@ calc_emissions <- function(dt, burn_type) {
         ########################################################################
         
         # emissions species
-        e_spp <- c("CH4", "CO", "CO2", "NH3", "NOx", "SO2", "VOC")
+        e_spp <- c("CH4", "CO", "CO2", "NOx", "SO2", "VOC")
         # pile combustion phase 
         cnames <- paste(c("flamg", "smoldg", "resid"), "pile", sep = "_")
         
@@ -120,7 +114,7 @@ calc_emissions <- function(dt, burn_type) {
         ########################################################################
         
         # emissions species
-        e_spp <- c("CH4", "CO", "CO2", "NH3", "NOx", "PM10", "PM2.5", "SO2", "VOC")
+        e_spp <- c("CH4", "CO", "CO2", "NOx", "PM10", "PM2.5", "SO2", "VOC")
         # now all combos of size class and c phase
         size <- c("duff_residue", "foliage_residue", "fwd_residue", "cwd_residue")
         cnames <- paste(rep(c("flamg", "smoldg", "resid"), each = length(size)),
@@ -138,7 +132,7 @@ calc_emissions <- function(dt, burn_type) {
         ########################################################################
         
         # get total emissions including original fuelbed
-        e_spp <- c("CH4", "CO", "CO2", "NH3", "NOx", "PM10", "PM2.5", "SO2", "VOC")
+        e_spp <- c("CH4", "CO", "CO2", "NOx", "PM10", "PM2.5", "SO2", "VOC")
         
         # loop though each combo and get the emissions for all combustion including original fuelbed
         for (col in e_spp) {
@@ -174,7 +168,7 @@ calc_emissions <- function(dt, burn_type) {
         e_spp <- c("PM10", "PM2.5")
         cnames <- paste(c("clean", "vdirty"), rep(e_spp, each = 2), sep = "_")
         
-        cnames <- paste("pile", c(cnames, c("CH4", "CO", "CO2", "NH3", "NOx", "SO2", "VOC")), sep = "_")
+        cnames <- paste("pile", c(cnames, c("CH4", "CO", "CO2", "NOx", "SO2", "VOC")), sep = "_")
         
         # loop though each combo and get the emissions
         for (col in cnames) {
@@ -245,7 +239,6 @@ calc_emissions <- function(dt, burn_type) {
                            total_CH4, 
                            total_CO, 
                            total_CO2,
-                           total_NH3,
                            total_NOx, 
                            total_PM10, 
                            total_PM2.5,
@@ -258,7 +251,6 @@ calc_emissions <- function(dt, burn_type) {
                            total_pile_CH4,
                            total_pile_CO,
                            total_pile_CO2,              
-                           total_pile_NH3,
                            total_pile_NOx,
                            total_pile_SO2,
                            total_pile_VOC,
@@ -286,10 +278,6 @@ calc_emissions <- function(dt, burn_type) {
                            total_foliage_residue_CO2,
                            total_fwd_residue_CO2,
                            total_cwd_residue_CO2,
-                           total_duff_residue_NH3,
-                           total_foliage_residue_NH3,
-                           total_fwd_residue_NH3,
-                           total_cwd_residue_NH3,
                            total_duff_residue_NOx,
                            total_foliage_residue_NOx,
                            total_fwd_residue_NOx,
