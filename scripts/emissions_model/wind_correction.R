@@ -1,6 +1,11 @@
 ################################################################################
 # This script corrects windspeed for FCCS fuelbeds based on terrain and trees 
 # per acre as part of the  California Biopower Impact Project. 
+# 
+# dt: input data.table
+# Wind: Windspeed column
+# TPA: trees per acre column
+# TPI: terrain prominance index column
 #
 # Author: Micah Wright, Humboldt State University
 ################################################################################
@@ -49,7 +54,9 @@ wind_correction <- function(dt, Wind, TPA, TPI) {
         dt[, waf := make_waf(lf_class, shelter_class)]
         
         # correct windspeed
-        dt[, Wind_corrected := Wind * waf]
+        dt[, ':=' (Wind_corrected_rx = Wind_rx * waf,
+                   Wind_corrected_50 = Wind_50 * waf,
+                   Wind_corrected_97 = Wind_97 * waf)]
         
         # remove old columns
         dt[, c("lf_class", "shelter_class", "waf") := NULL ]

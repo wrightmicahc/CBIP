@@ -10,11 +10,11 @@ library(rgdal)
 library(parallel)
 
 # load the raster from UW 
-UW_FCID <- raster("data/UW/UW_FCID_no_wild.tif")
+UW_FCID <- raster("data/UW/FCID2018_masked.tif")
 
 # load the tiles created in make_tiles.R
-tiles <- readOGR("data/Tiles",
-                 "tiles")
+tiles <- readOGR("data/Tiles/raw_tiles",
+                 "raw_tiles")
 
 # function to count number of non-na cells in a tile
 get_cells_fun <- function(x, poly){
@@ -34,7 +34,7 @@ t_list <- split(tiles, tiles$ID)
 # get the number of non-na cells in each tile, 
 # return tile number if more than 10
 ncell_list <- mclapply(t_list,
-                       mc.cores = detectCores() - 1,
+                       mc.cores = detectCores(),
                        function(i){
                                
                                tile_rows <- get_cells_fun(UW_FCID, i)
@@ -57,12 +57,10 @@ good_id <- full_list[!is.na(full_list)]
 # select good tiles
 good_tiles <- tiles[tiles$ID %in% good_id, ]
 
+# update ID 
+good_tiles$ID <- 1:nrow(good_tiles)
+
 # save to a file
 shapefile(good_tiles, 
           filename = "data/Tiles/clipped_tiles/clipped_tiles.shp", 
           overwrite=TRUE)
-
-# Remove the old tiles 
-lapply(list.files(path = "data/Tiles", 
-                  pattern = "^tiles.",
-                  full.names = TRUE), file.remove)

@@ -56,20 +56,14 @@ poly <- do.call(bind, poly_list)
 # define projection
 proj4string(poly) <- crs(FCID)
 
-# load mask poly
-CA_mask <- readOGR("data/UW",
-                   "UW_poly_300m")
-
 # load srtm to clip
 srtm <- readOGR("data/Other/srtm_1_deg",
                 "srtm_1_deg")
 
 # reproject
-CA_mask <- spTransform(CA_mask, proj4string(poly))
 srtm <- spTransform(srtm, proj4string(poly))
 
 # crop extents to CA and srtm, otherwise the tiles go into Oregon
-poly <- poly[CA_mask, ]
 poly <- poly[srtm, ]
 
 # check with a plot
@@ -80,11 +74,11 @@ area_fun <- function(shp) {
         cat("Area: ", area(shp)/10000, " Hectares")
 }
 
-area_fun(poly[599])
+area_fun(poly[1])
 
 # Remove any old tiles to avoid overwrite issues
-lapply(list.files("data/Tiles", full.names = TRUE), file.remove)
+lapply(list.files("data/Tiles/raw_tiles", full.names = TRUE), file.remove)
 
 # save the polygons
-shapefile(poly, filename = paste0("data/Tiles/tiles.shp"), overwrite=TRUE)
+shapefile(poly, "data/Tiles/raw_tiles/raw_tiles.shp", overwrite=TRUE)
 

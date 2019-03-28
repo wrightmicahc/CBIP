@@ -14,13 +14,11 @@ knitr::opts_knit$set(root.dir = "../..")
 
 # Purpose
 
-This document performs a (more or less) full run of the wildfire biomass emissions calculations on a tile.
+This document pre-processes the FCCS data so it can be read in later.
 
 ### Dependencies
 
-This document relies on several third-party packages, imported below. Additionally, it imports data sets processed using several other scripts. 
-
-* List dependencies
+This document relies on several third-party packages, imported below.  
 
 # Setup
 
