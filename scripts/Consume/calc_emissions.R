@@ -176,7 +176,7 @@ calc_emissions <- function(dt, burn_type) {
         }
         
         # calculate total consumed biomass for both total fuelbed and residue only'
-        dt[, ':=' (total_fuel_consumed = (total_flamg + total_smoldg + total_resid), 
+        dt[, ':=' (total_fuel_consumed = (total_flamg + total_smoldg + total_resid + flamg_pile + smoldg_pile + resid_pile), 
                    total_duff_consumed = (flamg_duff_residue + smoldg_duff_residue + resid_duff_residue),
                    total_foliage_consumed = (flamg_foliage_residue + smoldg_foliage_residue + resid_foliage_residue),
                    total_fwd_consumed = (flamg_fwd_residue + smoldg_fwd_residue + resid_fwd_residue),
