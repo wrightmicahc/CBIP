@@ -15,4 +15,5 @@ figures/
 *.html
 # ignore downsample
 scripts/downsample/
-Test/
+scripts/Test/
+scripts/mtbs
