@@ -1,0 +1,40 @@
+---
+title: "Raster Data Description"
+author: "Micah Wright"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: pdf_document
+---
+
+This folder contains pre-processed rasters, all in GeoTIFF format with 30m resolution. All rasters are projected using California (Teale) Albers in NAD83. The crs is given in proj4string notation below.
+
+```
+"+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 
++datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"
+```
+# Rasters
+
+### Slope_NAD83
+
+Slope raster, values in percent slope. Originally sourced from the National Elevation Dataset available on Google Earth Engine.
+
+### Slope_NAD83_harvest_class
+
+Harvest classification based on Slope_NAD83. 0-30% slope is ground, pixel value 1, 30-80% is cable, pixel value 2, and >80% is unharvestable, pixel value 3.
+
+### FCCS_unforested.tif
+
+Mask of the unforested areas, according to FCCS. I've defined this as any FCCS fuelbed that is barren, indcluding water, urban, etc. Unforested areas have a pixel value of 1.
+
+### FCID2018_masked
+
+Raster of GNN FCID, with wilderness areas, Barren areas (as classified by FCCS), and FCID without residues masked out. The FCID without residues were defined as those whose residue sum for the clearcut treatment was 0. FCID numbers were updated by UW biomass team to reflect changes occuring from growth modeled between 2012 and 2018.
+
+# Archive
+
+### UW_FCID_no_wild
+
+UW FCID masked to exclude wilderness areas only.
+
+###
+### FCCS_unforested.tif
+Mask of the unforested areas, according to FCCS. I've defined this as any FCCS fuelbed that is barren, indcluding water, urban, etc., and any area without tree fuel load, including snags. Unforested areas have a pixel value of 1.
