@@ -48,7 +48,7 @@ rm(tiles)
 
 # make a dt and save it for each tile
 mclapply(tile_list,
-         mc.cores = detectCores() - 1,
+         mc.cores = detectCores(),
          function(x) { 
                  
                  rlist <- lapply(raster_paths, function(i) {

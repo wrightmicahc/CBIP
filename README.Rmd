@@ -39,15 +39,16 @@ CBIP                            # main project directory
 |   +-- GEE                     # Google Earth Engine data
 |   +-- Other                   # directory for misc. data sets
 |   +-- UW                      # UW data directory
-|   +-- Tiles                   # Tile shapefiles, tiled inputs and output data
-                                  sets.
+|   +-- Tiles                   # Tile shapefiles, tiled input and output data
+                                  sets
 +-- scripts                     # main script directory
 |   +-- Consume                 # consume, r version
 |   +-- FCCS                    # existing fuelbed processing
 |   +-- GAP                     # landcover classification
 |   +-- GEE                     # Google earth engine data processing
 |   +-- Other                   # misc. scripts
-|   +-- emissions_model         # core scripts for the emissions model
+|   +-- emissions_model         # core scripts for the emissions model excluding
+|                                 consumption/emissions scripts
 |   +-- Test                    # scratch and testing scripts
 |   +-- UW                      # residue data processing 
 +-- figures                     # figures
