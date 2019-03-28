@@ -15,3 +15,4 @@ figures/
 *.html
 # ignore downsample
 scripts/downsample/
+Test/
