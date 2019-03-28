@@ -136,12 +136,12 @@ calc_emissions <- function(dt, burn_type) {
         
         # loop though each combo and get the emissions for all combustion including original fuelbed
         for (col in e_spp) {
-                dt[ , paste0("total_", col) := rowSums(.SD), .SDcols = paste("total", c("flamg", "smoldg", "resid"), col, sep = "_")]
+                dt[ , paste0("total_except_pile_", col) := rowSums(.SD), .SDcols = paste("total", c("flamg", "smoldg", "resid"), col, sep = "_")]
         }
         ########################################################################
         # calculate total char
         ########################################################################
-        dt[, total_char := rowSums(.SD), .SDcols = c("char_100",
+        dt[, total_except_pile_char := rowSums(.SD), .SDcols = c("char_100",
                                                      "char_OneK_snd",
                                                      "char_OneK_rot",
                                                      "char_tenK_snd",
@@ -235,15 +235,15 @@ calc_emissions <- function(dt, burn_type) {
                            oneK_hr_rotten_pr,
                            tenK_hr_rotten_pr,
                            tnkp_hr_rotten_pr,
-                           total_char,
-                           total_CH4, 
-                           total_CO, 
-                           total_CO2,
-                           total_NOx, 
-                           total_PM10, 
-                           total_PM2.5,
-                           total_SO2, 
-                           total_VOC,
+                           total_except_pile_char,
+                           total_except_pile_CH4, 
+                           total_except_pile_CO, 
+                           total_except_pile_CO2,
+                           total_except_pile_NOx, 
+                           total_except_pile_PM10, 
+                           total_except_pile_PM2.5,
+                           total_except_pile_SO2, 
+                           total_except_pile_VOC,
                            total_pile_clean_PM10, 
                            total_pile_vdirty_PM10,
                            total_pile_clean_PM2.5,
