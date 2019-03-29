@@ -1,0 +1,93 @@
+---
+title: "Tile size and cell count"
+author: "Micah Wright"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "../..")
+```
+
+# Purpose
+
+This document explores the tile size and cell count for each tile.
+
+### Dependencies
+
+This document relies on several third-party packages, imported below. 
+
+# Setup
+
+Load the necessary packages and set ggplot2 theme.
+
+```{r message=FALSE, warning=FALSE}
+library(raster) # raster data
+library(rgdal) # raster and polygon 
+library(parallel)
+```
+
+# Analysis
+
+### Raster Import
+
+FCID2018: UW FCID numbers. Can be reclassified to any UW output via attribute tables.
+
+```{r}
+FCID2018 <- raster("data/UW/FCID2018_masked.tif")
+```
+
+### Tile Import
+
+Load the tiles. The size is customizable in make_tiles.R. Split the polygon into individual features, then remove the original.
+
+```{r}
+tiles <- readOGR("data/Tiles/clipped_tiles",
+                 "clipped_tiles")
+
+tile_list <- split(tiles, tiles$ID)
+
+rm(tiles)
+```
+
+How big is each tile?
+
+```{r}
+area_fun <- function(shp) {
+        cat("Area: ", area(shp)/10000, " Hectares")
+}
+
+area_fun(tile_list[[1]])
+```
+
+Make a function that crops the raster to each polygon and counts the cells that are not NA.
+
+```{r}
+get_count_fun <- function(ras, poly){
+       rc <- crop(ras, poly)
+       rows_ras <- nrow(as.data.frame(rc, na.rm = TRUE))
+       return(rows_ras)
+}
+```
+
+Apply the function to the list of raster file paths. This ouputs a list of rasters the size of the test zone, so all extents are the same. CRS and resolution were taken care of previously.
+
+```{r}
+rowcount_list <- mclapply(tile_list,
+                      mc.cores = detectCores(),
+                      function(i) get_count_fun(FCID2018, i))
+```
+
+Look at a histogram and summary of the values.
+
+```{r}
+rowcount <- unlist(rowcount_list)
+
+hist(rowcount)
+
+summary(rowcount)
+```
+
