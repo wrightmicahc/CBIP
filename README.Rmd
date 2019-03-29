@@ -141,7 +141,6 @@ total_except_pile_char: char produced by scattered fuels in tons/acre including 
 total_except_pile_CH4: CH4 produced by scattered fuels in tons/acre including original fuelbed. 
 total_except_pile_CO: CO produced by scattered fuels in tons/acre including original fuelbed.
 total_except_pile_CO2: CO2 produced by scattered fuels in tons/acre including original fuelbed.
-total_except_pile_NH3: NH3 produced by scattered fuels in tons/acre including original fuelbed.
 total_except_pile_NOx: NOx produced by scattered fuels in tons/acre including original fuelbed.
 total_except_pile_PM10: PM10 produced by scattered fuels in tons/acre including original fuelbed.
 total_except_pile_PM2.5: PM2.5 produced by scattered fuels in tons/acre including original fuelbed.
@@ -154,7 +153,6 @@ total_pile_vdirty_PM2.5: PM2.5 from piled fuels in tons/acre assuming very dirty
 total_pile_CH4: CH4 from piled fuels in tons/acre.
 total_pile_CO: CO from piled fuels in tons/acre.           
 total_pile_CO2: CO2 from piled fuels in tons/acre.
-total_pile_NH3: NH3 from piled fuels in tons/acre.
 total_pile_NOx: NOx from piled fuels in tons/acre.
 total_pile_SO2: SO2 from piled fuels in tons/acre.
 total_pile_VOC: VOC from piled fuels in tons/acre.
@@ -182,10 +180,6 @@ total_duff_residue_CO2: CO2 produced by residue duff in tons/acre.
 total_foliage_residue_CO2: CO2 produced by residue foliage in tons/acre.
 total_fwd_residue_CO2: CO2 produced by residue fine woody debris (1-3") in tons/acre.
 total_cwd_residue_CO2: CO2 produced by residue CO2arse woody debris (>3") in tons/acre.
-total_duff_residue_NH3: NH3 produced by residue duff in tons/acre.
-total_foliage_residue_NH3: NH3 produced by residue foliage in tons/acre.
-total_fwd_residue_NH3: NH3 produced by residue fine woody debris (1-3") in tons/acre.
-total_cwd_residue_NH3: NH3 produced by residue NH3arse woody debris (>3") in tons/acre.
 total_duff_residue_NOx: NOx produced by residue duff in tons/acre.
 total_foliage_residue_NOx: NOx produced by residue foliage in tons/acre.
 total_fwd_residue_NOx: NOx produced by residue fine woody debris (1-3") in tons/acre.
