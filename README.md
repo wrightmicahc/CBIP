@@ -607,118 +607,119 @@ output/emissions/657/20_Proportional_Thin-Cable-Cut_to_Length-Broadcast-None-No-
 
 The emissions table has the following columns:
 
-```
-x: x coordinate of cell.
-y: y coordinate of cell.
-fuelbed_number: FCCS fuelbed number.
-FCID2018: UW FCID number for 2018.
-ID: Integer scenario ID number, unique to each scenario treatment combination.
-Silvicultural_Treatment: Harvest or fuel treatment method applied.
-Harvest_Type: Harvest method, whole tree or cut-to-length.
-Harvest_System: Harvest extraction method, cable or ground.
-Burn_Type: RX burn type for the scenario, if applicable.
-Biomass_Collection: Was the biomass collected for energy generation?
-Pulp_Market: Was there a pulp market?
-Year: year in 100-year sequence.
-total_except_pile_char: char produced by scattered fuels in tons/acre including original fuelbed.
-total_except_pile_CH4: CH4 produced by scattered fuels in tons/acre including original fuelbed. 
-total_except_pile_CO: CO produced by scattered fuels in tons/acre including original fuelbed.
-total_except_pile_CO2: CO2 produced by scattered fuels in tons/acre including original fuelbed.
-total_except_pile_NOx: NOx produced by scattered fuels in tons/acre including original fuelbed.
-total_except_pile_PM10: PM10 produced by scattered fuels in tons/acre including original fuelbed.
-total_except_pile_PM2.5: PM2.5 produced by scattered fuels in tons/acre including original fuelbed.
-total_except_pile_SO2: SO2 produced by scattered fuels in tons/acre including original fuelbed.
-total_except_pile_VOC: VOC produced by scattered fuels in tons/acre including original fuelbed.
-total_pile_clean_PM10: PM10 from piled fuels in tons/acre assuming clean piles.
-total_pile_vdirty_PM10: PM10 from piled fuels in tons/acre assuming very dirty piles.
-total_pile_clean_PM2.5: PM2.5 from piled fuels in tons/acre assuming clean piles.
-total_pile_vdirty_PM2.5: PM2.5 from piled fuels in tons/acre assuming very dirty piles.
-total_pile_CH4: CH4 from piled fuels in tons/acre.
-total_pile_CO: CO from piled fuels in tons/acre.           
-total_pile_CO2: CO2 from piled fuels in tons/acre.
-total_pile_NOx: NOx from piled fuels in tons/acre.
-total_pile_SO2: SO2 from piled fuels in tons/acre.
-total_pile_VOC: VOC from piled fuels in tons/acre.
-pile_char: char from piled fuels  in tons/acre.
-char_fwd_residue: char from fine woody debris (1-3") in tons/acre.
-char_cwd_residue: char from coarse woody debris (>3") in tons/acre
-total_duff_exposed: duff exposed to fire that began as residue in tons/acre.
-total_foliage_exposed: residue foliage exposed to fire in tons/acre.
-total_fwd_exposed: residue fine woody debris (1-3") exposed to fire in tons/acre.
-total_cwd_exposed: residue coarse woody debris (>3") exposed to fire in tons/acre.
-total_fuel_consumed: total biomass consumed in tons/acre, including piled fuels.
-total_duff_consumed: residue duff consumed in tons/acre.
-total_foliage_consumed: residue foliage consumed in tons/acre.
-total_fwd_consumed: residue fine woody debris (1-3") consumed in tons/acre.
-total_cwd_consumed: residue coarse woody debris (>3") consumed in tons/acre.
-total_duff_residue_CH4: CH4 produced by residue duff in tons/acre.
-total_foliage_residue_CH4: CH4 produced by residue foliage in tons/acre.
-total_fwd_residue_CH4: CH4 produced by residue fine woody debris (1-3") in tons/acre.
-total_cwd_residue_CH4: CH4 produced by residue coarse woody debris (>3") in tons/acre.
-total_duff_residue_CO: CO produced by residue duff in tons/acre.
-total_foliage_residue_CO: CO produced by residue foliage in tons/acre.
-total_fwd_residue_CO: CO produced by residue fine woody debris (1-3") in tons/acre.
-total_cwd_residue_CO: CO produced by residue coarse woody debris (>3") in tons/acre.
-total_duff_residue_CO2: CO2 produced by residue duff in tons/acre.
-total_foliage_residue_CO2: CO2 produced by residue foliage in tons/acre.
-total_fwd_residue_CO2: CO2 produced by residue fine woody debris (1-3") in tons/acre.
-total_cwd_residue_CO2: CO2 produced by residue CO2arse woody debris (>3") in tons/acre.
-total_duff_residue_NOx: NOx produced by residue duff in tons/acre.
-total_foliage_residue_NOx: NOx produced by residue foliage in tons/acre.
-total_fwd_residue_NOx: NOx produced by residue fine woody debris (1-3") in tons/acre.
-total_cwd_residue_NOx: NOx produced by residue NOxarse woody debris (>3") in tons/acre.
-total_duff_residue_PM10: PM10 produced by residue duff in tons/acre.
-total_foliage_residue_PM10: PM10 produced by residue foliage in tons/acre.
-total_fwd_residue_PM10: PM10 produced by residue fine woody debris (1-3") in tons/acre.
-total_cwd_residue_PM10: PM10 produced by residue PM10arse woody debris (>3") in tons/acre.
-total_duff_residue_PM2.5: PM2.5 produced by residue duff in tons/acre.
-total_foliage_residue_PM2.5: PM2.5 produced by residue foliage in tons/acre.
-total_fwd_residue_PM2.5: PM2.5 produced by residue fine woody debris (1-3") in tons/acre.
-total_cwd_residue_PM2.5: PM2.5 produced by residue PM2.5arse woody debris (>3") in tons/acre.
-total_duff_residue_SO2: SO2 produced by residue duff in tons/acre.
-total_foliage_residue_SO2: SO2 produced by residue foliage in tons/acre.
-total_fwd_residue_SO2: SO2 produced by residue fine woody debris (1-3") in tons/acre.
-total_cwd_residue_SO2: SO2 produced by residue SO2arse woody debris (>3") in tons/acre.
-total_duff_residue_VOC: VOC produced by residue duff in tons/acre.
-total_foliage_residue_VOC: VOC produced by residue foliage in tons/acre.
-total_fwd_residue_VOC: VOC produced by residue fine woody debris (1-3") in tons/acre.
-total_cwd_residue_VOC: VOC produced by residue VOCarse woody debris (>3") in tons/acre.
-```
+| Column                     | Description                                                                |
+|----------------------------|----------------------------------------------------------------------------|
+|x                           |x coordinate of cell.
+|y                           |y coordinate of cell.
+|fuelbed_number              |FCCS fuelbed number.
+|FCID2018                    |UW FCID number for 2018.
+|ID                          |Integer scenario ID number, unique to each scenario treatment combination.
+|Silvicultural_Treatment     |Harvest or fuel treatment method applied.
+|Harvest_Type                |Harvest method, whole tree or cut-to-length.
+|Harvest_System              |Harvest extraction method, cable or ground.
+|Burn_Type                   |RX burn type for the scenario, if applicable.
+|Biomass_Collection          |Was the biomass collected for energy generation?
+|Pulp_Market                 |Was there a pulp market?
+|Year                        |Year in 100-year sequence.
+|total_except_pile_char      |Char produced by scattered fuels in tons/acre including original fuelbed.
+|total_except_pile_CH4       |CH4 produced by scattered fuels in tons/acre including original fuelbed. 
+|total_except_pile_CO        |CO produced by scattered fuels in tons/acre including original fuelbed.
+|total_except_pile_CO2       |CO2 produced by scattered fuels in tons/acre including original fuelbed.
+|total_except_pile_NOx       |NOx produced by scattered fuels in tons/acre including original fuelbed.
+|total_except_pile_PM10      |PM10 produced by scattered fuels in tons/acre including original fuelbed.
+|total_except_pile_PM2.5     |PM2.5 produced by scattered fuels in tons/acre including original fuelbed.
+|total_except_pile_SO2       |SO2 produced by scattered fuels in tons/acre including original fuelbed.
+|total_except_pile_VOC       |VOC produced by scattered fuels in tons/acre including original fuelbed.
+|total_pile_clean_PM10       |PM10 from piled fuels in tons/acre assuming clean piles.
+|total_pile_vdirty_PM10      |PM10 from piled fuels in tons/acre assuming very dirty piles.
+|total_pile_clean_PM2.5      |PM2.5 from piled fuels in tons/acre assuming clean piles.
+|total_pile_vdirty_PM2.5     |PM2.5 from piled fuels in tons/acre assuming very dirty piles.
+|total_pile_CH4              |CH4 from piled fuels in tons/acre.
+|total_pile_CO               |CO from piled fuels in tons/acre.           
+|total_pile_CO2              |CO2 from piled fuels in tons/acre.
+|total_pile_NOx              |NOx from piled fuels in tons/acre.
+|total_pile_SO2              |SO2 from piled fuels in tons/acre.
+|total_pile_VOC              |VOC from piled fuels in tons/acre.
+|pile_char                   |Char from piled fuels  in tons/acre.
+|char_fwd_residue            |Char from fine woody debris (1-3") in tons/acre.
+|char_cwd_residue            |Char from coarse woody debris (>3") in tons/acre
+|total_duff_exposed          |Duff exposed to fire that began as residue in tons/acre.
+|total_foliage_exposed       |Residue foliage exposed to fire in tons/acre.
+|total_fwd_exposed           |Residue fine woody debris (1-3") exposed to fire in tons/acre.
+|total_cwd_exposed           |Residue coarse woody debris (>3") exposed to fire in tons/acre.
+|total_fuel_consumed         |Total biomass consumed in tons/acre, including piled fuels.
+|total_duff_consumed         |Residue duff consumed in tons/acre.
+|total_foliage_consumed      |Residue foliage consumed in tons/acre.
+|total_fwd_consumed          |Residue fine woody debris (1-3") consumed in tons/acre.
+|total_cwd_consumed          |Residue coarse woody debris (>3") consumed in tons/acre.
+|total_duff_residue_CH4      |CH4 produced by residue duff in tons/acre.
+|total_foliage_residue_CH4   |CH4 produced by residue foliage in tons/acre.
+|total_fwd_residue_CH4       |CH4 produced by residue fine woody debris (1-3") in tons/acre.
+|total_cwd_residue_CH4       |CH4 produced by residue coarse woody debris (>3") in tons/acre.
+|total_duff_residue_CO       |CO produced by residue duff in tons/acre.
+|total_foliage_residue_CO    |CO produced by residue foliage in tons/acre.
+|total_fwd_residue_CO        |CO produced by residue fine woody debris (1-3") in tons/acre.
+|total_cwd_residue_CO        |CO produced by residue coarse woody debris (>3") in tons/acre.
+|total_duff_residue_CO2      |CO2 produced by residue duff in tons/acre.
+|total_foliage_residue_CO2   |CO2 produced by residue foliage in tons/acre.
+|total_fwd_residue_CO2       |CO2 produced by residue fine woody debris (1-3") in tons/acre.
+|total_cwd_residue_CO2       |CO2 produced by residue CO2arse woody debris (>3") in tons/acre.
+|total_duff_residue_NOx      |NOx produced by residue duff in tons/acre.
+|total_foliage_residue_NOx   |NOx produced by residue foliage in tons/acre.
+|total_fwd_residue_NOx       |NOx produced by residue fine woody debris (1-3") in tons/acre.
+|total_cwd_residue_NOx       |NOx produced by residue NOxarse woody debris (>3") in tons/acre.
+|total_duff_residue_PM10     |PM10 produced by residue duff in tons/acre.
+|total_foliage_residue_PM10  |PM10 produced by residue foliage in tons/acre.
+|total_fwd_residue_PM10      |PM10 produced by residue fine woody debris (1-3") in tons/acre.
+|total_cwd_residue_PM10      |PM10 produced by residue PM10arse woody debris (>3") in tons/acre.
+|total_duff_residue_PM2.5    |PM2.5 produced by residue duff in tons/acre.
+|total_foliage_residue_PM2.5 |PM2.5 produced by residue foliage in tons/acre.
+|total_fwd_residue_PM2.5     |PM2.5 produced by residue fine woody debris (1-3") in tons/acre.
+|total_cwd_residue_PM2.5     |PM2.5 produced by residue PM2.5arse woody debris (>3") in tons/acre.
+|total_duff_residue_SO2      |SO2 produced by residue duff in tons/acre.
+|total_foliage_residue_SO2   |SO2 produced by residue foliage in tons/acre.
+|total_fwd_residue_SO2       |SO2 produced by residue fine woody debris (1-3") in tons/acre.
+|total_cwd_residue_SO2       |SO2 produced by residue SO2arse woody debris (>3") in tons/acre.
+|total_duff_residue_VOC      |VOC produced by residue duff in tons/acre.
+|total_foliage_residue_VOC   |VOC produced by residue foliage in tons/acre.
+|total_fwd_residue_VOC       |VOC produced by residue fine woody debris (1-3") in tons/acre.
+|total_cwd_residue_VOC       |VOC produced by residue VOCarse woody debris (>3") in tons/acre
+
 ### Residual Fuels
 
 The residual fuels table has the following columns.
 
-```
-x: x coordinate of cell.
-y: y coordinate of cell.
-fuelbed_number: FCCS fuelbed number.
-FCID2018: UW FCID number for 2018.
-ID: Integer scenario ID number, unique to each scenario treatment combination.
-Silvicultural_Treatment: Harvest or fuel treatment method applied.
-Harvest_Type: Harvest method, whole tree or cut-to-length.
-Harvest_System: Harvest extraction method, cable or ground.
-Burn_Type: RX burn type for the scenario, if applicable.
-Biomass_Collection: Was the biomass collected for energy generation?
-Pulp_Market: Was there a pulp market?
-Year: year in 100-year sequence.
-Slope: Slope of pixel in percent.
-Fm10: 10-hour fuel moisture in percent.
-Fm1000: 1,000-hour fuel moisture in percent.
-Wind_corrected: Corrected windspeed, miles per hour.
-duff_upper_loading: Upper duff layer loading, residue only, in tons/acre.
-litter_loading: litter loading, residue only, in tons/acre.
-one_hr_sound: one-hour (<=0.25") fuel loading, residue only, in tons/acre.
-ten_hr_sound: ten-hour (0.26-1") fuel loading, residue only, in tons/acre.           
-hun_hr_sound: hundred-hour (1.1-3") fuel loading, residue only, in tons/acre.
-oneK_hr_sound: one thousand-hour (3-9") sound fuel loading, residue only, in tons/acre.
-oneK_hr_rotten: one thousand-hour (3-9") rotten fuel loading, residue only, in tons/acre.
-tenK_hr_sound: ten thousand-hour (9-20") sound fuel loading, residue only, in tons/acre.
-tenK_hr_rotten: ten thousand-hour (9-20") rotten fuel loading, residue only, in tons/acre.
-tnkp_hr_sound: greater than ten thousand-hour (>20") sound fuel loading, residue only, in tons/acre.
-tnkp_hr_rotten: greater than ten thousand-hour (>20") rotten fuel loading, residue only, in tons/acre.
-pile_field: field-piled residue of all size classes, in tons/acre.
-pile_landing: landing-piled residue of all size classes, in tons/acre.
-```
+| Column                  | Description                                                                |
+|-------------------------|----------------------------------------------------------------------------|
+|x                        |x coordinate of cell.
+|y                        |y coordinate of cell.
+|fuelbed_number           |FCCS fuelbed number.
+|FCID2018                 |UW FCID number for 2018.
+|ID                       |Integer scenario ID number, unique to each scenario treatment combination.
+|Silvicultural_Treatment  |Harvest or fuel treatment method applied.
+|Harvest_Type             |Harvest method, whole tree or cut-to-length.
+|Harvest_System           |Harvest extraction method, cable or ground.
+|Burn_Type                |RX burn type for the scenario, if applicable.
+|Biomass_Collection       |Was the biomass collected for energy generation?
+|Pulp_Market              |Was there a pulp market?
+|Year                     |Year in 100-year sequence.
+|Slope                    |Slope of pixel in percent.
+|Fm10                     |10-hour fuel moisture in percent.
+|Fm1000                   |1,000-hour fuel moisture in percent.
+|Wind_corrected           |Corrected windspeed, miles per hour.
+|duff_upper_loading       |Upper duff layer loading, residue only, in tons/acre.
+|litter_loading           |Litter loading, residue only, in tons/acre.
+|one_hr_sound             |One-hour (<=0.25 in.) fuel loading, residue only, in tons/acre.
+|ten_hr_sound             |Ten-hour (0.26-1 in.) fuel loading, residue only, in tons/acre.           
+|hun_hr_sound             |Hundred-hour (1.1-3 in.) fuel loading, residue only, in tons/acre.
+|oneK_hr_sound            |One thousand-hour (3-9 in.) sound fuel loading, residue only, in tons/acre.
+|oneK_hr_rotten           |One thousand-hour (3-9 in.) rotten fuel loading, residue only, in tons/acre.
+|tenK_hr_sound            |Ten thousand-hour (9-20 in.) sound fuel loading, residue only, in tons/acre.
+|tenK_hr_rotten           |Ten thousand-hour (9-20 in.) rotten fuel loading, residue only, in tons/acre.
+|tnkp_hr_sound            |Greater than ten thousand-hour (>20 in.) sound fuel loading, residue only, in tons/acre.
+|tnkp_hr_rotten           |Greater than ten thousand-hour (>20 in.) rotten fuel loading, residue only, in tons/acre.
+|pile_field               |Field-piled residue of all size classes, in tons/acre.
+|pile_landing             |Landing-piled residue of all size classes, in tons/acre.
 
 ## Versioning
 
