@@ -92,6 +92,17 @@ emissions <- readRDS("data/Tiles/output/emissions/300/20_Proportional_Thin-Cable
 residual_fuels <- readRDS("data/Tiles/output/residual_fuels/300/20_Proportional_Thin-Cable-Cut_to_Length-Broadcast-None-No-300-0.rds")
 ```
 
+To run the emissions scenario_emissions function on the entire tile set, use the run_all function, as shown below. The run_all function has an optional argument t_range, which is a integer vector or sequence of tile ID numbers. The default is NULL, which runs all tiles. WARNING: This takes quite a while to run, and require a lot of disk space.
+
+```
+source("scripts/emissions_model/run_all.R")
+
+# runs everything
+run_all()
+
+# run first 100 tiles
+run_all(1:100)
+```
 ## What it does
 
 The model estimates fuel consumption, emissions, and residual fuels for one of 478 fixed scenarios. The scenarios are shown in the following table, which can also be accessed at "data/SERC/scenarios.csv".
