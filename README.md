@@ -663,27 +663,27 @@ The emissions table has the following columns:
 |total_duff_residue_CO2      |CO2 produced by residue duff in tons/acre.
 |total_foliage_residue_CO2   |CO2 produced by residue foliage in tons/acre.
 |total_fwd_residue_CO2       |CO2 produced by residue fine woody debris (1-3") in tons/acre.
-|total_cwd_residue_CO2       |CO2 produced by residue CO2arse woody debris (>3") in tons/acre.
+|total_cwd_residue_CO2       |CO2 produced by residue coarse woody debris (>3") in tons/acre.
 |total_duff_residue_NOx      |NOx produced by residue duff in tons/acre.
 |total_foliage_residue_NOx   |NOx produced by residue foliage in tons/acre.
 |total_fwd_residue_NOx       |NOx produced by residue fine woody debris (1-3") in tons/acre.
-|total_cwd_residue_NOx       |NOx produced by residue NOxarse woody debris (>3") in tons/acre.
+|total_cwd_residue_NOx       |NOx produced by residue coarse woody debris (>3") in tons/acre.
 |total_duff_residue_PM10     |PM10 produced by residue duff in tons/acre.
 |total_foliage_residue_PM10  |PM10 produced by residue foliage in tons/acre.
 |total_fwd_residue_PM10      |PM10 produced by residue fine woody debris (1-3") in tons/acre.
-|total_cwd_residue_PM10      |PM10 produced by residue PM10arse woody debris (>3") in tons/acre.
+|total_cwd_residue_PM10      |PM10 produced by residue coarse woody debris (>3") in tons/acre.
 |total_duff_residue_PM2.5    |PM2.5 produced by residue duff in tons/acre.
 |total_foliage_residue_PM2.5 |PM2.5 produced by residue foliage in tons/acre.
 |total_fwd_residue_PM2.5     |PM2.5 produced by residue fine woody debris (1-3") in tons/acre.
-|total_cwd_residue_PM2.5     |PM2.5 produced by residue PM2.5arse woody debris (>3") in tons/acre.
+|total_cwd_residue_PM2.5     |PM2.5 produced by residue coarse woody debris (>3") in tons/acre.
 |total_duff_residue_SO2      |SO2 produced by residue duff in tons/acre.
 |total_foliage_residue_SO2   |SO2 produced by residue foliage in tons/acre.
 |total_fwd_residue_SO2       |SO2 produced by residue fine woody debris (1-3") in tons/acre.
-|total_cwd_residue_SO2       |SO2 produced by residue SO2arse woody debris (>3") in tons/acre.
+|total_cwd_residue_SO2       |SO2 produced by residue coarse woody debris (>3") in tons/acre.
 |total_duff_residue_VOC      |VOC produced by residue duff in tons/acre.
 |total_foliage_residue_VOC   |VOC produced by residue foliage in tons/acre.
 |total_fwd_residue_VOC       |VOC produced by residue fine woody debris (1-3") in tons/acre.
-|total_cwd_residue_VOC       |VOC produced by residue VOCarse woody debris (>3") in tons/acre
+|total_cwd_residue_VOC       |VOC produced by residue coarse woody debris (>3") in tons/acre
 
 ### Residual Fuels
 
