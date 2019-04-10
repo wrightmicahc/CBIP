@@ -648,6 +648,7 @@ The emissions table has the following columns:
 |total_fwd_exposed           |Residue fine woody debris (1-3") exposed to fire in tons/acre.
 |total_cwd_exposed           |Residue coarse woody debris (>3") exposed to fire in tons/acre.
 |total_fuel_consumed         |Total biomass consumed in tons/acre, including piled fuels.
+|total_pile_consumed         |Total piled biomass consumed in tons/acre. Piles are entirely residue.
 |total_duff_consumed         |Residue duff consumed in tons/acre.
 |total_foliage_consumed      |Residue foliage consumed in tons/acre.
 |total_fwd_consumed          |Residue fine woody debris (1-3") consumed in tons/acre.
