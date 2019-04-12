@@ -304,9 +304,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         # ccon_piled()
         # this is combined for wildfire scenarios
         ###################################################
-        dt[,':='(flamg_pile = ((pile_field * 0.9) * 0.7) + ((pile_landing * 0.9) * 0.7),
-                 smoldg_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15),
-                 resid_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15))]
+        dt[, ':=' (flamg_pile = (pile_load * 0.9) * 0.7,
+                   smoldg_pile = (pile_load * 0.9) * 0.15,
+                   resid_pile = (pile_load * 0.9) * 0.15)]
         
         ###################################################
         # charcoal production
@@ -330,10 +330,9 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                    tnkp_hr_sound = tnkp_hr_sound - char_tnkp_snd,
                    tnkp_hr_rotten = tnkp_hr_rotten - char_tnkp_rot)]
         
-        # calculate pile char and update remaining mass
-        dt[, ':=' (pile_char = char_pile(pile_field * 0.1) + char_pile(pile_landing * 0.1),
-                   pile_field = pile_field - char_pile(pile_field), 
-                   pile_landing = pile_landing - char_pile(pile_landing))]
+        # calculate pile char and update remaining unburned mass
+        dt[, ':=' (pile_char = char_pile(pile_load * 0.1),
+                   pile_load = pile_load - pile_char)]
         
         # aggregate the data as much as possible to get residue only and total by combustion phase
         # first aggregate the total consumed by combustion phase
@@ -438,28 +437,16 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
 # consumption for piled fuel only scenarios
 # dt: input data.table
 # burn_type: Pile or Jackpot
-ccon_activity_piled_only_fast <- function(dt, burn_type) {
+ccon_activity_piled_only_fast <- function(dt) {
         
-        if(burn_type == "Pile") {
-                
-                dt[, ':=' (flamg_pile = (pile_landing * 0.9) * 0.7,
-                           smoldg_pile = (pile_landing * 0.9) * 0.15,
-                           resid_pile = (pile_landing * 0.9) * 0.15)]
-                
-        } 
+        dt[, ':=' (flamg_pile = (pile_load * 0.9) * 0.7,
+                   smoldg_pile = (pile_load * 0.9) * 0.15,
+                   resid_pile = (pile_load * 0.9) * 0.15)]
         
-        if(burn_type == "Jackpot") { 
-                
-                dt[,':='(flamg_pile = ((pile_field * 0.9) * 0.7) + ((pile_landing * 0.9) * 0.7),
-                         smoldg_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15),
-                         resid_pile = ((pile_field * 0.9) * 0.15) + ((pile_landing * 0.9) * 0.15))]
-        }
-        
-        # calculate char and update consumed mass
-        dt[, ':=' (pile_char = char_pile((flamg_pile + smoldg_pile + resid_pile)),
-                   flamg_pile = flamg_pile - char_pile(flamg_pile), 
-                   smoldg_pile = smoldg_pile -  char_pile(smoldg_pile),
-                   resid_pile = resid_pile - char_pile(resid_pile))]
+        # calculate char and update remaining mass
+        # calculate pile char and update remaining mass
+        dt[, ':=' (pile_char = char_pile(pile_load * 0.1),
+                   pile_load = pile_load - pile_char)]
         
         # assign 0 values to other burn cols for eval in  calc_emissions
         c_phase <- c("flamg", "smoldg", "resid")
