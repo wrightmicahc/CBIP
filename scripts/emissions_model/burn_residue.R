@@ -42,8 +42,7 @@ burn_residue <- function(dt, burn_type) {
         }
         
         # RX piled only
-        if(burn_type %in% c("Pile",
-                            "Jackpot")) {
+        if(burn_type  == "Pile") {
                 
                 consumption_df <- ccon_activity_piled_only_fast(dt, burn_type)
                 
