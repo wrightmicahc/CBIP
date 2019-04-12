@@ -23,15 +23,15 @@ run_all <- function(t_range = NULL) {
         tile_nums <- tiles$ID
         
         # run message
-        run_message <- "running scenario_emissions on"
+        run_message <- "calculating emissions scenarios for"
         
         if(is.null(t_range)) {
                 # run the function on each tile
-                print(paste(run_message, length(tile_nums), "tiles..."))
+                message(paste(run_message, length(tile_nums), "tiles..."))
                 lapply(tile_nums, function(x) try(scenario_emissions(x)))       
         } else {
                 # run the function on the specified tiles
-                print(paste(run_message, length(t_range), "tiles..."))
+                message(paste(run_message, length(t_range), "tiles..."))
                 lapply(tile_nums[t_range], function(x) try(scenario_emissions(x)))       
         }
         
