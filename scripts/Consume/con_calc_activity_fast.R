@@ -436,7 +436,6 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
 
 # consumption for piled fuel only scenarios
 # dt: input data.table
-# burn_type: Pile or Jackpot
 ccon_activity_piled_only_fast <- function(dt) {
         
         dt[, ':=' (flamg_pile = (pile_load * 0.9) * 0.7,
