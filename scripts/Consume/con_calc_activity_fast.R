@@ -47,7 +47,7 @@ char_pile <- function(m_cons) {
 # fm_type: fuel moisture type, one of MEAS_Th, ADJ_Th, NFDRS_Th
 # days_since_rain: the number of days since 0.25" rain
 # DRR: diameter reduction modifier
-ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
+ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR, burn_type){
         
         ###################################################
         # calculate % of 100-hr fuels consumed
@@ -304,9 +304,16 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
         # ccon_piled()
         # this is combined for wildfire scenarios
         ###################################################
-        dt[, ':=' (flamg_pile = (pile_load * 0.9) * 0.7,
-                   smoldg_pile = (pile_load * 0.9) * 0.15,
-                   resid_pile = (pile_load * 0.9) * 0.15)]
+        if (burn_type %in% c("Pile_Broadcast", "None")) {
+                dt[, ':=' (flamg_pile = (pile_load * 0.9) * 0.7,
+                           smoldg_pile = (pile_load * 0.9) * 0.15,
+                           resid_pile = (pile_load * 0.9) * 0.15)]
+        } else {
+                
+                dt[, ':=' (flamg_pile = 0,
+                           smoldg_pile = 0,
+                           resid_pile = 0)]
+        }
         
         ###################################################
         # charcoal production
@@ -331,8 +338,12 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR){
                    tnkp_hr_rotten = tnkp_hr_rotten - char_tnkp_rot)]
         
         # calculate pile char and update remaining unburned mass
-        dt[, ':=' (pile_char = char_pile(pile_load * 0.1),
-                   pile_load = pile_load - pile_char)]
+        if (burn_type %in% c("Pile_Broadcast", "None")) {
+                dt[, ':=' (pile_char = char_pile(pile_load * 0.1),
+                           pile_load = pile_load - pile_char)]
+        } else {
+                dt[, pile_char := 0]
+        }
         
         # aggregate the data as much as possible to get residue only and total by combustion phase
         # first aggregate the total consumed by combustion phase
