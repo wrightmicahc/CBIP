@@ -3,9 +3,6 @@
 # combines them into a single data.table as part of the California Biopower 
 # Impact Project. 
 # 
-# id: scenario id number
-# harvest_system: Ground, Cable, or None
-# harvest_type: Whole_Tree, Cut_to_length, or None
 # burn_type: None (wf), Broacast, Pile, or Jackpot
 # biomass_collection: yes/no
 # tile_number: numeric tile number.
@@ -17,7 +14,7 @@
 library(data.table)
 
 # define function
-load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, biomass_collection, tile_number) {
+load_data <- function(treatment, burn_type, biomass_collection, tile_number) {
         
         # file paths to residue tables
         residue_path <- list("No_Action" = "data/UW/residue/NoAction.csv",
@@ -46,6 +43,9 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         rdf <- readRDS(paste0("data/Tiles/input/", 
                               tile_number, ".rds"))
         
+        # remove slopes above 80%
+        rdf[Slope < 80]
+        
         # load fuel proportions
         fuel_prop <- fread(fuel_prop_path, 
                            verbose = FALSE) 
@@ -60,10 +60,8 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         residue <- residue[FCID2018 %in% rdf$FCID2018]
         
         # specify scenario treatments and attributes
-        residue[, ':=' (ID = id,
-                        Silvicultural_Treatment = treatment, 
-                        Harvest_System = harvest_system,
-                        Harvest_Type = harvest_type, 
+        # leave out id
+        residue[, ':=' (Silvicultural_Treatment = treatment, 
                         Burn_Type = burn_type,
                         Biomass_Collection = biomass_collection,
                         Tile_Number = tile_number)]
@@ -88,6 +86,9 @@ load_data <- function(id, treatment, harvest_system, harvest_type, burn_type, bi
         setkey(FCCS, fuelbed_number)
         
         rdf <-  merge(rdf, FCCS, by = "fuelbed_number")
+        
+        # specify a slope class
+        rdf[, Slope_Class := ifelse(Slope < 40, "shallow", "steep")]
         
         return(rdf)
 }
