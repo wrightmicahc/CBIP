@@ -22,7 +22,8 @@ burn_residue <- function(dt, burn_type) {
                 consumption_df <- ccon_activity_fast(dt, 
                                                      fm_type = "NFDRS_Th",
                                                      days_since_rain = 50,
-                                                     DRR = DRR)
+                                                     DRR = DRR,
+                                                     burn_type = burn_type)
                 
                 emissions_df <- calc_emissions(consumption_df, burn_type)
                 
@@ -35,7 +36,8 @@ burn_residue <- function(dt, burn_type) {
                 consumption_df <- ccon_activity_fast(dt, 
                                                      fm_type = "NFDRS_Th", 
                                                      days_since_rain = 10,
-                                                     DRR = DRR)
+                                                     DRR = DRR, 
+                                                     burn_type = burn_type)
                 
                 emissions_df <- calc_emissions(consumption_df, burn_type)
                 
