@@ -78,8 +78,6 @@ scenario_emissions <- function(tile_number) {
                               # so assigning the first row gets the correct value
                               ID <- x[1, ID]
                               Silvicultural_Treatment <- x[1, Silvicultural_Treatment]
-                              Harvest_System <- x[1, Harvest_System]
-                              Harvest_Type <- x[1, Harvest_Type]
                               Burn_Type <- x[1, Burn_Type]
                               Biomass_Collection <- x[1, Biomass_Collection]
                               Pulp_Market <- x[1, Pulp_Market]
@@ -90,8 +88,6 @@ scenario_emissions <- function(tile_number) {
                               # attribute data
                               fuel_df <- load_data(ID,
                                                    Silvicultural_Treatment,
-                                                   Harvest_System,
-                                                   Harvest_Type, 
                                                    Burn_Type,
                                                    Biomass_Collection,
                                                    Tile_Number)
@@ -125,8 +121,7 @@ scenario_emissions <- function(tile_number) {
                                       # save the output
                                       save_output(rx_out,
                                                   Silvicultural_Treatment,
-                                                  Harvest_System,
-                                                  Harvest_Type,
+                                                  ID,
                                                   Burn_Type,
                                                   tile_number,
                                                   Biomass_Collection,
@@ -158,8 +153,7 @@ scenario_emissions <- function(tile_number) {
                                               # save the output
                                               save_output(output_df,
                                                           Silvicultural_Treatment,
-                                                          Harvest_System,
-                                                          Harvest_Type,
+                                                          ID,
                                                           Burn_Type,
                                                           tile_number,
                                                           Biomass_Collection,
@@ -201,8 +195,7 @@ scenario_emissions <- function(tile_number) {
                                               # save the output
                                               save_output(output_df,
                                                           Silvicultural_Treatment,
-                                                          Harvest_System,
-                                                          Harvest_Type,
+                                                          ID,
                                                           Burn_Type,
                                                           tile_number,
                                                           Biomass_Collection,
