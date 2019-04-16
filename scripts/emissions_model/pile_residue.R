@@ -21,7 +21,7 @@ pile_residue <- function(dt, timestep) {
         # merge lookup and dt
         dt <-  merge(dt, 
                      lookup_pile,
-                     by = c("ID",
+                     by = c("Slope_Class",
                             "Silvicultural_Treatment",
                             "Harvest_System",
                             "Harvest_Type",
