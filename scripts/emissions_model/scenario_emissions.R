@@ -119,14 +119,17 @@ scenario_emissions <- function(tile_number) {
                                       rx_out <- burn_residue(cpy, Burn_Type)
                                       
                                       # save the output
-                                      save_output(rx_out,
-                                                  Silvicultural_Treatment,
-                                                  ID,
-                                                  Burn_Type,
-                                                  tile_number,
-                                                  Biomass_Collection,
-                                                  Pulp_Market,
-                                                  0)
+                                      lapply(1:2, function(i) {
+                                              save_output(rx_out[[i]],
+                                                          Silvicultural_Treatment,
+                                                          ID,
+                                                          Burn_Type,
+                                                          tile_number,
+                                                          Biomass_Collection,
+                                                          Pulp_Market,
+                                                          secondary_burn = names(rx_out)[i],
+                                                          0)
+                                              })
                                       
                                       # create a vector from 25-100 years in 25 year bins
                                       timestep <- seq(25, 100, 25)
@@ -140,7 +143,7 @@ scenario_emissions <- function(tile_number) {
                                       lapply(timestep, function(i) {
                                               
                                               # create post RX recovered fuelbed for year i
-                                              post_rx <- add_rx_residue(rx_out, fuel_df, i)
+                                              post_rx <- add_rx_residue(rx_out[["first"]], fuel_df, i)
                                               
                                               # change fire weather value names appropriately
                                               post_rx[, ':=' (Wind_corrected = Wind_corrected_97,
@@ -158,6 +161,7 @@ scenario_emissions <- function(tile_number) {
                                                           tile_number,
                                                           Biomass_Collection,
                                                           Pulp_Market,
+                                                          secondary_burn = "first",
                                                           i)
                                               
                                       })
@@ -200,6 +204,7 @@ scenario_emissions <- function(tile_number) {
                                                           tile_number,
                                                           Biomass_Collection,
                                                           Pulp_Market,
+                                                          secondary_burn = "first",
                                                           i)
                                               
                                       })
