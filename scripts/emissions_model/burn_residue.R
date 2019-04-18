@@ -12,6 +12,7 @@
 # source functions that calculate consumption and emissions
 source("scripts/Consume/con_calc_activity_fast.R")
 source("scripts/Consume/calc_emissions.R")
+source("scripts/emissions_model/remove_rx_consumed.R")
 
 burn_residue <- function(dt, burn_type) {
         # wildfire
@@ -39,7 +40,17 @@ burn_residue <- function(dt, burn_type) {
                                                      DRR = DRR, 
                                                      burn_type = burn_type)
                 
+                burn_again <- remove_rx_consumed(consumption_df, burn_type)
+                
+                consumption_df2 <- ccon_activity_fast(burn_again, 
+                                                      fm_type = "NFDRS_Th", 
+                                                      days_since_rain = 10,
+                                                      DRR = DRR, 
+                                                      burn_type = "None")
+                
                 emissions_df <- calc_emissions(consumption_df, burn_type)
+                
+                emissions_df2 <- calc_emissions(consumption_df2, "None")
                 
         }
         
@@ -48,9 +59,23 @@ burn_residue <- function(dt, burn_type) {
                 
                 consumption_df <- ccon_activity_piled_only_fast(dt)
                 
+                burn_again <- remove_rx_consumed(consumption_df, burn_type)
+                
+                consumption_df2 <- ccon_activity_piled_only_fast(burn_again)
+                
                 emissions_df <- calc_emissions(consumption_df, burn_type)
+                
+                emissions_df2 <- calc_emissions(consumption_df2, "None")
                 
         }
         
-        return(emissions_df)
+        if(burn_type == "None") {
+                
+                return(emissions_df)
+                
+        } else {
+                
+                return(list("first" = emissions_df, "second" = emissions_df2))
+                
+        }
 }
