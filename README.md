@@ -92,6 +92,17 @@ emissions <- readRDS("data/Tiles/output/emissions/300/20_Proportional_Thin-Cable
 residual_fuels <- readRDS("data/Tiles/output/residual_fuels/300/20_Proportional_Thin-Cable-Cut_to_Length-Broadcast-None-No-300-0.rds")
 ```
 
+To run the emissions scenario_emissions function on the entire tile set, use the run_all function, as shown below. The run_all function has an optional argument t_range, which is a integer vector or sequence of tile ID numbers. The default is NULL, which runs all tiles. WARNING: This takes quite a while to run, and require a lot of disk space.
+
+```
+source("scripts/emissions_model/run_all.R")
+
+# runs everything
+run_all()
+
+# run first 100 tiles
+run_all(1:100)
+```
 ## What it does
 
 The model estimates fuel consumption, emissions, and residual fuels for one of 478 fixed scenarios. The scenarios are shown in the following table, which can also be accessed at "data/SERC/scenarios.csv".
@@ -648,6 +659,7 @@ The emissions table has the following columns:
 |total_fwd_exposed           |Residue fine woody debris (1-3") exposed to fire in tons/acre.
 |total_cwd_exposed           |Residue coarse woody debris (>3") exposed to fire in tons/acre.
 |total_fuel_consumed         |Total biomass consumed in tons/acre, including piled fuels.
+|total_pile_consumed         |Total piled biomass consumed in tons/acre. Piles are entirely residue.
 |total_duff_consumed         |Residue duff consumed in tons/acre.
 |total_foliage_consumed      |Residue foliage consumed in tons/acre.
 |total_fwd_consumed          |Residue fine woody debris (1-3") consumed in tons/acre.
@@ -663,27 +675,27 @@ The emissions table has the following columns:
 |total_duff_residue_CO2      |CO2 produced by residue duff in tons/acre.
 |total_foliage_residue_CO2   |CO2 produced by residue foliage in tons/acre.
 |total_fwd_residue_CO2       |CO2 produced by residue fine woody debris (1-3") in tons/acre.
-|total_cwd_residue_CO2       |CO2 produced by residue CO2arse woody debris (>3") in tons/acre.
+|total_cwd_residue_CO2       |CO2 produced by residue coarse woody debris (>3") in tons/acre.
 |total_duff_residue_NOx      |NOx produced by residue duff in tons/acre.
 |total_foliage_residue_NOx   |NOx produced by residue foliage in tons/acre.
 |total_fwd_residue_NOx       |NOx produced by residue fine woody debris (1-3") in tons/acre.
-|total_cwd_residue_NOx       |NOx produced by residue NOxarse woody debris (>3") in tons/acre.
+|total_cwd_residue_NOx       |NOx produced by residue coarse woody debris (>3") in tons/acre.
 |total_duff_residue_PM10     |PM10 produced by residue duff in tons/acre.
 |total_foliage_residue_PM10  |PM10 produced by residue foliage in tons/acre.
 |total_fwd_residue_PM10      |PM10 produced by residue fine woody debris (1-3") in tons/acre.
-|total_cwd_residue_PM10      |PM10 produced by residue PM10arse woody debris (>3") in tons/acre.
+|total_cwd_residue_PM10      |PM10 produced by residue coarse woody debris (>3") in tons/acre.
 |total_duff_residue_PM2.5    |PM2.5 produced by residue duff in tons/acre.
 |total_foliage_residue_PM2.5 |PM2.5 produced by residue foliage in tons/acre.
 |total_fwd_residue_PM2.5     |PM2.5 produced by residue fine woody debris (1-3") in tons/acre.
-|total_cwd_residue_PM2.5     |PM2.5 produced by residue PM2.5arse woody debris (>3") in tons/acre.
+|total_cwd_residue_PM2.5     |PM2.5 produced by residue coarse woody debris (>3") in tons/acre.
 |total_duff_residue_SO2      |SO2 produced by residue duff in tons/acre.
 |total_foliage_residue_SO2   |SO2 produced by residue foliage in tons/acre.
 |total_fwd_residue_SO2       |SO2 produced by residue fine woody debris (1-3") in tons/acre.
-|total_cwd_residue_SO2       |SO2 produced by residue SO2arse woody debris (>3") in tons/acre.
+|total_cwd_residue_SO2       |SO2 produced by residue coarse woody debris (>3") in tons/acre.
 |total_duff_residue_VOC      |VOC produced by residue duff in tons/acre.
 |total_foliage_residue_VOC   |VOC produced by residue foliage in tons/acre.
 |total_fwd_residue_VOC       |VOC produced by residue fine woody debris (1-3") in tons/acre.
-|total_cwd_residue_VOC       |VOC produced by residue VOCarse woody debris (>3") in tons/acre
+|total_cwd_residue_VOC       |VOC produced by residue coarse woody debris (>3") in tons/acre
 
 ### Residual Fuels
 
