@@ -53,7 +53,7 @@ scenario_emissions <- function(tile_number) {
         })
         
         # load scenarios
-        scenarios <- fread("data/SERC/scenarios.csv", 
+        scenarios <- fread("data/SERC/fake_scenarios.csv", 
                            verbose = FALSE)
         
         setkey(scenarios, Silvicultural_Treatment)
@@ -78,6 +78,8 @@ scenario_emissions <- function(tile_number) {
                               # so assigning the first row gets the correct value
                               ID <- x[1, ID]
                               Silvicultural_Treatment <- x[1, Silvicultural_Treatment]
+                              Fraction_Piled = x[1, Fraction_Piled]
+                              Fraction_Scattered = x[1, Fraction_Scattered]
                               Burn_Type <- x[1, Burn_Type]
                               Biomass_Collection <- x[1, Biomass_Collection]
                               Pulp_Market <- x[1, Pulp_Market]
@@ -88,6 +90,8 @@ scenario_emissions <- function(tile_number) {
                               # attribute data
                               fuel_df <- load_data(ID,
                                                    Silvicultural_Treatment,
+                                                   Fraction_Piled,
+                                                   Fraction_Scattered,
                                                    Burn_Type,
                                                    Biomass_Collection,
                                                    Tile_Number)
