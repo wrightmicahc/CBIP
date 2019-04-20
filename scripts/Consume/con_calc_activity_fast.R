@@ -339,8 +339,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR, burn_type){
         
         # calculate pile char and update remaining unburned mass
         if (burn_type %in% c("Pile_Broadcast", "None")) {
-                dt[, ':=' (pile_char = char_pile(pile_load * 0.1),
-                           pile_load = pile_load - pile_char)]
+                dt[, pile_char := char_pile(pile_load * 0.1)][, pile_load := pile_load - pile_char]
         } else {
                 dt[, pile_char := 0]
         }
@@ -455,8 +454,7 @@ ccon_activity_piled_only_fast <- function(dt) {
         
         # calculate char and update remaining mass
         # calculate pile char and update remaining mass
-        dt[, ':=' (pile_char = char_pile(pile_load * 0.1),
-                   pile_load = pile_load - pile_char)]
+        dt[, pile_char := char_pile(pile_load * 0.1)][, pile_load := pile_load - pile_char]
         
         # assign 0 values to other burn cols for eval in  calc_emissions
         c_phase <- c("flamg", "smoldg", "resid")
