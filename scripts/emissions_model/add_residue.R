@@ -29,7 +29,7 @@ propfuel <- function(load, add, prop) {
 add_residue <- function(dt, timestep) {
         
         # load the lookup table for scattered fuels
-        lookup_scattered <- fread("data/SERC/lookup_tables/scattered_in_field.csv", 
+        lookup_scattered <- fread("data/SERC/lookup_tables/fake/scattered.csv", 
                                   verbose = FALSE)
         
         # add year column
@@ -39,9 +39,10 @@ add_residue <- function(dt, timestep) {
         dt <-  merge(dt, 
                      lookup_scattered,
                      by = c("ID",
+                            "Slope_Class",
                             "Silvicultural_Treatment",
-                            "Harvest_System",
-                            "Harvest_Type",
+                            "Fraction_Piled",
+                            "Fraction_Scattered",
                             "Burn_Type",
                             "Biomass_Collection"), 
                      all.x = TRUE,
@@ -174,7 +175,6 @@ add_residue <- function(dt, timestep) {
                "Branch",
                "Foliage",
                "CWD",
-               "Type",
                "TPI",
                "CWD_K",
                "FWD_K",
