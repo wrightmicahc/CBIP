@@ -14,7 +14,7 @@
 library(data.table)
 
 # define function
-load_data <- function(treatment, burn_type, biomass_collection, tile_number) {
+load_data <- function(id, treatment, f_piled, f_scattered, burn_type, biomass_collection, tile_number) {
         
         # file paths to residue tables
         residue_path <- list("No_Action" = "data/UW/residue/NoAction.csv",
@@ -44,7 +44,7 @@ load_data <- function(treatment, burn_type, biomass_collection, tile_number) {
                               tile_number, ".rds"))
         
         # remove slopes above 80%
-        rdf[Slope < 80]
+        rdf <- rdf[Slope < 80]
         
         # load fuel proportions
         fuel_prop <- fread(fuel_prop_path, 
@@ -60,8 +60,10 @@ load_data <- function(treatment, burn_type, biomass_collection, tile_number) {
         residue <- residue[FCID2018 %in% rdf$FCID2018]
         
         # specify scenario treatments and attributes
-        # leave out id
-        residue[, ':=' (Silvicultural_Treatment = treatment, 
+        residue[, ':=' (ID = ID,
+                        Silvicultural_Treatment = treatment, 
+                        Fraction_Piled = f_piled,
+                        Fraction_Scattered = f_scattered,
                         Burn_Type = burn_type,
                         Biomass_Collection = biomass_collection,
                         Tile_Number = tile_number)]
@@ -88,7 +90,7 @@ load_data <- function(treatment, burn_type, biomass_collection, tile_number) {
         rdf <-  merge(rdf, FCCS, by = "fuelbed_number")
         
         # specify a slope class
-        rdf[, Slope_Class := ifelse(Slope < 40, "shallow", "steep")]
+        rdf[, Slope_Class := ifelse(Slope < 40, 40, 80)]
         
         return(rdf)
 }
