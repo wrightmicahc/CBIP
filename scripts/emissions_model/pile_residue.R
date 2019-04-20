@@ -15,16 +15,17 @@ pile_residue <- function(dt, timestep) {
         pK_coeff <- 0.7516606
 
         # load the lookup table for piled fuels
-        lookup_pile <- fread("data/SERC/lookup_tables/piled_fuels.csv", 
+        lookup_pile <- fread("data/SERC/lookup_tables/fake/piled.csv", 
                                 verbose = FALSE)
         
         # merge lookup and dt
         dt <-  merge(dt, 
                      lookup_pile,
-                     by = c("Slope_Class",
+                     by = c("ID",
+                            "Slope_Class",
                             "Silvicultural_Treatment",
-                            "Harvest_System",
-                            "Harvest_Type",
+                            "Fraction_Piled",
+                            "Fraction_Scattered",
                             "Burn_Type",
                             "Biomass_Collection"), 
                      all.x = TRUE,
@@ -58,8 +59,7 @@ pile_residue <- function(dt, timestep) {
                                  "duff")]
         
         # remove excess columns
-        dt[, c("Type",
-               "Stem_ge9",
+        dt[, c("Stem_ge9",
                "Stem_6t9",
                "Stem_4t6",
                "Branch",
