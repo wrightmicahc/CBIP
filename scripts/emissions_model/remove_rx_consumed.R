@@ -21,8 +21,11 @@ remove_rx_consumed <- function(dt, burn_type) {
         } else {
                 
                 # caclulate remaining fuel for each size class
+                # TODO: check to make sure depths are correct
                 pdt[, ':=' (duff_upper_loading = duff_upper_loading - total_duff,
+                            duff_upper_depth = duff_upper_loading * duff_upper_ratio,
                             litter_loading = litter_loading - total_litter,
+                            litter_depth = litter_loading * litter_ratio,
                             one_hr_sound = 0,
                             ten_hr_sound = 0,
                             hun_hr_sound = hun_hr_sound - total_100,
@@ -35,31 +38,21 @@ remove_rx_consumed <- function(dt, burn_type) {
                 
         }
         
-        # remove unecessary columns
-        pdt[, c("total_duff", 
-                "total_litter",
-                "total_1",
-                "total_10",
-                "total_100",
-                "total_OneK_snd",
-                "total_OneK_rot",
-                "total_tenK_snd", 
-                "total_tenK_rot",
-                "total_tnkp_snd", 
-                "total_tnkp_rot",
-                "flamg_pile", 
-                "smoldg_pile",
-                "resid_pile", 
-                "char_100",
-                "char_OneK_snd",
-                "char_OneK_rot",
-                "char_tenK_snd",
-                "char_tenK_rot",
-                "char_tnkp_snd",
-                "char_tnkp_rot",
-                "char_fwd_residue",
-                "char_cwd_residue",
-                "pile_char") := NULL]
+        # remove all exraneous columns
+        # first emissions columns
+        e_spp <- c("CH4", "CO", "CO2", "NOx", "PM10", "PM2.5", "SO2", "VOC", "char")
+        
+        for (i in e_spp) {
+                pdt[, grep(i, names(pdt), value = "TRUE") := NULL]
+        }
+        
+        # combustion columns
+        phase <- c("total", "flamg", "smoldg", "resid")
+        
+        for (i in phase) {
+                pdt[, grep(i, names(pdt), value = "TRUE") := NULL]
+        }
+        
         
         return(pdt)
 }
