@@ -27,7 +27,7 @@ library(tidyverse)
 
 # Extract Scenarios Lookup Table
 
-Load the scenario matrix, and extract the different scenarios. Note that this excludes pulp market scenarios. The ID column needs to be repeated across slope class, fix this.
+Load the scenario matrix, and extract the different scenarios.
 
 ```{r message=FALSE}
 scenarios <- read_csv("data/SERC/Scenario_Matrix_v11_model-input.csv",
