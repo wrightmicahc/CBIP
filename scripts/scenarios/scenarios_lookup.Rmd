@@ -95,11 +95,11 @@ get_sections <- function(fraction_type, col_range) {
                           Burn_Type = ifelse(`Burn Type` == "No", "None", `Burn Type`),
                           Biomass_Collection = `Biomass Collection`,
                           Pulp_Market = `Pulp Market`,
-                          Stem_ge9 = `Stem 9+`,
-                          Stem_6t9 = `Stem 6-9`,
-                          Stem_4t6 = `Stem 4-6`,
-                          Branch = Branch,
-                          Foliage = Foliage) %>%
+                          Stem_ge9 = as.numeric(gsub("[%]", "", `Stem 9+`)),
+                          Stem_6t9 = as.numeric(gsub("[%]", "", `Stem 6-9`)),
+                          Stem_4t6 = as.numeric(gsub("[%]", "", `Stem 4-6`)),
+                          Branch = as.numeric(gsub("[%]", "", Branch)),
+                          Foliage = as.numeric(gsub("[%]", "", Foliage))) %>%
                 add_row(ID = rep(c(705, 706), each = 2),
                         Slope_Class = rep(c(40, 80), each = 2),
                         Silvicultural_Treatment = rep("No_Action", 4),
