@@ -9,13 +9,21 @@
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
-pile_residue <- function(dt, timestep) {
+piled_k_const <- function(k_const, coEf = 0.721, per_ag = .892, per_gc = .108) {
         
+        k_pile <- ((k_const * coEf) * per_ag) + (k_const * per_gc)
+        
+        return(k_pile)
+}
+
+
+pile_residue <- function(dt, timestep) {
+        browser()
         # specify the coefficient for pile K
         pK_coeff <- 0.7516606
 
         # load the lookup table for piled fuels
-        lookup_pile <- fread("data/SERC/lookup_tables/fake/piled.csv", 
+        lookup_pile <- fread("data/SERC/lookup_tables/piled_fuels.csv", 
                                 verbose = FALSE)
         
         # merge lookup and dt
@@ -37,25 +45,30 @@ pile_residue <- function(dt, timestep) {
         # calculate coarse load
         dt[, CWD := (Stem_ge9_tonsAcre * Stem_ge9) + (Stem_6t9_tonsAcre * Stem_6t9) + (Stem_4t6_tonsAcre * Stem_4t6)]
         
+        # update k values
+        dt[, ":=" (pile_CWD_K = piled_k_const(CWD_K),
+                   pile_FWD_K = piled_k_const(FWD_K),
+                   pile_Foliage_K = piled_k_const(Foliage_K))]
+        
         # calculate landing pile load
         dt[, pile_load := decay_fun(CWD,
-                                    CWD_K * pK_coeff,
+                                    pile_CWD_K,
                                     timestep) + 
                    to_duff(CWD,
-                           CWD_K * pK_coeff,
+                           pile_CWD_K,
                            timestep) +
                    decay_fun(Branch_tonsAcre * Branch,
-                             FWD_K * pK_coeff,
+                             pile_FWD_K,
                              timestep) +
                    to_duff(Branch_tonsAcre * Branch,
-                           FWD_K * pK_coeff,
+                           pile_FWD_K,
                            timestep) +
                    decay_foliage(Foliage_tonsAcre * Foliage, 
-                                 Foliage_K * pK_coeff,
+                                 pile_Foliage_K,
                                  timestep,
                                  "foliage") +
                    decay_foliage(Foliage_tonsAcre * Foliage, 
-                                 Foliage_K * pK_coeff, 
+                                 pile_Foliage_K, 
                                  timestep,
                                  "duff")]
         
@@ -65,7 +78,10 @@ pile_residue <- function(dt, timestep) {
                "Stem_4t6",
                "Branch",
                "Foliage",
-               "CWD") := NULL]
+               "CWD",
+               "pile_CWD_k",
+               "pile_FWD_k",
+               "pile_Foliage_K") := NULL]
         
         return(dt)
 }
