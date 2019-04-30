@@ -14,7 +14,7 @@
 library(data.table)
 
 # define function
-load_data <- function(id, treatment, f_piled, f_scattered, burn_type, biomass_collection, tile_number) {
+load_data <- function(id, treatment, f_piled, f_scattered, burn_type, biomass_collection, pulp_market, tile_number) {
         
         # file paths to residue tables
         residue_path <- list("No_Action" = "data/UW/residue/NoAction.csv",
@@ -66,6 +66,7 @@ load_data <- function(id, treatment, f_piled, f_scattered, burn_type, biomass_co
                         Fraction_Scattered = f_scattered,
                         Burn_Type = burn_type,
                         Biomass_Collection = biomass_collection,
+                        Pulp_Market = pulp_market,
                         Tile_Number = tile_number)]
         
         # merge tabulated raster data to fuel proportion and residue data 
