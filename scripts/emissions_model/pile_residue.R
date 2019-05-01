@@ -18,9 +18,6 @@ piled_k_const <- function(k_const, coEf = 0.721, per_ag = .892, per_gc = .108) {
 
 
 pile_residue <- function(dt, timestep) {
-        browser()
-        # specify the coefficient for pile K
-        pK_coeff <- 0.7516606
 
         # load the lookup table for piled fuels
         lookup_pile <- fread("data/SERC/lookup_tables/piled_fuels.csv", 
@@ -79,8 +76,8 @@ pile_residue <- function(dt, timestep) {
                "Branch",
                "Foliage",
                "CWD",
-               "pile_CWD_k",
-               "pile_FWD_k",
+               "pile_CWD_K",
+               "pile_FWD_K",
                "pile_Foliage_K") := NULL]
         
         return(dt)
