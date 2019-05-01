@@ -88,18 +88,18 @@ get_sections <- function(fraction_type, col_range) {
         section <- section %>%
                 select(-contains("Bark"), -Stump, -Root) %>%
                 transmute(ID = as.integer(ID),
-                          Slope_Class = as.numeric(gsub("[LTG]", "", Slope)),
+                          Slope_Class = ifelse(Slope == "GT40", 80, 40),
                           Silvicultural_Treatment = gsub(" ", "_", `Silvicultural Treatment`),
                           Fraction_Piled = gsub("[%]", "",`Fraction Gross Residues That Are Piled`),
                           Fraction_Scattered = gsub("[%]", "", `Fraction Gross Residues That Are Scattered`),
                           Burn_Type = ifelse(`Burn Type` == "No", "None", `Burn Type`),
                           Biomass_Collection = `Biomass Collection`,
                           Pulp_Market = `Pulp Market`,
-                          Stem_ge9 = as.numeric(gsub("[%]", "", `Stem 9+`)),
-                          Stem_6t9 = as.numeric(gsub("[%]", "", `Stem 6-9`)),
-                          Stem_4t6 = as.numeric(gsub("[%]", "", `Stem 4-6`)),
-                          Branch = as.numeric(gsub("[%]", "", Branch)),
-                          Foliage = as.numeric(gsub("[%]", "", Foliage))) %>%
+                          Stem_ge9 = as.numeric(gsub("[%]", "", `Stem 9+`))/100,
+                          Stem_6t9 = as.numeric(gsub("[%]", "", `Stem 6-9`))/100,
+                          Stem_4t6 = as.numeric(gsub("[%]", "", `Stem 4-6`))/100,
+                          Branch = as.numeric(gsub("[%]", "", Branch))/100,
+                          Foliage = as.numeric(gsub("[%]", "", Foliage))/100) %>%
                 add_row(ID = rep(c(705, 706), each = 2),
                         Slope_Class = rep(c(40, 80), each = 2),
                         Silvicultural_Treatment = rep("No_Action", 4),
