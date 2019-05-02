@@ -29,7 +29,7 @@ propfuel <- function(load, add, prop) {
 add_residue <- function(dt, timestep) {
         
         # load the lookup table for scattered fuels
-        lookup_scattered <- fread("data/SERC/lookup_tables/fake/scattered.csv", 
+        lookup_scattered <- fread("data/SERC/lookup_tables/scattered_in_field.csv", 
                                   verbose = FALSE)
         
         # add year column
