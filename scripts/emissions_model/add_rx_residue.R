@@ -145,8 +145,7 @@ add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
                    tnkp_hr_rotten = tnkp_hr_rotten + tnkp_hr_rotten_toadd,
                    duff_upper_loading = duff_upper_loading + duff_toadd,
                    litter_loading = litter_loading + litter_toadd,
-                   pile_field = 0,
-                   pile_landing = 0)]
+                   pile_load = 0)]
         
         
         
