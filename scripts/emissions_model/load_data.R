@@ -60,7 +60,7 @@ load_data <- function(id, treatment, f_piled, f_scattered, burn_type, biomass_co
         residue <- residue[FCID2018 %in% rdf$FCID2018]
         
         # specify scenario treatments and attributes
-        residue[, ':=' (ID = ID,
+        residue[, ':=' (ID = id,
                         Silvicultural_Treatment = treatment, 
                         Fraction_Piled = f_piled,
                         Fraction_Scattered = f_scattered,
