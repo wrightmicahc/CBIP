@@ -36,9 +36,6 @@ source("scripts/emissions_model/save_output.R")
 # load parallel processing package, wrapper for os agnostic future package
 library(future.apply)
 
-# assign local multicore processing if available
-plan(multiprocess)
-
 scenario_emissions <- function(tile_number) {
         
         # create output tile folders if missing
@@ -53,7 +50,7 @@ scenario_emissions <- function(tile_number) {
         })
         
         # load scenarios
-        scenarios <- fread("data/SERC/fake_scenarios.csv", 
+        scenarios <- fread("data/SERC/scenarios.csv", 
                            verbose = FALSE)
         
         setkey(scenarios, Silvicultural_Treatment)
@@ -64,6 +61,9 @@ scenario_emissions <- function(tile_number) {
         
         # split the scenario dt into a list
         scenario_list <- split(scenarios, by = "ID")
+        
+        # assign local multicore processing if available
+        plan(multiprocess)
         
         # run fuel processing and decay/fire models on each scenario in the list
         # in parallel
@@ -76,14 +76,14 @@ scenario_emissions <- function(tile_number) {
                               
                               # assign scenario ids. x is a single-row data table,
                               # so assigning the first row gets the correct value
-                              ID <- x[1, ID]
-                              Silvicultural_Treatment <- x[1, Silvicultural_Treatment]
-                              Fraction_Piled = x[1, Fraction_Piled]
-                              Fraction_Scattered = x[1, Fraction_Scattered]
-                              Burn_Type <- x[1, Burn_Type]
-                              Biomass_Collection <- x[1, Biomass_Collection]
-                              Pulp_Market <- x[1, Pulp_Market]
-                              Tile_Number <- x[1, Tile_Number]
+                              ID <- x[, ID]
+                              Silvicultural_Treatment <- x[, Silvicultural_Treatment]
+                              Fraction_Piled = x[, Fraction_Piled]
+                              Fraction_Scattered = x[, Fraction_Scattered]
+                              Burn_Type <- x[, Burn_Type]
+                              Biomass_Collection <- x[, Biomass_Collection]
+                              Pulp_Market <- x[, Pulp_Market]
+                              Tile_Number <- x[, Tile_Number]
                               
                               # load data
                               # this combines residue, fuelbed, and spatial
@@ -94,6 +94,7 @@ scenario_emissions <- function(tile_number) {
                                                    Fraction_Scattered,
                                                    Burn_Type,
                                                    Biomass_Collection,
+                                                   Pulp_Market, 
                                                    Tile_Number)
                               
                               # correct windspeed from 10m to mid-flame
@@ -112,7 +113,7 @@ scenario_emissions <- function(tile_number) {
                                       cpy <- pile_residue(cpy, 0)
                                       
                                       # add the scattered residue to the fuelbed
-                                      cpy <-  add_residue(cpy, 0)
+                                      cpy <- add_residue(cpy, 0)
                                       
                                       # change fire weather value names appropriately
                                       cpy[, ':=' (Wind_corrected = Wind_corrected_rx,
@@ -123,17 +124,19 @@ scenario_emissions <- function(tile_number) {
                                       rx_out <- burn_residue(cpy, Burn_Type)
                                       
                                       # save the output
-                                      lapply(1:2, function(i) {
+                                      for (i in 1:2) {
                                               save_output(rx_out[[i]],
                                                           Silvicultural_Treatment,
                                                           ID,
                                                           Burn_Type,
-                                                          tile_number,
+                                                          Tile_Number,
+                                                          Fraction_Piled,
+                                                          Fraction_Scattered,
                                                           Biomass_Collection,
                                                           Pulp_Market,
                                                           secondary_burn = names(rx_out)[i],
                                                           0)
-                                              })
+                                      }
                                       
                                       # create a vector from 25-100 years in 25 year bins
                                       timestep <- seq(25, 100, 25)
@@ -162,7 +165,9 @@ scenario_emissions <- function(tile_number) {
                                                           Silvicultural_Treatment,
                                                           ID,
                                                           Burn_Type,
-                                                          tile_number,
+                                                          Tile_Number,
+                                                          Fraction_Piled,
+                                                          Fraction_Scattered,
                                                           Biomass_Collection,
                                                           Pulp_Market,
                                                           secondary_burn = "first",
@@ -205,7 +210,9 @@ scenario_emissions <- function(tile_number) {
                                                           Silvicultural_Treatment,
                                                           ID,
                                                           Burn_Type,
-                                                          tile_number,
+                                                          Tile_Number,
+                                                          Fraction_Piled,
+                                                          Fraction_Scattered,
                                                           Biomass_Collection,
                                                           Pulp_Market,
                                                           secondary_burn = "first",
