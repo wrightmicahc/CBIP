@@ -34,7 +34,10 @@ remove_rx_consumed <- function(dt, burn_type) {
                             tenK_hr_sound = tenK_hr_sound - total_tenK_snd,
                             tenK_hr_rotten = tenK_hr_rotten - total_tenK_rot,
                             tnkp_hr_sound = tnkp_hr_sound - total_tnkp_snd,
-                            tnkp_hr_rotten = tnkp_hr_rotten - total_tnkp_rot)]
+                            tnkp_hr_rotten = tnkp_hr_rotten - total_tnkp_rot,
+                            pile_load = pile_load - (flamg_pile +
+                                                     smoldg_pile +
+                                                     resid_pile))]
                 
         }
         
