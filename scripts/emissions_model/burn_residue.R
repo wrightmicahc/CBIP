@@ -30,7 +30,7 @@ burn_residue <- function(dt, burn_type) {
                 
         }
         # RX with scattered and piled fuels
-        if(burn_type  == "Broadcast") {
+        if(burn_type  %in% c("Broadcast", "Pile and Broadcast") {
                 
                 # specify diameter reduction factor
                 DRR  <- 1 
