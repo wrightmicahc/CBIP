@@ -100,7 +100,7 @@ get_sections <- function(fraction_type, col_range) {
                           Stem_4t6 = as.numeric(gsub("[%]", "", `Stem 4-6`))/100,
                           Branch = as.numeric(gsub("[%]", "", Branch))/100,
                           Foliage = as.numeric(gsub("[%]", "", Foliage))/100) %>%
-                add_row(ID = rep(c(705, 706), each = 2),
+                add_row(ID = rep(c(703, 704), 2),
                         Slope_Class = rep(c(40, 80), each = 2),
                         Silvicultural_Treatment = rep("No_Action", 4),
                         Fraction_Piled = rep("0", 4),
