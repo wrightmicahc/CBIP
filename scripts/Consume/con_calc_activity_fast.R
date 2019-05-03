@@ -304,7 +304,7 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR, burn_type){
         # ccon_piled()
         # this is combined for wildfire scenarios
         ###################################################
-        if (burn_type %in% c("Pile_Broadcast", "None")) {
+        if (burn_type %in% c("Pile and Broadcast", "Broadcast", "None")) {
                 dt[, ':=' (flamg_pile = (pile_load * 0.9) * 0.7,
                            smoldg_pile = (pile_load * 0.9) * 0.15,
                            resid_pile = (pile_load * 0.9) * 0.15)]
