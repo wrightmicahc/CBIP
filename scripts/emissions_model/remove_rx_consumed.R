@@ -41,21 +41,5 @@ remove_rx_consumed <- function(dt, burn_type) {
                 
         }
         
-        # remove all exraneous columns
-        # first emissions columns
-        e_spp <- c("CH4", "CO", "CO2", "NOx", "PM10", "PM2.5", "SO2", "VOC", "char")
-        
-        for (i in e_spp) {
-                pdt[, grep(i, names(pdt), value = "TRUE") := NULL]
-        }
-        
-        # combustion columns
-        phase <- c("total", "flamg", "smoldg", "resid")
-        
-        for (i in phase) {
-                pdt[, grep(i, names(pdt), value = "TRUE") := NULL]
-        }
-        
-        
         return(pdt)
 }
