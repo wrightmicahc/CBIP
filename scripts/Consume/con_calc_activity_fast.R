@@ -319,14 +319,15 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR, burn_type){
         # charcoal production
         ###################################################
         
-        # caclulate char for each size class
+        # caclulate char for each size class. Char from RX burns is added if it exists
+        
         dt[, ':=' (char_100 = char_scat(hun_hr_sound - total_100),
                    char_OneK_snd = char_scat(oneK_hr_sound - total_OneK_snd),
                    char_OneK_rot = char_scat(oneK_hr_rotten - total_OneK_rot),
                    char_tenK_snd = char_scat(tenK_hr_sound - total_tenK_snd),
                    char_tenK_rot = char_scat(tenK_hr_rotten - total_tenK_rot),
                    char_tnkp_snd = char_scat(tnkp_hr_sound - total_tnkp_snd),
-                   char_tnkp_rot = char_scat(tnkp_hr_rotten - total_tnkp_rot))]
+                   char_tnkp_rot = char_scat(tnkp_hr_rotten - total_tnkp_rot))]       
         
         # update unburned so char is omitted
         dt[, ':=' (hun_hr_sound = hun_hr_sound - char_100,
@@ -337,11 +338,28 @@ ccon_activity_fast <- function(dt, fm_type, days_since_rain, DRR, burn_type){
                    tnkp_hr_sound = tnkp_hr_sound - char_tnkp_snd,
                    tnkp_hr_rotten = tnkp_hr_rotten - char_tnkp_rot)]
         
+        # add previously existing char
+        if (exists("char_100_rx", dt)) {
+                
+                dt[, ':=' (char_100 = char_100_rx + char_100, 
+                           char_OneK_snd = char_OneK_snd_rx + char_OneK_snd, 
+                           char_OneK_rot = char_OneK_rot_rx + char_OneK_rot, 
+                           char_tenK_snd = char_tenK_snd_rx + char_tenK_snd, 
+                           char_tenK_rot = char_tenK_rot_rx + char_tenK_rot, 
+                           char_tnkp_snd = char_tnkp_snd_rx + char_tnkp_snd, 
+                           char_tnkp_rot = char_tnkp_rot_rx + char_tnkp_rot)]
+                
+        } 
+        
         # calculate pile char and update remaining unburned mass
         if (burn_type %in% c("Pile_Broadcast", "None")) {
                 dt[, pile_char := char_pile(pile_load * 0.1)][, pile_load := pile_load - pile_char]
         } else {
                 dt[, pile_char := 0]
+        }
+        
+        if (exists("pile_char_rx", dt)) {
+                dt[, pile_char := pile_char + pile_char_rx]
         }
         
         # aggregate the data as much as possible to get residue only and total by combustion phase
@@ -455,6 +473,10 @@ ccon_activity_piled_only_fast <- function(dt) {
         # calculate char and update remaining mass
         # calculate pile char and update remaining mass
         dt[, pile_char := char_pile(pile_load * 0.1)][, pile_load := pile_load - pile_char]
+        
+        if (exists("pile_char_rx", dt)) {
+                dt[, pile_char := pile_char + pile_char_rx]
+        }
         
         # assign 0 values to other burn cols for eval in  calc_emissions
         c_phase <- c("flamg", "smoldg", "resid")
