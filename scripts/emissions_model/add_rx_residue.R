@@ -25,7 +25,8 @@ add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
                               tnkp_hr_sound_b = tnkp_hr_sound,
                               tnkp_hr_rotten_b = tnkp_hr_rotten,
                               litter_loading_b = litter_loading,
-                              duff_upper_loading_b = duff_upper_loading)],
+                              duff_upper_loading_b = duff_upper_loading,
+                              pile_load_b = pile_load)],
                     by = c("x", "y"))
         
         dt[, ':=' (litter_toadd = decay_foliage(litter_loading_b, 
@@ -145,7 +146,7 @@ add_rx_residue <- function(dt_rx, dt_fuel, timestep) {
                    tnkp_hr_rotten = tnkp_hr_rotten + tnkp_hr_rotten_toadd,
                    duff_upper_loading = duff_upper_loading + duff_toadd,
                    litter_loading = litter_loading + litter_toadd,
-                   pile_load = 0)]
+                   pile_load = pile_load_b)]
         
         
         
