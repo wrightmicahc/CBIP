@@ -105,7 +105,7 @@ get_sections <- function(fraction_type, col_range) {
                         Silvicultural_Treatment = rep("No_Action", 4),
                         Fraction_Piled = rep("0", 4),
                         Fraction_Scattered = rep("0", 4),
-                        Burn_Type = rep(c("None", "Broadcast"), each = 2),
+                        Burn_Type = rep(c("None", "Broadcast"), 2),
                         Biomass_Collection = rep("None", 4),
                         Pulp_Market = rep("No", 4),
                         Stem_ge9 = rep(0.0, 4),
