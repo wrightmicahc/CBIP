@@ -16,7 +16,10 @@ remove_rx_consumed <- function(dt, burn_type) {
         
         if (burn_type == "Pile") {
                 
-                pdt[, pile_load := 0]
+                pdt[, ":=" (pile_load = 0,
+                            pile_char_rx = pile_char)]
+                
+                pdt[, "pile_char" := NULL]
                 
         } else {
                 
@@ -37,7 +40,25 @@ remove_rx_consumed <- function(dt, burn_type) {
                             tnkp_hr_rotten = tnkp_hr_rotten - total_tnkp_rot,
                             pile_load = pile_load - (flamg_pile +
                                                      smoldg_pile +
-                                                     resid_pile))]
+                                                     resid_pile),
+                            char_100_rx = char_100,
+                            char_OneK_snd_rx = char_OneK_snd,
+                            char_OneK_rot_rx = char_OneK_rot,
+                            char_tenK_snd_rx = char_tenK_snd,
+                            char_tenK_rot_rx = char_tenK_rot,
+                            char_tnkp_snd_rx = char_tnkp_snd,
+                            char_tnkp_rot_rx = char_tnkp_rot,
+                            pile_char_rx = pile_char)]
+                
+                # remove old char columns
+                pdt[, c("char_100",
+                        "char_OneK_snd",
+                        "char_OneK_rot",
+                        "char_tenK_snd",
+                        "char_tenK_rot",
+                        "char_tnkp_snd",
+                        "char_tnkp_rot",
+                        "pile_char") := NULL]
                 
         }
         
