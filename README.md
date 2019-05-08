@@ -160,11 +160,12 @@ The emissions table has the following columns:
 |FCID2018                    |UW FCID number for 2018.
 |ID                          |Integer scenario ID number, unique to each scenario treatment combination.
 |Silvicultural_Treatment     |Harvest or fuel treatment method applied.
-|Harvest_Type                |Harvest method, whole tree or cut-to-length.
-|Harvest_System              |Harvest extraction method, cable or ground.
 |Burn_Type                   |RX burn type for the scenario, if applicable.
+|Fraction_Piled              |Fraction of residues that are piled.
+|Fraction_Scattered          |Fraction of residues that are scattered.
 |Biomass_Collection          |Was the biomass collected for energy generation?
 |Pulp_Market                 |Was there a pulp market?
+|Secondary_Burn              |Either "first", the first burn of the year, or "second", a secondary wildfire following an RX burn. Burns with "second" only occur following RX burns in year 0.
 |Year                        |Year in 100-year sequence.
 |total_except_pile_char      |Char produced by scattered fuels in tons/acre including original fuelbed.
 |total_except_pile_CH4       |CH4 produced by scattered fuels in tons/acre including original fuelbed. 
@@ -243,11 +244,12 @@ The residual fuels table has the following columns.
 |FCID2018                 |UW FCID number for 2018.
 |ID                       |Integer scenario ID number, unique to each scenario treatment combination.
 |Silvicultural_Treatment  |Harvest or fuel treatment method applied.
-|Harvest_Type             |Harvest method, whole tree or cut-to-length.
-|Harvest_System           |Harvest extraction method, cable or ground.
 |Burn_Type                |RX burn type for the scenario, if applicable.
+|Fraction_Piled           |Fraction of residues that are piled.
+|Fraction_Scattered       |Fraction of residues that are scattered.
 |Biomass_Collection       |Was the biomass collected for energy generation?
 |Pulp_Market              |Was there a pulp market?
+|Secondary_Burn           |Either "first", the first burn of the year, or "second", a secondary wildfire following an RX burn. Burns with "second" only occur following RX burns in year 0.
 |Year                     |Year in 100-year sequence.
 |Slope                    |Slope of pixel in percent.
 |Fm10                     |10-hour fuel moisture in percent.
