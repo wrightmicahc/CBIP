@@ -42,6 +42,11 @@ burn_residue <- function(dt, burn_type) {
                 
                 burn_again <- remove_rx_consumed(consumption_df, burn_type)
                 
+                # update fire weather
+                burn_again[, Fm10  := Fm10_97,
+                           Fm1000 := Fm1000_97,
+                           Wind_corrected := Wind_corrected_97]
+                
                 consumption_df2 <- ccon_activity_fast(burn_again, 
                                                       fm_type = "NFDRS_Th", 
                                                       days_since_rain = 10,
@@ -60,6 +65,11 @@ burn_residue <- function(dt, burn_type) {
                 consumption_df <- ccon_activity_piled_only_fast(dt)
                 
                 burn_again <- remove_rx_consumed(consumption_df, burn_type)
+                
+                # update fire weather
+                burn_again[,Fm10  := Fm10_97,
+                           Fm1000 := Fm1000_97,
+                           Wind_corrected := Wind_corrected_97]
                 
                 consumption_df2 <- ccon_activity_piled_only_fast(burn_again)
                 
