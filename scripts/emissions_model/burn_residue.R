@@ -49,8 +49,8 @@ burn_residue <- function(dt, burn_type) {
                 
                 consumption_df2 <- ccon_activity_fast(burn_again, 
                                                       fm_type = "NFDRS_Th", 
-                                                      days_since_rain = 10,
-                                                      DRR = DRR, 
+                                                      days_since_rain = 50,
+                                                      DRR = 2.0 / 3.0, 
                                                       burn_type = "None")
                 
                 emissions_df <- calc_emissions(consumption_df, burn_type)
@@ -71,7 +71,11 @@ burn_residue <- function(dt, burn_type) {
                            Fm1000 := Fm1000_97,
                            Wind_corrected := Wind_corrected_97]
                 
-                consumption_df2 <- ccon_activity_piled_only_fast(burn_again)
+                consumption_df2 <- ccon_activity_fast(burn_again, 
+                                                      fm_type = "NFDRS_Th", 
+                                                      days_since_rain = 50,
+                                                      DRR = 2.0 / 3.0, 
+                                                      burn_type = "None")
                 
                 emissions_df <- calc_emissions(consumption_df, burn_type)
                 
