@@ -35,6 +35,8 @@ source("scripts/emissions_model/save_output.R")
 
 # load parallel processing package, wrapper for os agnostic future package
 library(future.apply)
+# data table
+library(data.table)
 
 scenario_emissions <- function(tile_number) {
         
