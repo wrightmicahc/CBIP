@@ -10,9 +10,6 @@
 # Author: Micah Wright, Humboldt State University
 ################################################################################
 
-# load the necessary packages
-library(data.table)
-
 # define function
 load_data <- function(id, treatment, f_piled, f_scattered, burn_type, biomass_collection, pulp_market, tile_number) {
         
