@@ -20,3 +20,4 @@ scripts/mtbs
 scripts/Other/GNN_pcover.Rmd
 scripts/UW/UW_reclass.R
 *.Rproj
+*.rds
