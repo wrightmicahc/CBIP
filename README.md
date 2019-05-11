@@ -31,6 +31,7 @@ CBIP                            # main project directory
 |   +-- Other                   # misc. scripts
 |   +-- emissions_model         # core scripts for the emissions model excluding
 |                                 consumption/emissions scripts
+|   +-- run_for_all_emissions.R # Run this to get all emissions
 |   +-- Test                    # scratch and testing scripts
 |   +-- UW                      # residue data processing 
 +-- figures                     # figures
@@ -92,12 +93,14 @@ emissions <- readRDS("data/Tiles/output/emissions/300/20_Proportional_Thin-None-
 residual_fuels <- readRDS("data/Tiles/output/residual_fuels/300/20_Proportional_Thin-None-70-30-first-No-No-49-300-0.rds")
 ```
 
-To run the emissions scenario_emissions function on the entire tile set, use the run_all function, as shown below. The run_all function has an optional argument t_range, which is a integer vector or sequence of tile ID numbers. The default is NULL, which runs all tiles. WARNING: This takes quite a while to run, and require a lot of disk space.
+To run the emissions scenario_emissions function on the entire tile set, run the run_for_all_emissions.R script. It simply sources the run_all function, as shown below. The run_all function has an optional argument t_range, which is a integer vector or sequence of tile ID numbers. The default is NULL, which runs all tiles. WARNING: This takes quite a while to run, and require a lot of disk space.
 
 ```
-source("scripts/emissions_model/run_all.R")
+# runs everything from bash
+Rscript run_for_all_emissions.R
 
-# runs everything
+# runs everything from Rstudio
+source("scripts/emissions_model/run_all.R")
 run_all()
 
 # run first 100 tiles
@@ -135,22 +138,22 @@ These are saved as .rds files in folders of the same name located in data/Tiles/
 
 The specifics in the above example are described in the table below.
 
-| Position|Value                |Attribute               | Description                                                 |
-|--------:|:--------------------|:-----------------------|:------------------------------------------------------------|
-|        1|20_Proportional_Thin |Silvicultural_Treatment |Silvaculture or thinning treatment                           |
-|        2|None                 |Burn_Type               |Type of burn, wildfire is "none", all others are RX          |
-|        3|70                   |Fraction_Piled          |Fraction of residues that are piled                          |
-|        4|30                   |Fraction_Scattered      |Fraction of residues that are scattered                      |
-|        5|first                |secondary_burn          |Was this a wildfire immediately following an RX treatment?   |
-|        6|No                   |Biomass_Collection      |Were any of the residues removed from the fuelbed?           |
-|        7|No                   |Pulp_Market             |Was there a pulp market where smaller trees would have value?|
-|        8|49                   |ID                      |Scenario-specific ID number                                  |
-|        9|300                  |tile_number             |Tile ID number                                               |
-|       10|0                    |year                    |Year in the 100 year sequence                                |
+| Position|Value                |Attribute               | Description                                                                 |
+|--------:|:--------------------|:-----------------------|:---------------------------------------------------------------------       |
+|        1|20_Proportional_Thin |Silvicultural_Treatment |Silvaculture or thinning treatment                                           |
+|        2|None                 |Burn_Type               |Type of burn, wildfire is "none", all others are RX                          |
+|        3|70                   |Fraction_Piled          |Fraction of residues that are piled                                          |
+|        4|30                   |Fraction_Scattered      |Fraction of residues that are scattered                                      |
+|        5|first                |secondary_burn          |Was this a wildfire immediately following an RX treatment? No in this case   |
+|        6|No                   |Biomass_Collection      |Were any of the residues removed from the fuelbed?                           |
+|        7|No                   |Pulp_Market             |Was there a pulp market where smaller trees would have value?                |
+|        8|49                   |ID                      |Scenario-specific ID number                                                  |
+|        9|300                  |tile_number             |Tile ID number                                                               |
+|       10|0                    |year                    |Year in the 100 year sequence                                                |
 
 ### Emissions
 
-The emissions table has the following columns:
+The emissions table has the following columns. All emissions are in US tons/acre.
 
 | Column                     | Description                                                                |
 |----------------------------|----------------------------------------------------------------------------|
@@ -234,7 +237,7 @@ The emissions table has the following columns:
 
 ### Residual Fuels
 
-The residual fuels table has the following columns.
+The residual fuels table has the following columns. All residual fuels are in US tons/acre.
 
 | Column                  | Description                                                                |
 |-------------------------|----------------------------------------------------------------------------|
