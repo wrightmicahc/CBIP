@@ -4,11 +4,12 @@
 # depending on whether or not every tile is run.
 #
 # t_range: range or single integer that corresponds to specific tile numbers 
+# save_runtime: save runtime to .rds file? default TRUE
 #
 # Author: Micah Wright 
 ################################################################################
 
-run_all <- function(t_range = NULL) {
+run_all <- function(t_range = NULL, save_runtime = TRUE) {
         # load sf package
         library(sf)
         
@@ -28,11 +29,13 @@ run_all <- function(t_range = NULL) {
         if(is.null(t_range)) {
                 # run the function on each tile
                 message(paste(run_message, length(tile_nums), "tiles..."))
-                lapply(tile_nums, function(x) try(scenario_emissions(x)))       
+                run_time <- system.time(lapply(tile_nums, function(x) try(scenario_emissions(x))))       
         } else {
                 # run the function on the specified tiles
                 message(paste(run_message, length(t_range), "tiles..."))
-                lapply(tile_nums[t_range], function(x) try(scenario_emissions(x)))       
+                run_time <- system.time(lapply(tile_nums[t_range], function(x) try(scenario_emissions(x))))
         }
+        
+        saveRDS(run_time, "run_time.rds")
         
 }
