@@ -64,16 +64,36 @@ install.packages("data.table")
 
 Other packages and software are required to reproduce the entire project, inlcuding python, Consume 4.2, Google Earth Engine, and many other r packages. Packages were loaded at the beginning of every script where possible. All scripts have a description header.
 
+## Summary Overview
+
+The process for calculating the consumption and emissions for a single tile over 5 timesteps (0, 25, 50, 75, and 100) is shown below. 
+
+1. The scenario lookup table is loaded. The following steps are run for each scenario.
+
+2. The FCCS fuelbed, residue, and spatial attributes data are loaded and joined into a single data.table.
+
+3. Mid-flame windspeeds are estimated from Gridmet 10m windspeeds.
+
+4. Piled residue mass is calculated for each fuel size class. If the year is one of the later timesteps (25-100), this is adjusted for decay.
+
+5. Scattered residue mass is calculated for each fuel size class. If the timestep is one of 25-100, this is adjusted for decay.
+
+6. The mass consumed by size class is estimated for the scenario and timestep. RX burns only occur during timestep 0, all subsequent fires for that timestep are wildfires. Wildfires in later timesteps assume that the fuelbed is recovered and that no wildfire has occurred to that point.
+
+7. If the scenario is an RX burn, the fuelbed is adjusted so only unconsumed fuel remains, and the fuelbed is burned again in the same year as a wildfire. All subsequent timesteps
+
+8. The emissions and residual fuels (unconsumed) for each scenario and timestep are estimated.
+
+9. Output emissions and residual fuels are saved as .rds files, mass units are US tons per acre.
+
 ## Usage
 
-This project is in the Rstudio project format, so all scripts must be sourced relative to the main CBIP folder. The general usage is shown below. In this example, emissions and residual (unconsumed) fuel are estimated for a fixed set of scenarios over five time steps over a 100-year period for tile number 300.
+This project is in the Rstudio project format, so all scripts must be sourced relative to the main CBIP folder. The steps to calculate emissions for a single tile are shown below. In this example, emissions and residual (unconsumed) fuel are estimated for a fixed set of scenarios over five time steps over a 100-year period for tile number 300. For ease of use when running on multiple tiles, the run_all function wraps the scenario_emissions function, which in turn wraps all other functions. For efficiency, the scenario_emissions function impliments parrallel processing using the future.apply package, which is platform independent. 
 
 ```
-source("scripts/emissions_model/scenario_emissions.R")
+source("scripts/emissions_model/run_all.R")
 
-tile_number <- 300
-
-scenario_emissions(tile_number)
+run_all(300)
 ```
 
 Tile number must match one of the ID numbers of the tiles located in "data/Tiles/clipped_tiles/clipped_tiles.shp". There are 11,990 tiles, eah of which is approximately ~2669 hectares in size. The tile ID numbers can be extracted using the following snippet:
@@ -83,9 +103,7 @@ tiles <- sf::st_read("data/Tiles/clipped_tiles/clipped_tiles.shp")
 tiles$ID
 ```
 
-For efficiency, the scenario_emissions function impliments parrallel processing using the future.apply package, which should be platform independent. 
-
-All outputs are saved to the "data/Tiles/output" folder. The following code demonstrates how to access the results, which are data.tables saved in .rds format.
+All outputs are saved to the "data/Tiles/output" folder as data.tables in .rds format. The following code demonstrates how to access the results.
 
 ```
 emissions <- readRDS("data/Tiles/output/emissions/300/20_Proportional_Thin-None-70-30-first-No-No-49-300-0.rds")
@@ -93,22 +111,19 @@ emissions <- readRDS("data/Tiles/output/emissions/300/20_Proportional_Thin-None-
 residual_fuels <- readRDS("data/Tiles/output/residual_fuels/300/20_Proportional_Thin-None-70-30-first-No-No-49-300-0.rds")
 ```
 
-To run the emissions scenario_emissions function on the entire tile set, run the run_for_all_emissions.R script. It simply sources the run_all function, as shown below. The run_all function has an optional argument t_range, which is a integer vector or sequence of tile ID numbers. The default is NULL, which runs all tiles. WARNING: This takes quite a while to run, and require a lot of disk space.
+The run_all function can run any number of the tiles. The run_all function has an optional argument t_range, which is a integer vector or sequence of tile ID numbers. The default is NULL, which runs all tiles. WARNING: This takes quite a while to run, and requires a lot of disk space. There is a second argument save_runtime, which defaults to TRUE. This saves an .rds file with the runtime, "run_time.rds", in the main project directory.
 
 ```
-# runs everything from bash
-Rscript run_for_all_emissions.R
-
-# runs everything from Rstudio
+# runs all tiles
 source("scripts/emissions_model/run_all.R")
 run_all()
 
-# run first 100 tiles
-run_all(1:100)
+# run first 100 tiles from Rstudio
+run_all(t_range = 1:100)
 ```
 ## What it does
 
-The scenario_emissions function estimates fuel consumption, emissions, and residual fuels for all  of the 704 fixed scenarios. The individual scenarios are stored in a .csv file which can be accessed at "data/SERC/scenarios.csv".
+The scenario_emissions function sourced by run_all estimates fuel consumption, emissions, and residual fuels for all  of the 704 fixed scenarios. The individual scenarios are stored in a .csv file which can be accessed at "data/SERC/scenarios.csv".
 
 The function loads pre-processed spatial attributes that have been converted from raster to a tabular format with x-y location indicator columns. All spatial data use the California (Teale) Albers projetion. The CRS is below:
 
@@ -118,7 +133,7 @@ CRS arguments:
 +no_defs +ellps=GRS80 +towgs84=0,0,0 
 ```
 
-The existing fuelbed and treatment residue data are then appended to the spatial attribute data using FCCS and updated GNN FCID identifiers. The post-treatment fuelbed is then created by adding the treatment residue to the exisiting fuelbed using proportions assigned for each scenario. Burns are then simulated for each fuelbed at 25-year increments over a 100-year period for a total of five model runs in each wildfire scenario and six in the RX treatment scenarios. Both the emissions and residual fuels (treatment residue only) are saved following each simulation. Wildfire simulations assume that no previous wildfire has occurred. For scenarios that include an RX burn, the RX burn occurs at year 0, and all subsequent burns are modeled as wildfires that occur on 25-year timesteps from 0-100 years after the treatment. With the exception of the wildfire immediately following the RX treatment, these follow-up wildfires are simulated using the remaining treatment residue that has been added to a "recovered" fuelbed. Treatment residues are updated to reflect mass loss from decay prior to burning for all cases.
+The existing fuelbed and treatment residue data are then appended to the spatial attribute data using FCCS and updated GNN FCID identifiers. The post-treatment fuelbed is then created by adding the treatment residue to the exisiting fuelbed using proportions assigned for each scenario. Residues are added as piled fuels or scattered fuels by fuel size class, accounting for decau. Burns are simulated on the updated fuelbeds at 25-year increments over a 100-year period for a total of five model runs in each wildfire scenario and six in the RX treatment scenarios. Both the emissions and residual fuels (treatment residue only) are saved following each simulation. Wildfire simulations assume that no previous wildfire has occurred. For scenarios that include an RX burn, the RX burn occurs at year 0, and all subsequent burns are modeled as wildfires that occur on 25-year timesteps from 0-100 years after the treatment. With the exception of the wildfire immediately following the RX treatment, these follow-up wildfires are simulated using the remaining treatment residue that has been added to a "recovered" fuelbed. Treatment residues are updated to reflect mass loss from decay prior to burning for all cases.
 
 To estimate emissions, all consumed mass is multiplied by phase-specific (flaming, smoldering, and residual) FEPs emissons factors, which are taken from the [Bluesky modeling framework](https://github.com/pnwairfire/eflookup/blob/master/eflookup/fepsef.py). Char production is also modeled. All mass converted to char is assumed to come from unconsumed fuel. The model output is then split into seperate data.tables containing residual fuels and emissions estimates and is saved as .rds files.
 
@@ -126,9 +141,9 @@ To estimate emissions, all consumed mass is multiplied by phase-specific (flamin
 
 The scenario_emissions function saves two output files for each scenario:
 
-1. emissions 
+1. emissions - this is the consumption and emissions estimates for each fuelbed in the tile.
 
-2. residual_fuels
+2. residual_fuels - this is the remaining residue for each fuelbed in the tile.
 
 These are saved as .rds files in folders of the same name located in data/Tiles/output. File naming convention is folders for output type and tile_number, then silvicultural treatment, type of burn, fraction of residues piled and scatterd, whether the burn was a secondary burn following an RX treatment, whether biomass was collected for utilization, the existence of a pulp market, tile number, and year. File paths have "-" seperation. An example:
 
