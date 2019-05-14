@@ -103,7 +103,7 @@ tiles <- sf::st_read("data/Tiles/clipped_tiles/clipped_tiles.shp")
 tiles$ID
 ```
 
-All outputs are saved to the "data/Tiles/output" folder as data.tables in .rds format. The following code demonstrates how to access the results.
+All outputs are saved to the "data/Tiles/output" folder as data.tables in .rds format. The subfolder "emissions" contains wildfire emissions estimates, the subfolder "residual_fuels" contains the residual fuels data. Each tile has scenario-specific outputs stored in a folder named for the tile number. The following code demonstrates how to access the results.
 
 ```
 emissions <- readRDS("data/Tiles/output/emissions/300/20_Proportional_Thin-None-70-30-first-No-No-49-300-0.rds")
@@ -145,7 +145,7 @@ The scenario_emissions function saves two output files for each scenario:
 
 2. residual_fuels - this is the remaining residue for each fuelbed in the tile.
 
-These are saved as .rds files in folders of the same name located in data/Tiles/output. File naming convention is folders for output type and tile_number, then silvicultural treatment, type of burn, fraction of residues piled and scatterd, whether the burn was a secondary burn following an RX treatment, whether biomass was collected for utilization, the existence of a pulp market, tile number, and year. File paths have "-" seperation. An example:
+These are saved as .rds files in folders of the same name located in data/Tiles/output. File naming convention is folders for output type (emissions or residual fuels) and tile number, then silvicultural treatment, type of burn, fraction of residues piled and scatterd, whether the burn was a secondary burn following an RX treatment, whether biomass was collected for utilization, the existence of a pulp market, tile number, and year. File paths have "-" seperation. An example:
 
 ```
 "data/Tiles/output/emissions/300/20_Proportional_Thin-None-70-30-first-No-No-49-300-0.rds"
