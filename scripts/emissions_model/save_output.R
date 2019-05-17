@@ -5,19 +5,14 @@
 # tile_number: numeric tile number.
 #
 # Author: Micah Wright, Humboldt State University
+#
+# 2019-05-16: Jerome updated to work with updated scenario_emissions()
+#       HAS NOT BEEN RUN OR TESTED YET
 ################################################################################
 
 save_output <- function(dt,
-                        Silvicultural_Treatment,
-                        ID,
-                        Burn_Type,
                         tile_number,
-                        Fraction_Piled,
-                        Fraction_Scattered,
-                        Biomass_Collection,
-                        Pulp_Market,
-                        secondary_burn,
-                        year) {
+                        Pulp_Market) {
         
         emissions_df <- dt[, list(x, 
                                   y,
@@ -30,7 +25,7 @@ save_output <- function(dt,
                                   Fraction_Scattered,
                                   Biomass_Collection, 
                                   Pulp_Market = Pulp_Market,
-                                  Secondary_Burn = secondary_burn,
+                                  Secondary_Burn,
                                   Year,
                                   total_except_pile_char,
                                   total_except_pile_CH4, 
@@ -108,7 +103,7 @@ save_output <- function(dt,
                                  Fraction_Scattered,
                                  Biomass_Collection, 
                                  Pulp_Market = Pulp_Market,
-                                 Secondary_Burn = secondary_burn,
+                                 Secondary_Burn,
                                  Year,
                                  Slope,
                                  Fm10,
@@ -131,34 +126,10 @@ save_output <- function(dt,
         saveRDS(emissions_df,
                 file = paste0("data/Tiles/output/emissions/",
                               tile_number,
-                              "/",
-                              paste(Silvicultural_Treatment,
-                                    Burn_Type,
-                                    Fraction_Piled,
-                                    Fraction_Scattered,
-                                    secondary_burn,
-                                    Biomass_Collection,
-                                    Pulp_Market,
-                                    ID,
-                                    tile_number,
-                                    year, 
-                                    sep = "-"),
                               ".rds"))
         
         saveRDS(residual_df,
                 file = paste0("data/Tiles/output/residual_fuels/",
                               tile_number,
-                              "/",
-                              paste(Silvicultural_Treatment,
-                                    Burn_Type,
-                                    Fraction_Piled,
-                                    Fraction_Scattered,
-                                    secondary_burn,
-                                    Biomass_Collection,
-                                    Pulp_Market,
-                                    ID,
-                                    tile_number,
-                                    year, 
-                                    sep = "-"),
                               ".rds"))
 }
